@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Calendar, MapPin, CheckCircle2 } from "lucide-react";
+import { Calendar, MapPin, TrendingUp } from "lucide-react";
 import { EXPERIENCE } from "@/data/portfolioData";
 
 export const Experience: React.FC = () => {
@@ -29,35 +29,36 @@ export const Experience: React.FC = () => {
             Research & Industry Experience
           </h2>
 
-          <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
+          <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
             Rigorous hands-on algorithmic problem solving, electromagnetic simulation, and quantitative research.
           </p>
         </motion.div>
 
         {/* Experience Cards */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           {EXPERIENCE.map((exp, idx) => (
             <motion.div
               key={exp.id}
               {...fadeUp(0.08 + idx * 0.05)}
-              className="clean-card p-7 sm:p-8 rounded-2xl"
+              className="clean-card p-6 sm:p-9 rounded-2xl border border-white/[0.08]"
             >
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 pb-4 border-b border-white/[0.07]">
+              {/* Header: Role, Organization, Program, Dates & Location */}
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6 pb-6 border-b border-white/[0.08]">
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-mono text-zinc-400 px-2 py-0.5 rounded bg-white/[0.05] border border-white/10">
+                  <div className="inline-flex items-center gap-2 mb-2">
+                    <span className="text-xs font-mono text-zinc-300 px-2.5 py-0.5 rounded bg-white/[0.06] border border-white/10 font-medium">
                       {exp.program}
                     </span>
                   </div>
-                  <h3 className="text-xl font-semibold text-white tracking-tight">
+                  <h3 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
                     {exp.role}
                   </h3>
-                  <div className="text-sm font-medium text-zinc-300 mt-0.5">
+                  <div className="text-sm sm:text-base font-medium text-zinc-300 mt-1">
                     {exp.organization}
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:items-end text-xs text-zinc-400 font-mono gap-1">
+                <div className="flex flex-col sm:items-end text-xs text-zinc-400 font-mono gap-1.5 shrink-0">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-zinc-500" />
                     {exp.period}
@@ -69,27 +70,109 @@ export const Experience: React.FC = () => {
                 </div>
               </div>
 
-              {/* Summary */}
-              <p className="text-sm text-zinc-300 leading-relaxed mb-5">
+              {/* Introductory Statement */}
+              <div className="p-4 sm:p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] mb-8 text-sm sm:text-[15px] text-zinc-300 leading-relaxed">
                 {exp.summary}
-              </p>
-
-              {/* Bullet points */}
-              <div className="space-y-2 mb-6">
-                {exp.highlights.map((highlight, hIdx) => (
-                  <div key={hIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                    <CheckCircle2 className="w-4 h-4 text-zinc-500 shrink-0 mt-0.5" />
-                    <span>{highlight}</span>
-                  </div>
-                ))}
               </div>
 
-              {/* Tags */}
-              <div className="flex flex-wrap gap-1.5 pt-4 border-t border-white/[0.06]">
+              {/* Three Research Areas: Data Processing → Configuration Analysis → Validation */}
+              <div className="mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {exp.researchAreas.map((area, aIdx) => (
+                    <div
+                      key={area.id || aIdx}
+                      className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <span className="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
+                            {area.title}
+                          </span>
+                          <span className="text-xs font-mono text-zinc-500">
+                            0{aIdx + 1}
+                          </span>
+                        </div>
+                        <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                          {area.id === "data-processing" ? (
+                            <>
+                              Processed{" "}
+                              <strong className="text-white font-semibold">
+                                20K+ RFID signatures
+                              </strong>{" "}
+                              through a modular MATLAB workflow, converting simulation outputs
+                              into structured data for analysis.
+                            </>
+                          ) : area.id === "configuration-analysis" ? (
+                            <>
+                              Compared{" "}
+                              <strong className="text-white font-semibold">
+                                four resonator configurations
+                              </strong>{" "}
+                              and multiple feed variations to identify patterns associated with
+                              improved chipless RFID performance.
+                            </>
+                          ) : (
+                            <>
+                              Cross-checked experimental results against simulation outputs,
+                              investigated discrepancies, and refined a reproducible analytical
+                              workflow.
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-white/[0.08] my-8" />
+
+              {/* Research Outcome Section */}
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUp className="w-3.5 h-3.5 text-zinc-400" />
+                  <span className="text-xs font-mono font-semibold tracking-wider text-zinc-400 uppercase">
+                    RESEARCH OUTCOME
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {exp.outcomes.map((outcome, oIdx) => (
+                    <div
+                      key={oIdx}
+                      className="p-4 sm:p-5 rounded-xl bg-white/[0.02] border border-white/[0.06]"
+                    >
+                      <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-1.5 font-mono">
+                        {outcome.value}
+                      </div>
+                      <div className="text-xs sm:text-sm font-medium text-zinc-300 mb-1">
+                        {outcome.label}
+                      </div>
+                      <div className="text-[11px] text-zinc-500 leading-snug">
+                        {outcome.sub}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-white/[0.08] my-8" />
+
+              {/* Technologies for LNMIIT */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-mono text-zinc-500 mr-1">
+                  Technologies:
+                </span>
                 {exp.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-white/[0.03] text-zinc-400 border border-white/10"
+                    className={`text-xs font-mono px-3 py-1 rounded-md border ${
+                      tag === "CST Studio Suite" || tag === "MATLAB"
+                        ? "bg-white/[0.06] text-zinc-200 border-white/20 font-medium"
+                        : "bg-white/[0.03] text-zinc-400 border-white/10"
+                    }`}
                   >
                     {tag}
                   </span>

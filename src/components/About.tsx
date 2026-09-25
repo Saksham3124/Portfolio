@@ -35,9 +35,9 @@ export const About: React.FC = () => {
     },
     {
       icon: <Cpu className="w-4 h-4 text-zinc-300" />,
-      title: "Systems Discipline",
+      title: "Engineering & Systems Thinking",
       description:
-        "Formed through low-level signal processing, research at LNMIIT, and hardware-software rigor at BIT Mesra.",
+        "Applying engineering principles to technical research, structured problem solving, and reliable analytical systems.",
     },
   ];
 
@@ -60,22 +60,20 @@ export const About: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Shortened, High-Impact Narrative Card */}
+        {/* Shortened, Authoritative Narrative Card */}
         <motion.div {...fadeUp(0.08)} className="clean-card p-7 sm:p-9 rounded-2xl mb-8 border border-white/[0.08]">
           <div className="space-y-4 text-zinc-300 text-sm sm:text-base leading-relaxed">
             <p>
-              My academic trajectory is grounded in <strong className="text-white font-medium">Electronics and Communication Engineering (ECE)</strong> at{" "}
-              <strong className="text-white font-medium">BIT Mesra</strong>, coupled with national fellowship research at{" "}
-              <strong className="text-white font-medium">LNMIIT</strong>. Working with stochastic systems, signal processing, and numerical optimization established a first-principles respect for deterministic constraints and mathematical precision.
+              My academic foundation is in <strong className="text-white font-medium">Electronics and Communication Engineering at BIT Mesra</strong>, complemented by research at <strong className="text-white font-medium">LNMIIT</strong>. Working across electromagnetic simulation, signal processing, and numerical optimization developed a first-principles approach to solving complex technical problems.
             </p>
 
             <p>
-              I apply that analytical and systems-oriented thinking to <strong className="text-white font-medium">Risk Analytics, Data Engineering, and Operational Reporting</strong>. Whether stratifying 307K+ loan applicants to isolate default risk, writing multi-layer SQL anomaly detection engines for 50K+ invoices, or partitioning multi-million transaction lakes in AWS S3 and Athena, I ensure every metric is backed by auditable data lineage and clear decision support.
+              I now apply that systems-oriented thinking to <strong className="text-white font-medium">Risk Analytics, Data Engineering, and Operational Reporting</strong>. My work spans credit risk, anomaly detection, customer analytics, and data pipelines—turning complex datasets into validated, decision-ready insights.
             </p>
           </div>
         </motion.div>
 
-        {/* 4 Concise Analytical Pillars */}
+        {/* 4 Analytical Pillars */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {pillars.map((pillar, i) => (
             <motion.div

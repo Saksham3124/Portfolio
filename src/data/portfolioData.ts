@@ -23,6 +23,17 @@ export interface ExperienceItem {
   location: string;
   type: string;
   summary: string;
+  researchAreas: {
+    id: string;
+    title: string;
+    highlight: string;
+    description: string;
+  }[];
+  outcomes: {
+    value: string;
+    label: string;
+    sub: string;
+  }[];
   highlights: string[];
   tags: string[];
 }
@@ -100,14 +111,62 @@ export const EXPERIENCE: ExperienceItem[] = [
     location: "Jaipur, India",
     type: "Research Internship",
     summary:
-      "Selected through a competitive national screening process for the LUSIP Research Fellowship. Focused on advanced structural electromagnetics, CST Studio Suite simulation, radar cross-section (RCS) response extraction, and mathematical optimization algorithms in MATLAB.",
-    highlights: [
-      "Formulated mathematical optimization algorithms in MATLAB to isolate and extract resonant electromagnetic signatures from novel 3D chipless RFID structures.",
-      "Conducted extensive numerical modeling and electromagnetic field simulations in CST Studio Suite, benchmarking spectral efficiency against traditional planar resonant tag architectures.",
-      "Applied quantitative signal noise suppression and stochastic evaluation to microwave backscatter telemetry, demonstrating first-principles analytical discipline.",
-      "Documented formal research methodologies and structural data models for high-density physical asset authentication.",
+      "Investigated 3D chipless RFID structures through electromagnetic simulation, MATLAB-based data processing, and experimental validation, focusing on improving tag performance and extracting reliable resonant signatures.",
+    researchAreas: [
+      {
+        id: "data-processing",
+        title: "DATA PROCESSING",
+        highlight: "20K+ RFID signatures",
+        description:
+          "Processed 20K+ RFID signatures through a modular MATLAB workflow, converting simulation outputs into structured data for analysis.",
+      },
+      {
+        id: "configuration-analysis",
+        title: "CONFIGURATION ANALYSIS",
+        highlight: "4 resonator configurations",
+        description:
+          "Compared four resonator configurations and multiple feed variations to identify patterns associated with improved chipless RFID performance.",
+      },
+      {
+        id: "validation",
+        title: "VALIDATION",
+        highlight: "Simulation vs Experimental",
+        description:
+          "Cross-checked experimental results against simulation outputs, investigated discrepancies, and refined a reproducible analytical workflow.",
+      },
     ],
-    tags: ["CST Studio Suite", "MATLAB", "Electromagnetics", "Optimization Algorithms", "Signal Processing", "Quantitative R&D", "Systems Modeling"],
+    outcomes: [
+      {
+        value: "20K+",
+        label: "RFID Signatures Processed",
+        sub: "Converted simulation outputs into structured datasets",
+      },
+      {
+        value: "66% → 80%",
+        label: "Tag Utilization Efficiency",
+        sub: "Measured technical performance improvement",
+      },
+      {
+        value: "4",
+        label: "Resonator Configurations",
+        sub: "Multi-geometry analysis across feed variations",
+      },
+    ],
+    highlights: [
+      "Engineered a modular MATLAB data-processing workflow to automate processing and analysis of 20K+ RFID signatures.",
+      "Analyzed simulation data across four resonator configurations and multiple feed variations to identify optimal tag performance.",
+      "Cross-checked experimental results against simulation outputs, investigating discrepancies to document a reproducible workflow.",
+      "Contributed to measured research improvement in tag utilization efficiency from 66% to 80%.",
+    ],
+    tags: [
+      "CST Studio Suite",
+      "MATLAB",
+      "Electromagnetics",
+      "Optimization Algorithms",
+      "Signal Processing",
+      "Quantitative R&D",
+      "Systems Modeling",
+    ],
   },
 ];
 
