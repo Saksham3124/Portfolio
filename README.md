@@ -49,7 +49,7 @@ Portfolio/
 ├── src/
 │   ├── app/
 │   │   ├── fonts/               # Geist Sans & Geist Mono variable fonts
-│   │   ├── favicon.ico
+│   │   ├── icon.svg             # Custom data-network SVG favicon
 │   │   ├── globals.css          # Glassmorphism, animations & cyber dark theme
 │   │   ├── layout.tsx           # SEO Metadata & Root HTML
 │   │   └── page.tsx             # Main Home Page assembling all sections
