@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import {
   Mail,
   Phone,
@@ -63,53 +62,29 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
   };
 
   return (
-    <section id="contact" className="py-24 relative border-t border-white/[0.06]">
+    <section id="contact" className="py-24 relative border-t border-white/[0.06] bg-[#030304]">
       <div className="max-w-4xl mx-auto px-6">
         
         {/* Section Pill */}
         <div className="text-center mb-14">
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-            transition={{ duration: 0.35 }}
-            className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3"
-          >
+          <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
             Get in Touch
-          </motion.div>
+          </div>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-            transition={{ duration: 0.35, delay: 0.05 }}
-            className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4"
-          >
+          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4">
             Start a Conversation
-          </motion.h2>
+          </h2>
 
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-            transition={{ duration: 0.35, delay: 0.1 }}
-            className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed"
-          >
+          <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
             Open to Risk Analyst, Reporting Analyst, and Data Engineering opportunities.
             Reach out directly or send a message.
-          </motion.p>
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           
           {/* Left Column: Direct Contact & Resume Request Trigger */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-            transition={{ duration: 0.35 }}
-            className="md:col-span-5 space-y-4"
-          >
+          <div className="md:col-span-5 space-y-4">
             {/* Request Resume Banner Card */}
             <div className="clean-card p-6 rounded-2xl border border-white/10">
               <div className="flex items-center gap-3 mb-2.5">
@@ -207,16 +182,10 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                 <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
               </a>
             </div>
-          </motion.div>
+          </div>
 
           {/* Right Column: Clean Message Form */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-            transition={{ duration: 0.35, delay: 0.05 }}
-            className="md:col-span-7 clean-card p-7 sm:p-8 rounded-2xl"
-          >
+          <div className="md:col-span-7 clean-card p-7 sm:p-8 rounded-2xl">
             <h3 className="text-lg font-semibold text-white mb-1.5">Direct Message</h3>
             <p className="text-xs text-zinc-400 mb-6">
               Send a note directly to my email regarding an opportunity or technical discussion.
@@ -306,7 +275,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                 </button>
               </form>
             )}
-          </motion.div>
+          </div>
         </div>
 
       </div>

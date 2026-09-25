@@ -1,57 +1,34 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import { Calendar, MapPin, CheckCircle2 } from "lucide-react";
 import { EXPERIENCE } from "@/data/portfolioData";
 
 export const Experience: React.FC = () => {
   return (
-    <section id="experience" className="py-24 relative border-t border-white/[0.06]">
+    <section id="experience" className="py-24 relative border-t border-white/[0.06] bg-[#030304]">
       <div className="max-w-4xl mx-auto px-6">
         
-        {/* Section Pill */}
+        {/* Section Header */}
         <div className="text-center mb-14">
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-            transition={{ duration: 0.35 }}
-            className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3"
-          >
+          <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
             Professional Experience
-          </motion.div>
+          </div>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-            transition={{ duration: 0.35, delay: 0.05 }}
-            className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4"
-          >
+          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4">
             Research & Industry Experience
-          </motion.h2>
+          </h2>
 
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-            transition={{ duration: 0.35, delay: 0.1 }}
-            className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed"
-          >
+          <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
             Rigorous hands-on algorithmic problem solving and quantitative research.
-          </motion.p>
+          </p>
         </div>
 
         {/* Experience Cards */}
         <div className="space-y-6">
-          {EXPERIENCE.map((exp, idx) => (
-            <motion.div
+          {EXPERIENCE.map((exp) => (
+            <div
               key={exp.id}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-              transition={{ duration: 0.4, delay: idx * 0.05 }}
               className="clean-card p-7 sm:p-8 rounded-2xl"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 pb-4 border-b border-white/[0.07]">
@@ -107,7 +84,7 @@ export const Experience: React.FC = () => {
                   </span>
                 ))}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 

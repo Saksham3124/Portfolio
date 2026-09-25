@@ -15,7 +15,7 @@ export const Footer: React.FC<FooterProps> = ({ onRequestResume }) => {
   };
 
   return (
-    <footer className="border-t border-white/[0.06] pt-14 pb-12 bg-[#09090b]">
+    <footer className="border-t border-white/[0.06] pt-14 pb-12 bg-[#030304]">
       <div className="max-w-5xl mx-auto px-6">
         
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-10 border-b border-white/[0.06]">
@@ -23,8 +23,8 @@ export const Footer: React.FC<FooterProps> = ({ onRequestResume }) => {
             <div className="text-base font-semibold text-white tracking-tight">
               Kumar Saksham<span className="text-zinc-500">.</span>
             </div>
-            <p className="text-xs text-zinc-400 mt-1">
-              Data · Risk · Engineering · Operations
+            <p className="text-xs text-zinc-400 font-mono tracking-wider mt-1 uppercase">
+              DATA · RISK · ENGINEERING
             </p>
           </div>
 

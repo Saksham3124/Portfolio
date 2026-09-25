@@ -22,7 +22,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
     { name: "Education", href: "#education", id: "education" },
     { name: "Skills", href: "#skills", id: "skills" },
     { name: "Credentials", href: "#credentials", id: "credentials" },
-    { name: "Achievements", href: "#achievements", id: "achievements" },
     { name: "Contact", href: "#contact", id: "contact" },
   ];
 
@@ -44,24 +43,22 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
       }
 
       const sections = [
-        "about",
-        "experience",
-        "work",
-        "education",
-        "skills",
-        "credentials",
-        "achievements",
-        "contact",
+        { id: "about", navId: "about" },
+        { id: "highlights", navId: "about" },
+        { id: "experience", navId: "experience" },
+        { id: "work", navId: "work" },
+        { id: "education", navId: "education" },
+        { id: "skills", navId: "skills" },
+        { id: "credentials", navId: "credentials" },
+        { id: "contact", navId: "contact" },
       ];
 
-      for (const sectionId of sections) {
-        const el = document.getElementById(sectionId);
+      for (const section of sections) {
+        const el = document.getElementById(section.id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          // Header sits around 70px height; element is active if its top is under or near header
-          // and bottom hasn't scrolled past
           if (rect.top <= 260 && rect.bottom >= 140) {
-            setActiveSection(sectionId);
+            setActiveSection(section.navId);
             return;
           }
         }

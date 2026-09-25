@@ -1,22 +1,35 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { About } from "@/components/About";
+import { Highlights } from "@/components/Highlights";
 import { Experience } from "@/components/Experience";
 import { Projects } from "@/components/Projects";
 import { Education } from "@/components/Education";
 import { Skills } from "@/components/Skills";
-import { Certifications } from "@/components/Certifications";
-import { Achievements } from "@/components/Achievements";
+import { Credentials } from "@/components/Credentials";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { RequestResumeModal } from "@/components/RequestResumeModal";
+import { SectionDots } from "@/components/SectionDots";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 
 export default function Home() {
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+
+  // Fix scroll position on browser refresh: always start at the top unless an anchor hash is explicitly targeted
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "manual";
+      }
+      if (!window.location.hash) {
+        window.scrollTo(0, 0);
+      }
+    }
+  }, []);
 
   const handleOpenResumeModal = () => {
     setIsResumeModalOpen(true);
@@ -31,6 +44,9 @@ export default function Home() {
       {/* Dynamic Animated Ambient Background */}
       <AnimatedBackground />
 
+      {/* Fixed Right-side Vertical Section Dots for Desktop */}
+      <SectionDots />
+
       {/* Top sticky navigation bar */}
       <Navbar onRequestResume={handleOpenResumeModal} />
 
@@ -42,23 +58,23 @@ export default function Home() {
         {/* 2. About Me Section */}
         <About />
 
-        {/* 3. Professional Experience (LNMIIT LUSIP 2025) */}
+        {/* 3. Evidence & Scale (Impact Metrics) */}
+        <Highlights />
+
+        {/* 4. Professional Experience (LNMIIT LUSIP 2025) */}
         <Experience />
 
-        {/* 4. Featured Work (Strictly 3 Flagship Projects) */}
+        {/* 5. Featured Work (Strictly 3 Flagship Projects) */}
         <Projects />
 
-        {/* 5. Education (B.Tech in ECE, BIT Mesra) */}
+        {/* 6. Education (B.Tech in ECE, BIT Mesra) */}
         <Education />
 
-        {/* 6. Skills Matrix */}
+        {/* 7. Skills Matrix */}
         <Skills />
 
-        {/* 7. Certifications & Credentials (Dedicated) */}
-        <Certifications />
-
-        {/* 8. Achievements (Selective Notable Milestones) */}
-        <Achievements />
+        {/* 8. Credentials & Achievements (Unified) */}
+        <Credentials />
 
         {/* 9. Contact & Inquiries */}
         <Contact onRequestResume={handleOpenResumeModal} />

@@ -1,56 +1,31 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import { GraduationCap, Calendar, MapPin } from "lucide-react";
 import { EDUCATION } from "@/data/portfolioData";
 
 export const Education: React.FC = () => {
   return (
-    <section id="education" className="py-24 relative border-t border-white/[0.06]">
+    <section id="education" className="py-24 relative border-t border-white/[0.06] bg-[#030304]">
       <div className="max-w-4xl mx-auto px-6">
         
-        {/* Section Pill */}
+        {/* Section Header */}
         <div className="text-center mb-14">
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-            transition={{ duration: 0.35 }}
-            className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3"
-          >
+          <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
             Academic Foundation
-          </motion.div>
+          </div>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-            transition={{ duration: 0.35, delay: 0.05 }}
-            className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4"
-          >
+          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4">
             Education
-          </motion.h2>
+          </h2>
 
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-            transition={{ duration: 0.35, delay: 0.1 }}
-            className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed"
-          >
+          <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
             Formal training in signals, systems, mathematical modeling, and engineering discipline.
-          </motion.p>
+          </p>
         </div>
 
         {/* Education Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "100px 0px 0px 0px" }}
-          transition={{ duration: 0.35 }}
-          className="clean-card p-8 sm:p-10 rounded-2xl"
-        >
+        <div className="clean-card p-8 sm:p-10 rounded-2xl">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6 pb-6 border-b border-white/[0.08]">
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-xl bg-white/[0.05] border border-white/10 text-zinc-200 shrink-0">
@@ -81,7 +56,7 @@ export const Education: React.FC = () => {
           <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
             {EDUCATION.framing}
           </p>
-        </motion.div>
+        </div>
 
       </div>
     </section>

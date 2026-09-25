@@ -81,12 +81,14 @@ export const PERSONAL_INFO = {
   ],
 };
 
-export const HERO_METRICS = [
+export const IMPACT_METRICS = [
   { value: "50K+", label: "Invoice Records", sub: "GST Forensic Audit" },
   { value: "307K+", label: "Loan Applications", sub: "Default Stratification" },
   { value: "2.6M+", label: "Transactions", sub: "Customer Segmentation" },
   { value: "$8.06M", label: "Transaction Value", sub: "Promotional Uplift" },
 ];
+
+export const HERO_METRICS = IMPACT_METRICS;
 
 export const EXPERIENCE: ExperienceItem[] = [
   {
@@ -126,8 +128,31 @@ export const EDUCATION: EducationItem = {
   ],
 };
 
-// ONLY 3 PRIMARY FEATURED PROJECTS IN FRONT
+// 3 PRIMARY FLAGSHIP PROJECTS (EQUAL VISUAL WEIGHT)
 export const FEATURED_PROJECTS: Project[] = [
+  {
+    id: "dunnhumby-promotional-analytics",
+    title: "Promotional Opportunity & Customer Segmentation Analysis",
+    category: "Customer & Promotional Analytics",
+    targetRoleRelevance: ["Customer Analytics", "Reporting", "Decision Support", "Business-Facing Analytics"],
+    tagline: "Retail customer segmentation, transaction basket affinity & promotional uplift modeling in Power BI",
+    description:
+      "Large-scale customer and promotional opportunity analysis on Dunnhumby transaction data. Partitioned and queried large data volumes in AWS S3 using AWS Athena serverless SQL and PostgreSQL, uncovering high-ROI promotional levers and segmenting behavioral customer clusters in Power BI.",
+    architectureHighlights: [
+      "Engineered partitioned S3 data lake queried via serverless AWS Athena distributed SQL",
+      "Conducted behavioral customer segmentation across 2,500 households and 2.6M+ transactions",
+      "Evaluated discount elasticity across product categories to safeguard retail profit margins",
+      "Constructed executive Power BI reporting dashboards detailing customer lifetime value and promotional uplift",
+    ],
+    metrics: [
+      { label: "Transactions", value: "2.6M+" },
+      { label: "Households", value: "2,500" },
+      { label: "Sales Analyzed", value: "$8.06M" },
+    ],
+    tags: ["Power BI", "Python", "PostgreSQL", "AWS Athena", "SQL", "Pandas", "Customer Segmentation"],
+    githubUrl: "https://github.com/Saksham3124/dunnhumby-customer-promotional-opportunity",
+    featured: true,
+  },
   {
     id: "credit-risk-analytics",
     title: "Credit Risk Analytics & Default Prediction",
@@ -135,19 +160,19 @@ export const FEATURED_PROJECTS: Project[] = [
     targetRoleRelevance: ["Risk Analytics", "Risk Analyst", "Data Science Analyst", "Decision Support"],
     tagline: "Comprehensive loan portfolio risk stratification on 307K+ applicants with AI narrative layer",
     description:
-      "End-to-end credit risk analysis pipeline auditing 307,000+ loan applicants. Leveraged PostgreSQL and Python to perform rigorous demographic and credit bureau correlation modeling, identifying key delinquency indicators and debt-to-income default thresholds. Visualized in an executive Tableau dashboard with an evidence-cited risk narrative engine.",
+      "End-to-end credit risk analysis pipeline auditing 307,511 loan applicants. Leveraged PostgreSQL and Python to perform demographic and credit bureau correlation modeling, isolating default indicators and debt-to-income default thresholds visualized in an executive Tableau dashboard.",
     architectureHighlights: [
-      "Audited 307,000+ real-world loan applications across multi-table relational schema",
+      "Audited 307,511 real-world loan applications across multi-table relational PostgreSQL schema",
       "Modeled delinquency probability tiers across borrower age brackets, credit history, and income ratios",
+      "Evaluated default distribution patterns identifying an 8.07% overall portfolio default rate",
       "Designed dynamic Tableau executive dashboard with scenario filtering and portfolio stress testing",
-      "Synthesized AI-assisted evidence-cited risk narratives for credit committee decision-support",
     ],
     metrics: [
-      { label: "Applicants Audited", value: "307,000+" },
-      { label: "Key Risk Indicators", value: "18+ Features" },
-      { label: "Dashboard", value: "Tableau Public" },
+      { label: "Applicants", value: "307,511" },
+      { label: "Default Rate", value: "8.07%" },
+      { label: "Risk Indicators", value: "18+ Features" },
     ],
-    tags: ["SQL", "Python", "PostgreSQL", "Tableau", "Pandas", "Credit Risk Modeling", "EDA"],
+    tags: ["Python", "SQL", "PostgreSQL", "Tableau", "Pandas", "Credit Risk Modeling", "EDA"],
     githubUrl: "https://github.com/Saksham3124/credit-risk-analytics",
     tableauUrl:
       "https://public.tableau.com/app/profile/kumar.saksham2703/viz/CreditRiskAnalysis_17802306468670/CreditRiskAnalyticsDashboard?publish=yes",
@@ -157,10 +182,10 @@ export const FEATURED_PROJECTS: Project[] = [
     id: "gst-anomaly-detection",
     title: "GST Invoice Anomaly Detection & Vendor Risk Scoring",
     category: "Fraud & Anomaly Detection",
-    targetRoleRelevance: ["Risk", "Fraud / Anomaly Detection", "Data Quality", "Operations Analytics", "Data Engineering"],
+    targetRoleRelevance: ["Risk", "Fraud Detection", "Data Quality", "Operations Analytics", "Data Engineering"],
     tagline: "3-layer forensic rule engine with SQL window functions, statistical outlier detection & audit dashboard",
     description:
-      "Architected an automated 3-layer forensic anomaly detection system to identify suspicious tax credit claims, circular invoicing patterns, and vendor compliance discrepancies. Leveraged PostgreSQL window functions, rolling volume variance, and z-score anomaly scoring connected to an interactive Tableau audit dashboard.",
+      "Architected an automated 3-layer forensic anomaly detection system to identify suspicious tax credit claims, circular invoicing patterns, and vendor compliance discrepancies across 50,000+ invoices in PostgreSQL and Tableau.",
     architectureHighlights: [
       "Engineered 3-tier heuristic: Volume Spikes, Tax Discrepancy Ratios, and Circular Flow Patterns",
       "Authored high-performance PostgreSQL window functions to detect temporal and transactional outliers",
@@ -168,37 +193,13 @@ export const FEATURED_PROJECTS: Project[] = [
       "Constructed drill-down Tableau forensic dashboard tracking vendor risk tiers and recoverable capital",
     ],
     metrics: [
-      { label: "Detection Engine", value: "3-Layer Rules" },
+      { label: "Invoices Audited", value: "50K+" },
+      { label: "Rule Engine", value: "3-Layer" },
       { label: "Database", value: "PostgreSQL" },
-      { label: "Audit Output", value: "Tableau Dashboard" },
     ],
     tags: ["SQL Window Functions", "PostgreSQL", "Python", "Tableau", "Fraud Detection", "Risk Scoring"],
     githubUrl: "https://github.com/Saksham3124/gst-invoice-anomaly-detection",
     tableauUrl: "https://public.tableau.com/app/profile/kumar.saksham2703/viz/GST__/Dashboard1",
-    featured: true,
-  },
-  {
-    id: "dunnhumby-promotional-analytics",
-    title: "Promotional Opportunity & Customer Segmentation Analysis",
-    category: "Customer & Promotional Analytics",
-    targetRoleRelevance: ["Analytical Reasoning", "Customer Analytics", "Reporting", "Decision Support", "Business-Facing Analytics"],
-    tagline: "Behavioral retail customer segmentation & promotional elasticity modeling using AWS Athena & Power BI",
-    description:
-      "Large-scale customer and promotional opportunity analysis on Dunnhumby transaction data. Partitioned and queried large data volumes in AWS S3 using AWS Athena serverless SQL, uncovering high-ROI promotional levers and segmenting behavioral customer clusters to prevent margin-diluting discounts.",
-    architectureHighlights: [
-      "Architected partitioned S3 data lake queried via serverless AWS Athena distributed SQL",
-      "Conducted behavioral customer segmentation and basket affinity analysis in Python & Pandas",
-      "Isolated promotional discount elasticity across product categories to safeguard profit margins",
-      "Built executive Power BI reporting dashboards detailing customer lifetime value and promotional uplift",
-    ],
-    metrics: [
-      { label: "Cloud Engine", value: "AWS Athena & S3" },
-      { label: "Analysis", value: "Customer Segmentation" },
-      { label: "Visualization", value: "Power BI" },
-    ],
-    tags: ["AWS Athena", "AWS S3", "Python", "SQL", "Power BI", "Pandas", "Customer Segmentation"],
-    githubUrl: "https://github.com/Saksham3124/dunnhumby-customer-promotional-opportunity",
-    tableauUrl: "https://public.tableau.com/app/profile/kumar.saksham2703/vizzes",
     featured: true,
   },
 ];
@@ -363,6 +364,18 @@ export const CERTIFICATIONS: CredentialCategory[] = [
   {
     category: "Engineering & Electronics",
     items: [
+      {
+        name: "LUSIP Research Fellowship",
+        issuer: "The LNM Institute of Information Technology (LNMIIT)",
+        year: "2025",
+        highlight: "Advanced structural electromagnetics, radar cross-section response extraction & mathematical optimization in MATLAB",
+      },
+      {
+        name: "RISC-V Semi Synergy & Microelectronics Architecture",
+        issuer: "VLSI / Semiconductor Consortium",
+        year: "2024",
+        highlight: "Instruction set architectures, digital logic synthesis, and hardware-software constraint verification",
+      },
       {
         name: "AI & Deep Learning in Healthcare Workshop",
         issuer: "Institution of Electronics and Telecommunication Engineers (IETE)",

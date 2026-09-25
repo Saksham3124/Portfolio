@@ -175,3 +175,17 @@ body {
   animation: pulseSlow 14s ease-in-out infinite;
 }
 
+/* Gentle bobbing scroll indicator */
+@keyframes gentleBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.animate-gentle-bob {
+  animation: gentleBob 2.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
