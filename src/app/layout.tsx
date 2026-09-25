@@ -41,6 +41,14 @@ export const metadata: Metadata = {
     siteName: "Kumar Saksham Portfolio",
     type: "website",
   },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -51,6 +59,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark scroll-smooth">
       <head>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="alternate icon" href="/favicon.ico" />
         <script
           dangerouslySetInnerHTML={{
             __html: `if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; } if (!window.location.hash) { window.scrollTo(0, 0); }`,
