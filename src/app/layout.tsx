@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     "Power BI",
     "BIT Mesra",
     "LNMIIT",
-    "LUSIP Research Fellowship",
+    "LNMIIT Research",
     "ETL Pipelines",
     "Anomaly Detection",
     "Decision Support",

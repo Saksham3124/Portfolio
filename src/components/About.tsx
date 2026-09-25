@@ -64,11 +64,11 @@ export const About: React.FC = () => {
         <motion.div {...fadeUp(0.08)} className="clean-card p-7 sm:p-9 rounded-2xl mb-8 border border-white/[0.08]">
           <div className="space-y-4 text-zinc-300 text-sm sm:text-base leading-relaxed">
             <p>
-              My academic foundation is in <strong className="text-white font-medium">Electronics and Communication Engineering at BIT Mesra</strong>, complemented by research at <strong className="text-white font-medium">LNMIIT</strong>. Working across electromagnetic simulation, signal processing, and numerical optimization developed a first-principles approach to solving complex technical problems.
+              My academic foundation is in <strong className="text-white font-medium">Electronics and Communication Engineering at BIT Mesra</strong>, complemented by research at <strong className="text-white font-medium">LNMIIT</strong>. Working across electromagnetic simulation, signal processing, and numerical optimization taught me to approach complex technical problems from first principles.
             </p>
 
             <p>
-              I now apply that systems-oriented thinking to <strong className="text-white font-medium">Risk Analytics, Data Engineering, and Operational Reporting</strong>. My work spans credit risk, anomaly detection, customer analytics, and data pipelines—turning complex datasets into validated, decision-ready insights.
+              I now apply that engineering mindset to <strong className="text-white font-medium">Risk Analytics, Data Engineering, and Operational Reporting</strong>. My work spans credit risk, anomaly detection, customer analytics, and data pipelines, with a focus on turning complex datasets into validated, decision-ready insights.
             </p>
           </div>
         </motion.div>

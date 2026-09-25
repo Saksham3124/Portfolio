@@ -421,18 +421,6 @@ export const CERTIFICATIONS: CredentialCategory[] = [
     category: "Engineering & Electronics",
     items: [
       {
-        name: "LUSIP Research Fellowship",
-        issuer: "The LNM Institute of Information Technology (LNMIIT)",
-        year: "2025",
-        highlight: "Advanced structural electromagnetics, radar cross-section response extraction & mathematical optimization in MATLAB",
-      },
-      {
-        name: "RISC-V Semi Synergy & Microelectronics Architecture",
-        issuer: "VLSI / Semiconductor Consortium",
-        year: "2024",
-        highlight: "Instruction set architectures, digital logic synthesis, and hardware-software constraint verification",
-      },
-      {
         name: "AI & Deep Learning in Healthcare Workshop",
         issuer: "Institution of Electronics and Telecommunication Engineers (IETE)",
         year: "2023",

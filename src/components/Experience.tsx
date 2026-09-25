@@ -1,9 +1,113 @@
 "use client";
 
-import React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { Calendar, MapPin, TrendingUp } from "lucide-react";
 import { EXPERIENCE } from "@/data/portfolioData";
+
+interface OutcomeItem {
+  value: string;
+  label: string;
+  sub: string;
+}
+
+const ResearchOutcomeMetrics: React.FC<{ outcomes: OutcomeItem[] }> = ({ outcomes }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-40px" });
+  const shouldReduceMotion = useReducedMotion();
+
+  // Initial display states
+  const [val1, setVal1] = useState(shouldReduceMotion ? "20K+" : "0");
+  const [val2, setVal2] = useState(shouldReduceMotion ? "66% → 80%" : "66%");
+  const [val3, setVal3] = useState(shouldReduceMotion ? "4" : "0");
+
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      setVal1("20K+");
+      setVal2("66% → 80%");
+      setVal3("4");
+      return;
+    }
+
+    if (!isInView) return;
+
+    let animFrame: number;
+    let startTime: number | null = null;
+    const duration = 1250; // 1.25 seconds
+
+    // Smooth ease-out quad function
+    const easeOutQuad = (t: number) => t * (2 - t);
+
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeOutQuad(progress);
+
+      // 1. Metric 1: 0 -> 20K+ (abbreviated counter, no decimals)
+      if (progress >= 1) {
+        setVal1("20K+");
+      } else {
+        const kValue = Math.round(eased * 20);
+        setVal1(kValue === 0 ? "0" : `${kValue}K`);
+      }
+
+      // 2. Metric 2: 66% → 80% (communicates starting value -> improved value, settling into 66% → 80%)
+      if (progress >= 1) {
+        setVal2("66% → 80%");
+      } else if (elapsed < 350) {
+        setVal2("66%");
+      } else if (elapsed < 650) {
+        setVal2("66% →");
+      } else {
+        const effProgress = (elapsed - 650) / (duration - 650);
+        const currentEff = Math.round(66 + (80 - 66) * easeOutQuad(effProgress));
+        setVal2(`66% → ${Math.min(currentEff, 80)}%`);
+      }
+
+      // 3. Metric 3: 0 -> 4
+      if (progress >= 1) {
+        setVal3("4");
+      } else {
+        const configCount = Math.round(eased * 4);
+        setVal3(`${configCount}`);
+      }
+
+      if (progress < 1) {
+        animFrame = requestAnimationFrame(step);
+      }
+    };
+
+    animFrame = requestAnimationFrame(step);
+
+    return () => {
+      if (animFrame) cancelAnimationFrame(animFrame);
+    };
+  }, [isInView, shouldReduceMotion]);
+
+  const displayValues = [val1, val2, val3];
+
+  return (
+    <div ref={containerRef} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {outcomes.map((outcome, oIdx) => (
+        <div
+          key={oIdx}
+          className="p-4 sm:p-5 rounded-xl bg-white/[0.02] border border-white/[0.06]"
+        >
+          <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-1.5 font-mono tabular-nums min-h-[36px] sm:min-h-[40px] flex items-center">
+            {displayValues[oIdx] ?? outcome.value}
+          </div>
+          <div className="text-xs sm:text-sm font-medium text-zinc-300 mb-1">
+            {outcome.label}
+          </div>
+          <div className="text-[11px] text-zinc-500 leading-snug">
+            {outcome.sub}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export const Experience: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
@@ -137,24 +241,7 @@ export const Experience: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {exp.outcomes.map((outcome, oIdx) => (
-                    <div
-                      key={oIdx}
-                      className="p-4 sm:p-5 rounded-xl bg-white/[0.02] border border-white/[0.06]"
-                    >
-                      <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-1.5 font-mono">
-                        {outcome.value}
-                      </div>
-                      <div className="text-xs sm:text-sm font-medium text-zinc-300 mb-1">
-                        {outcome.label}
-                      </div>
-                      <div className="text-[11px] text-zinc-500 leading-snug">
-                        {outcome.sub}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <ResearchOutcomeMetrics outcomes={exp.outcomes} />
               </div>
 
               {/* Divider */}
