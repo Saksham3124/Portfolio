@@ -86,39 +86,48 @@ body {
   color: #ffffff;
 }
 
-/* Minimalist pill buttons: Ghost with thin borders, turning solid white or light grey on hover */
+/* Minimalist pill buttons: Ghost with thin borders, remaining dark and editorial */
 .pill-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
   padding: 0.625rem 1.375rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #f4f4f5;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #e4e4e7;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  text-decoration: none;
 }
 
 .pill-button:hover {
-  background: #ffffff;
-  border-color: #ffffff;
-  color: #000000;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
   transform: translateY(-1px);
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
 }
 
-.pill-button:hover svg {
-  color: #000000 !important;
+.pill-button:focus-visible {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.pill-button:active {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(0);
 }
 
 .pill-button-primary {
   background: #ffffff;
-  color: #000000;
+  color: #030304;
   border-color: #ffffff;
   font-weight: 600;
 }
@@ -127,7 +136,7 @@ body {
   background: #e4e4e7;
   color: #000000;
   border-color: #e4e4e7;
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
 /* Bento box card styling: thin subtle border, soft glow and slight lift on hover */

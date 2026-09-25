@@ -151,11 +151,13 @@ export const Projects: React.FC = () => {
         {/* Collapsible Secondary Technical Pipelines */}
         <motion.div {...fadeUp(0.24)} className="mt-14 text-center">
           <button
+            type="button"
             onClick={() => setShowSupporting(!showSupporting)}
-            className="pill-button text-xs py-2 px-5 text-zinc-400 hover:text-white"
+            aria-expanded={showSupporting}
+            className="group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-mono font-medium text-zinc-300 bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 hover:border-white/20 hover:text-white focus:outline-none focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-white/30 active:bg-white/[0.05] transition-all duration-200 cursor-pointer backdrop-blur-md"
           >
             <span>{showSupporting ? "Hide Supporting Pipelines" : "Inspect Supporting Pipelines (Rail Telemetry, Financial Modeling)"}</span>
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showSupporting ? "rotate-180" : ""}`} />
+            <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-200 transition-transform duration-200 ${showSupporting ? "rotate-180" : ""}`} />
           </button>
 
           {showSupporting && (
