@@ -24,7 +24,7 @@ export const Footer: React.FC<FooterProps> = ({ onRequestResume }) => {
               Kumar Saksham<span className="text-zinc-500">.</span>
             </div>
             <p className="text-xs text-zinc-400 font-mono tracking-wider mt-1 uppercase">
-              DATA · RISK · ENGINEERING
+              DATA · RISK · ENGINEERING · OPERATIONS
             </p>
           </div>
 

@@ -1,10 +1,20 @@
 "use client";
 
 import React from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { CheckCircle2, ShieldCheck, Cloud, LineChart, Cpu, Trophy, Calendar, Sparkles } from "lucide-react";
 import { CERTIFICATIONS, ACHIEVEMENTS } from "@/data/portfolioData";
 
 export const Credentials: React.FC = () => {
+  const shouldReduceMotion = useReducedMotion();
+
+  const fadeUp = (delay = 0) => ({
+    initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: "-40px" },
+    transition: { duration: 0.45, delay, ease: "easeOut" as const },
+  });
+
   const categoryIcons: Record<string, React.ReactNode> = {
     "Data & Cloud": <Cloud className="w-4 h-4 text-zinc-300" />,
     "Analytics": <LineChart className="w-4 h-4 text-zinc-300" />,
@@ -16,7 +26,7 @@ export const Credentials: React.FC = () => {
       <div className="max-w-5xl mx-auto px-6">
         
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <motion.div {...fadeUp(0)} className="text-center mb-16">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
             Verified Qualifications & Honors
           </div>
@@ -28,21 +38,22 @@ export const Credentials: React.FC = () => {
           <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
             Selective industry credentials reinforcing cloud architectures, relational querying, and competitive engineering milestones.
           </p>
-        </div>
+        </motion.div>
 
         {/* Part 1: Certifications & Credentials */}
         <div className="mb-16">
-          <div className="flex items-center gap-2 mb-8 pb-3 border-b border-white/[0.08]">
+          <motion.div {...fadeUp(0.04)} className="flex items-center gap-2 mb-8 pb-3 border-b border-white/[0.08]">
             <ShieldCheck className="w-4 h-4 text-zinc-400" />
             <h3 className="text-lg font-semibold text-white tracking-tight">
               Certifications & Credentials
             </h3>
-          </div>
+          </motion.div>
 
           <div className="space-y-6">
-            {CERTIFICATIONS.map((cat) => (
-              <div
+            {CERTIFICATIONS.map((cat, catIdx) => (
+              <motion.div
                 key={cat.category}
+                {...fadeUp(0.08 + catIdx * 0.06)}
                 className="clean-card p-6 sm:p-8 rounded-2xl"
               >
                 <div className="flex items-center gap-2.5 pb-4 mb-5 border-b border-white/[0.06]">
@@ -88,24 +99,25 @@ export const Credentials: React.FC = () => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
 
         {/* Part 2: Competitive Achievements */}
         <div>
-          <div className="flex items-center gap-2 mb-8 pb-3 border-b border-white/[0.08]">
+          <motion.div {...fadeUp(0.18)} className="flex items-center gap-2 mb-8 pb-3 border-b border-white/[0.08]">
             <Trophy className="w-4 h-4 text-amber-400" />
             <h3 className="text-lg font-semibold text-white tracking-tight">
               Competitive Achievements
             </h3>
-          </div>
+          </motion.div>
 
           <div className="space-y-4">
-            {ACHIEVEMENTS.map((item) => (
-              <div
+            {ACHIEVEMENTS.map((item, aIdx) => (
+              <motion.div
                 key={item.id}
+                {...fadeUp(0.22 + aIdx * 0.06)}
                 className="clean-card p-6 sm:p-8 rounded-2xl flex flex-col justify-between"
               >
                 <div>
@@ -141,7 +153,7 @@ export const Credentials: React.FC = () => {
                     <span>{item.impactMetrics}</span>
                   </div>
                 )}
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

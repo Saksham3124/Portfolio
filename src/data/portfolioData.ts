@@ -60,8 +60,8 @@ export interface AchievementItem {
 
 export const PERSONAL_INFO = {
   name: "Kumar Saksham",
-  roleTitle: "Data · Risk · Engineering",
-  heroHeadline: "Turning complex data into clear, defensible decisions.",
+  roleTitle: "DATA · RISK · ENGINEERING · OPERATIONS",
+  heroHeadline: "Turning Complex Data into Clear, Defensible Decisions.",
   heroSupporting:
     "Engineering graduate focused on risk analytics, data engineering, reporting, and analytical problem solving.",
   coreNarrative:
@@ -100,14 +100,14 @@ export const EXPERIENCE: ExperienceItem[] = [
     location: "Jaipur, India",
     type: "Research Internship",
     summary:
-      "Selected through a competitive national screening process for the LUSIP Research Fellowship. Focused on advanced structural electromagnetics, radar cross-section (RCS) response extraction, and mathematical optimization algorithms in MATLAB.",
+      "Selected through a competitive national screening process for the LUSIP Research Fellowship. Focused on advanced structural electromagnetics, CST Studio Suite simulation, radar cross-section (RCS) response extraction, and mathematical optimization algorithms in MATLAB.",
     highlights: [
       "Formulated mathematical optimization algorithms in MATLAB to isolate and extract resonant electromagnetic signatures from novel 3D chipless RFID structures.",
-      "Conducted extensive numerical modeling and hypothesis-driven parameter tuning, benchmarking spectral efficiency against traditional planar resonant tag architectures.",
+      "Conducted extensive numerical modeling and electromagnetic field simulations in CST Studio Suite, benchmarking spectral efficiency against traditional planar resonant tag architectures.",
       "Applied quantitative signal noise suppression and stochastic evaluation to microwave backscatter telemetry, demonstrating first-principles analytical discipline.",
       "Documented formal research methodologies and structural data models for high-density physical asset authentication.",
     ],
-    tags: ["MATLAB", "Electromagnetics", "Optimization Algorithms", "Signal Processing", "Quantitative R&D", "Systems Modeling"],
+    tags: ["CST Studio Suite", "MATLAB", "Electromagnetics", "Optimization Algorithms", "Signal Processing", "Quantitative R&D", "Systems Modeling"],
   },
 ];
 
@@ -275,53 +275,50 @@ export const SUPPORTING_PROJECTS: Project[] = [
 
 export const SKILL_GROUPS = [
   {
-    name: "Risk & Decision Analytics",
-    description: "Quantitative modeling, fraud scoring, and executive reporting",
+    name: "Programming & Automation",
+    description: "Scripting, querying, data manipulation, and scheduled workflow orchestration",
     skills: [
-      "Credit Risk Modeling",
-      "Anomaly Detection",
-      "Vendor Risk Scoring",
-      "Statistical Analysis",
-      "Exploratory Data Analysis (EDA)",
-      "Decision Support",
+      "Python",
+      "SQL",
+      "Pandas",
+      "NumPy",
+      "MATLAB",
+      "APScheduler",
+    ],
+  },
+  {
+    name: "AI & APIs",
+    description: "Generative intelligence integration, programmatic interfaces, and automated validation",
+    skills: [
+      "LLM APIs",
+      "Generative AI",
+      "API Integration",
+      "Data Validation",
     ],
   },
   {
     name: "Data Engineering & Cloud",
-    description: "Relational modeling, pipeline scheduling, and cloud data warehouses",
+    description: "Relational modeling, pipeline architecture, and cloud data warehousing",
     skills: [
       "PostgreSQL",
-      "SQL Window Functions",
-      "ETL / ELT Pipelines",
-      "AWS Athena",
-      "AWS S3",
-      "APScheduler",
-      "MySQL",
+      "ETL/ELT",
+      "Data Pipelines",
+      "Data Warehousing",
+      "AWS (S3, Athena, RDS)",
       "Git",
     ],
   },
   {
-    name: "BI & Visualization",
-    description: "Executive dashboards, DAX modeling, and self-service analytics",
+    name: "Analytics & Tools",
+    description: "Statistical modeling, anomaly identification, and business intelligence reporting",
     skills: [
-      "Tableau Desktop / Public",
-      "Power BI Desktop",
-      "DAX Measures",
+      "Statistical Analysis",
+      "Exploratory Data Analysis",
+      "Anomaly Detection",
+      "Power BI",
+      "Tableau",
       "Advanced Excel",
-      "Jupyter Notebooks",
-      "KPI Dashboards",
-    ],
-  },
-  {
-    name: "Programming & Systems",
-    description: "Numerical computation, algorithmic optimization, and hardware rigor",
-    skills: [
-      "Python (Pandas, NumPy)",
-      "MATLAB",
-      "C++",
-      "Systems Thinking",
-      "Signal Processing",
-      "VHDL / Microcontrollers",
+      "Jupyter",
     ],
   },
 ];
@@ -333,13 +330,13 @@ export const CERTIFICATIONS: CredentialCategory[] = [
       {
         name: "AWS Certified Cloud Practitioner",
         issuer: "Amazon Web Services (AWS)",
-        year: "2024",
+        year: "2026",
         highlight: "Cloud infrastructure, security, IAM, S3 storage architectures & billing management",
       },
       {
         name: "AWS Fundamentals of Analytics (Part 1 & 2)",
         issuer: "Amazon Web Services (AWS)",
-        year: "2024",
+        year: "2026",
         highlight: "Data lake design, distributed query optimization in Amazon Athena, ETL best practices",
       },
     ],
@@ -350,13 +347,13 @@ export const CERTIFICATIONS: CredentialCategory[] = [
       {
         name: "Data Analytics Job Simulation",
         issuer: "Deloitte",
-        year: "2024",
+        year: "2026",
         highlight: "Practical client risk data telemetry, forensic data cleaning, and executive reporting",
       },
       {
         name: "SQL (Advanced) & Problem Solving",
         issuer: "HackerRank",
-        year: "2024",
+        year: "2026",
         highlight: "Advanced joins, recursive queries, window functions, and relational indexing",
       },
     ],

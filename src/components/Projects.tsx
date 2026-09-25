@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -12,13 +13,21 @@ import { FEATURED_PROJECTS, SUPPORTING_PROJECTS } from "@/data/portfolioData";
 
 export const Projects: React.FC = () => {
   const [showSupporting, setShowSupporting] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
+
+  const fadeUp = (delay = 0) => ({
+    initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: "-40px" },
+    transition: { duration: 0.45, delay, ease: "easeOut" as const },
+  });
 
   return (
     <section id="work" className="py-24 relative border-t border-white/[0.06] bg-[#030304]">
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <motion.div {...fadeUp(0)} className="text-center mb-16">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
             Flagship Projects
           </div>
@@ -30,13 +39,14 @@ export const Projects: React.FC = () => {
           <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
             Three core evidence-based projects supporting customer opportunity modeling, credit risk stratification, and forensic anomaly detection.
           </p>
-        </div>
+        </motion.div>
 
-        {/* 3 Primary Flagship Projects in an Evenly Balanced 3-Column Grid */}
+        {/* 3 Primary Flagship Projects in an Evenly Balanced 3-Column Grid with Equal Visual Weight */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-          {FEATURED_PROJECTS.map((project) => (
-            <article
+          {FEATURED_PROJECTS.map((project, idx) => (
+            <motion.article
               key={project.id}
+              {...fadeUp(0.08 + idx * 0.08)}
               className="clean-card rounded-2xl p-6 sm:p-7 border border-white/[0.08] flex flex-col justify-between"
             >
               <div>
@@ -134,12 +144,12 @@ export const Projects: React.FC = () => {
                   </a>
                 )}
               </div>
-            </article>
+            </motion.article>
           ))}
         </div>
 
         {/* Collapsible Secondary Technical Pipelines */}
-        <div className="mt-14 text-center">
+        <motion.div {...fadeUp(0.24)} className="mt-14 text-center">
           <button
             onClick={() => setShowSupporting(!showSupporting)}
             className="pill-button text-xs py-2 px-5 text-zinc-400 hover:text-white"
@@ -180,7 +190,7 @@ export const Projects: React.FC = () => {
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
 
       </div>
     </section>

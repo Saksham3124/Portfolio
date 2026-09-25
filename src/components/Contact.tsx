@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   Mail,
   Phone,
@@ -18,6 +19,15 @@ interface ContactProps {
 }
 
 export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
+  const shouldReduceMotion = useReducedMotion();
+
+  const fadeUp = (delay = 0) => ({
+    initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: "-40px" },
+    transition: { duration: 0.45, delay, ease: "easeOut" as const },
+  });
+
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPhone, setCopiedPhone] = useState(false);
 
@@ -66,7 +76,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
       <div className="max-w-4xl mx-auto px-6">
         
         {/* Section Pill */}
-        <div className="text-center mb-14">
+        <motion.div {...fadeUp(0)} className="text-center mb-14">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
             Get in Touch
           </div>
@@ -79,12 +89,12 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
             Open to Risk Analyst, Reporting Analyst, and Data Engineering opportunities.
             Reach out directly or send a message.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           
           {/* Left Column: Direct Contact & Resume Request Trigger */}
-          <div className="md:col-span-5 space-y-4">
+          <motion.div {...fadeUp(0.08)} className="md:col-span-5 space-y-4">
             {/* Request Resume Banner Card */}
             <div className="clean-card p-6 rounded-2xl border border-white/10">
               <div className="flex items-center gap-3 mb-2.5">
@@ -182,10 +192,10 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                 <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
               </a>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Column: Clean Message Form */}
-          <div className="md:col-span-7 clean-card p-7 sm:p-8 rounded-2xl">
+          <motion.div {...fadeUp(0.14)} className="md:col-span-7 clean-card p-7 sm:p-8 rounded-2xl">
             <h3 className="text-lg font-semibold text-white mb-1.5">Direct Message</h3>
             <p className="text-xs text-zinc-400 mb-6">
               Send a note directly to my email regarding an opportunity or technical discussion.
@@ -275,7 +285,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                 </button>
               </form>
             )}
-          </div>
+          </motion.div>
         </div>
 
       </div>

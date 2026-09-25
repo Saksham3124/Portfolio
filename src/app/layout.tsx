@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Kumar Saksham — Data · Risk · Engineering",
+  title: "Kumar Saksham — Data · Risk · Engineering · Operations",
   description:
     "Engineering graduate focused on risk analytics, data engineering, reporting, and decision-support modeling. Hands-on work across credit risk, anomaly detection, customer analytics, and quantitative research.",
   keywords: [
@@ -22,6 +22,7 @@ export const metadata: Metadata = {
     "Risk Analyst",
     "Risk Analytics",
     "Credit Risk Analytics",
+    "Operations Analytics",
     "PostgreSQL",
     "Tableau",
     "Power BI",
@@ -34,8 +35,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Kumar Saksham", url: "https://github.com/Saksham3124" }],
   openGraph: {
-    title: "Kumar Saksham — Data · Risk · Engineering",
-    description: "Turning complex data into clear, defensible decisions.",
+    title: "Kumar Saksham — Data · Risk · Engineering · Operations",
+    description: "Turning Complex Data into Clear, Defensible Decisions.",
     url: "https://github.com/Saksham3124",
     siteName: "Kumar Saksham Portfolio",
     type: "website",
@@ -49,6 +50,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark scroll-smooth">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; } if (!window.location.hash) { window.scrollTo(0, 0); }`,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-[#030304] text-[#fafafa] min-h-screen selection:bg-white/20 selection:text-white`}
       >

@@ -1,16 +1,26 @@
 "use client";
 
 import React from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Calendar, MapPin, CheckCircle2 } from "lucide-react";
 import { EXPERIENCE } from "@/data/portfolioData";
 
 export const Experience: React.FC = () => {
+  const shouldReduceMotion = useReducedMotion();
+
+  const fadeUp = (delay = 0) => ({
+    initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: "-40px" },
+    transition: { duration: 0.45, delay, ease: "easeOut" as const },
+  });
+
   return (
     <section id="experience" className="py-24 relative border-t border-white/[0.06] bg-[#030304]">
       <div className="max-w-4xl mx-auto px-6">
         
         {/* Section Header */}
-        <div className="text-center mb-14">
+        <motion.div {...fadeUp(0)} className="text-center mb-14">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
             Professional Experience
           </div>
@@ -20,15 +30,16 @@ export const Experience: React.FC = () => {
           </h2>
 
           <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
-            Rigorous hands-on algorithmic problem solving and quantitative research.
+            Rigorous hands-on algorithmic problem solving, electromagnetic simulation, and quantitative research.
           </p>
-        </div>
+        </motion.div>
 
         {/* Experience Cards */}
         <div className="space-y-6">
-          {EXPERIENCE.map((exp) => (
-            <div
+          {EXPERIENCE.map((exp, idx) => (
+            <motion.div
               key={exp.id}
+              {...fadeUp(0.08 + idx * 0.05)}
               className="clean-card p-7 sm:p-8 rounded-2xl"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 pb-4 border-b border-white/[0.07]">
@@ -84,7 +95,7 @@ export const Experience: React.FC = () => {
                   </span>
                 ))}
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
