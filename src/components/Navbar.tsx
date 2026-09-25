@@ -24,8 +24,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
 
   const navLinks = [
     { name: "About", href: "#about" },
+    { name: "Experience", href: "#experience" },
+    { name: "Work", href: "#work" },
+    { name: "Education", href: "#education" },
     { name: "Skills", href: "#skills" },
-    { name: "Projects", href: "#projects" },
+    { name: "Credentials", href: "#credentials" },
     { name: "Achievements", href: "#achievements" },
     { name: "Contact", href: "#contact" },
   ];
@@ -34,38 +37,29 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-navy-950/85 backdrop-blur-md border-b border-slate-800/80 shadow-lg shadow-black/40 py-3"
+          ? "bg-[#09090b]/85 backdrop-blur-md border-b border-white/[0.08] shadow-sm py-3"
           : "bg-transparent py-5"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* Logo / Brand */}
+          {/* Brand */}
           <a
             href="#"
-            className="flex items-center gap-2.5 text-slate-100 hover:text-white transition-colors group"
+            className="flex items-center gap-2 text-zinc-100 hover:text-white transition-colors group"
           >
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white font-mono font-bold shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform">
-              KS
-            </div>
-            <div>
-              <span className="font-semibold tracking-tight text-slate-100 text-base sm:text-lg block leading-tight">
-                Kumar Saksham
-              </span>
-              <span className="text-[11px] font-mono text-cyan-400 tracking-wider flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                DATA & RISK ANALYST
-              </span>
-            </div>
+            <span className="font-semibold tracking-tight text-base sm:text-lg">
+              Kumar Saksham<span className="text-zinc-500">.</span>
+            </span>
           </a>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-7">
+          <nav className="hidden lg:flex items-center gap-6">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                className="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors"
+                className="text-xs sm:text-[13px] font-medium text-zinc-400 hover:text-white transition-colors"
               >
                 {link.name}
               </a>
@@ -73,57 +67,57 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
           </nav>
 
           {/* Prominent External Links & CTA */}
-          <div className="hidden lg:flex items-center gap-3">
-            {/* Prominent GitHub Button in Top Bar */}
+          <div className="hidden sm:flex items-center gap-3">
+            {/* Prominent GitHub Button in Sticky Top Bar */}
             <a
               href={PERSONAL_INFO.contact.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-200 bg-slate-800/80 hover:bg-slate-700/90 border border-slate-700/70 hover:border-slate-500 transition-all hover:scale-102"
-              title="Visit GitHub Profile (@Saksham3124)"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-zinc-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 transition-all"
+              title="Visit GitHub (@Saksham3124)"
             >
-              <GithubIcon className="w-4 h-4 text-cyan-400" />
+              <GithubIcon className="w-3.5 h-3.5 text-zinc-200" />
               <span>GitHub</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
+              <ArrowUpRight className="w-3 h-3 text-zinc-500" />
             </a>
 
-            {/* Prominent LinkedIn Button */}
+            {/* LinkedIn Icon Button */}
             <a
               href={PERSONAL_INFO.contact.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="LinkedIn Profile"
-              className="p-1.5 rounded-lg text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700/70 hover:border-indigo-500/50 transition-all"
+              className="p-1.5 rounded-full text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 transition-all"
               title="LinkedIn Profile"
+              aria-label="LinkedIn Profile"
             >
-              <LinkedinIcon className="w-4 h-4 text-indigo-400" />
+              <LinkedinIcon className="w-3.5 h-3.5" />
             </a>
 
-            {/* Dedicated Request Resume Button */}
+            {/* Request Resume Button */}
             <button
               onClick={onRequestResume}
-              className="relative inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-cyan-500 via-indigo-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 shadow-md shadow-indigo-500/25 hover:shadow-cyan-500/35 transition-all hover:scale-105 active:scale-95"
+              className="pill-button text-xs py-1.5 px-4 bg-white text-zinc-950 font-medium hover:bg-zinc-200 border-white"
             >
               <FileText className="w-3.5 h-3.5" />
-              <span>Request Resume</span>
+              <span>Request Résumé</span>
             </button>
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center gap-2">
             <button
               onClick={onRequestResume}
-              className="px-2.5 py-1.5 rounded-md text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-500 flex items-center gap-1"
+              className="px-3 py-1.5 rounded-full text-xs font-medium text-zinc-950 bg-white hover:bg-zinc-200 flex items-center gap-1"
             >
               <FileText className="w-3 h-3" />
-              <span>Resume</span>
+              <span>Résumé</span>
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-300 hover:text-white bg-slate-800/80 border border-slate-700"
+              className="p-2 rounded-lg text-zinc-300 hover:text-white bg-zinc-900 border border-zinc-800"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
         </div>
@@ -133,49 +127,49 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden bg-navy-900/95 border-b border-slate-800 px-6 py-5 shadow-2xl backdrop-blur-xl"
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.15 }}
+            className="lg:hidden bg-[#09090b]/95 border-b border-zinc-800 px-6 py-5 shadow-2xl backdrop-blur-2xl"
           >
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               {navLinks.map((link) => (
                 <a
                   key={link.name}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-base font-medium text-slate-200 hover:text-cyan-400 py-1"
+                  className="text-sm font-medium text-zinc-300 hover:text-white py-1"
                 >
                   {link.name}
                 </a>
               ))}
 
-              <div className="pt-3 border-t border-slate-800 flex flex-col gap-3">
+              <div className="pt-4 border-t border-zinc-800 flex flex-col gap-2.5">
                 <a
                   href={PERSONAL_INFO.contact.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-800 text-slate-200 text-sm font-semibold"
+                  className="flex items-center justify-between px-3.5 py-2 rounded-lg bg-zinc-900 text-zinc-200 text-xs font-medium border border-zinc-800"
                 >
                   <div className="flex items-center gap-2">
-                    <GithubIcon className="w-4 h-4 text-cyan-400" />
-                    <span>GitHub Profile (Saksham3124)</span>
+                    <GithubIcon className="w-4 h-4 text-zinc-300" />
+                    <span>GitHub (@Saksham3124)</span>
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-slate-400" />
+                  <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
                 </a>
 
                 <a
                   href={PERSONAL_INFO.contact.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-800 text-slate-200 text-sm font-semibold"
+                  className="flex items-center justify-between px-3.5 py-2 rounded-lg bg-zinc-900 text-zinc-200 text-xs font-medium border border-zinc-800"
                 >
                   <div className="flex items-center gap-2">
-                    <LinkedinIcon className="w-4 h-4 text-indigo-400" />
-                    <span>LinkedIn Profile</span>
+                    <LinkedinIcon className="w-4 h-4 text-zinc-300" />
+                    <span>LinkedIn</span>
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-slate-400" />
+                  <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
                 </a>
 
                 <button
@@ -183,10 +177,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
                     setMobileMenuOpen(false);
                     onRequestResume();
                   }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-cyan-500 to-indigo-600"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold text-zinc-950 bg-white hover:bg-zinc-200"
                 >
-                  <FileText className="w-4 h-4" />
-                  <span>Request Full Resume</span>
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Request Official Résumé</span>
                 </button>
               </div>
             </div>

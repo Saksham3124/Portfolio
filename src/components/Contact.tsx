@@ -10,7 +10,6 @@ import {
   Check,
   FileText,
   ArrowUpRight,
-  MessageSquare,
 } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/BrandIcons";
 import { PERSONAL_INFO } from "@/data/portfolioData";
@@ -40,206 +39,197 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
     }
   };
 
+  // Input Sanitization helper
+  const sanitizeInput = (input: string) => {
+    return input.replace(/[<>]/g, "").trim();
+  };
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const cleanName = sanitizeInput(senderName);
+    const cleanEmail = sanitizeInput(senderEmail);
+    const cleanSubject = sanitizeInput(subject);
+    const cleanMessage = sanitizeInput(message);
+
     const mailtoSubject = encodeURIComponent(
-      subject || `Inquiry from ${senderName} regarding Data/Risk Analytics`
+      cleanSubject || `Inquiry from ${cleanName} regarding Risk / Data Analytics`
     );
     const mailtoBody = encodeURIComponent(
-      `Hello Kumar,\n\n${message}\n\nFrom: ${senderName}\nContact: ${senderEmail}`
+      `Hello Kumar,\n\n${cleanMessage}\n\nFrom: ${cleanName}\nContact Email: ${cleanEmail}`
     );
     window.location.href = `mailto:${PERSONAL_INFO.contact.email}?subject=${mailtoSubject}&body=${mailtoBody}`;
     setSentSuccess(true);
   };
 
   return (
-    <section id="contact" className="py-24 relative overflow-hidden bg-navy-950">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section id="contact" className="py-24 relative border-t border-white/[0.06]">
+      <div className="max-w-4xl mx-auto px-6">
         
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        {/* Section Pill */}
+        <div className="text-center mb-14">
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-xs font-mono text-cyan-400 mb-3"
+            className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3"
           >
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>START A CONVERSATION</span>
+            Get in Touch
           </motion.div>
 
           <motion.h2
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4"
+            transition={{ delay: 0.1 }}
+            className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4"
           >
-            Let&apos;s Build <span className="text-gradient-cyan">Defensible Solutions</span>
+            Start a Conversation
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-slate-400 text-base sm:text-lg leading-relaxed"
+            transition={{ delay: 0.15 }}
+            className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed"
           >
-            Whether discussing credit risk models, high-throughput PostgreSQL pipelines,
-            or full-time quantitative / data engineering opportunities.
+            Open to Risk Analyst, Reporting Analyst, and Data Engineering opportunities.
+            Reach out directly or send a message.
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           
-          {/* Left Column: Direct Contact Details & Links */}
+          {/* Left Column: Direct Contact & Resume Request Trigger */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -16 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="lg:col-span-5 space-y-6"
+            className="md:col-span-5 space-y-4"
           >
-            {/* Dedicated Request Resume Banner */}
-            <div className="p-6 sm:p-7 rounded-2xl bg-gradient-to-br from-indigo-950/80 via-slate-900 to-navy-950 border border-indigo-700/50 shadow-xl">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2.5 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                  <FileText className="w-5 h-5" />
+            {/* Request Resume Banner Card */}
+            <div className="clean-card p-6 rounded-2xl border border-white/10">
+              <div className="flex items-center gap-3 mb-2.5">
+                <div className="p-2 rounded-lg bg-white/[0.05] border border-white/10 text-zinc-200">
+                  <FileText className="w-4 h-4" />
                 </div>
-                <h3 className="text-lg font-bold text-white">Need My Official Resume?</h3>
+                <h3 className="text-sm font-semibold text-white">Need an Official Résumé?</h3>
               </div>
-              <p className="text-xs text-slate-300 mb-5 leading-relaxed">
-                I do not host a direct public download to protect version accuracy.
-                Click below to trigger a structured, pre-filled request.
+              <p className="text-xs text-zinc-400 mb-4 leading-relaxed">
+                To provide tailored versions aligned with specific role requirements, resumes are shared directly upon verified request.
               </p>
               <button
                 onClick={onRequestResume}
-                className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 shadow-md shadow-indigo-500/25 transition-all hover:scale-102"
+                className="pill-button pill-button-primary w-full text-xs py-2"
               >
-                <FileText className="w-4 h-4" />
-                <span>Open Request Resume Form</span>
+                <span>Request Résumé Form</span>
               </button>
             </div>
 
-            {/* Email Card with 1-Click Copy */}
-            <div className="glass-panel p-6 rounded-2xl border border-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-slate-900 text-cyan-400 border border-slate-800">
-                  <Mail className="w-5 h-5" />
+            {/* Direct Email Card */}
+            <div className="clean-card p-4 rounded-xl flex items-center justify-between">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="p-2 rounded-lg bg-white/[0.04] text-zinc-300">
+                  <Mail className="w-4 h-4" />
                 </div>
-                <div>
-                  <div className="text-xs font-mono text-slate-400">Direct Email</div>
+                <div className="truncate">
+                  <div className="text-[11px] text-zinc-500 font-mono">Email Address</div>
                   <a
                     href={`mailto:${PERSONAL_INFO.contact.email}`}
-                    className="text-sm sm:text-base font-semibold text-white hover:text-cyan-400 transition-colors font-mono"
+                    className="text-xs sm:text-sm font-medium text-zinc-200 hover:text-white transition-colors truncate block"
                   >
                     {PERSONAL_INFO.contact.email}
                   </a>
                 </div>
               </div>
-
               <button
                 onClick={() => copyToClipboard(PERSONAL_INFO.contact.email, "email")}
-                className="p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors"
-                title="Copy email to clipboard"
+                className="p-2 rounded-lg hover:bg-white/[0.05] text-zinc-400 hover:text-white transition-colors shrink-0"
+                title="Copy email"
               >
-                {copiedEmail ? (
-                  <Check className="w-4 h-4 text-emerald-400" />
-                ) : (
-                  <Copy className="w-4 h-4" />
-                )}
+                {copiedEmail ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
 
-            {/* Phone Card with 1-Click Copy */}
-            <div className="glass-panel p-6 rounded-2xl border border-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-slate-900 text-emerald-400 border border-slate-800">
-                  <Phone className="w-5 h-5" />
+            {/* Direct Phone Card */}
+            <div className="clean-card p-4 rounded-xl flex items-center justify-between">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="p-2 rounded-lg bg-white/[0.04] text-zinc-300">
+                  <Phone className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-xs font-mono text-slate-400">Phone / WhatsApp</div>
+                  <div className="text-[11px] text-zinc-500 font-mono">Phone / WhatsApp</div>
                   <a
                     href={`tel:${PERSONAL_INFO.contact.phone}`}
-                    className="text-sm sm:text-base font-semibold text-white hover:text-emerald-400 transition-colors font-mono"
+                    className="text-xs sm:text-sm font-medium text-zinc-200 hover:text-white transition-colors block font-mono"
                   >
                     {PERSONAL_INFO.contact.phone}
                   </a>
                 </div>
               </div>
-
               <button
                 onClick={() => copyToClipboard(PERSONAL_INFO.contact.phone, "phone")}
-                className="p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors"
-                title="Copy phone number to clipboard"
+                className="p-2 rounded-lg hover:bg-white/[0.05] text-zinc-400 hover:text-white transition-colors shrink-0"
+                title="Copy phone number"
               >
-                {copiedPhone ? (
-                  <Check className="w-4 h-4 text-emerald-400" />
-                ) : (
-                  <Copy className="w-4 h-4" />
-                )}
+                {copiedPhone ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
 
-            {/* Social Link Badges */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* Social Links */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
               <a
                 href={PERSONAL_INFO.contact.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-4 rounded-xl glass-panel border border-slate-800 hover:border-cyan-500/50 transition-all flex items-center justify-between group"
+                className="clean-card p-3 rounded-xl flex items-center justify-between text-xs font-medium text-zinc-300 hover:text-white group"
               >
-                <div className="flex items-center gap-2.5">
-                  <GithubIcon className="w-5 h-5 text-cyan-400" />
-                  <span className="text-xs font-semibold text-slate-200 group-hover:text-white">
-                    GitHub Profile
-                  </span>
+                <div className="flex items-center gap-2">
+                  <GithubIcon className="w-4 h-4" />
+                  <span>GitHub</span>
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-cyan-400" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
               </a>
 
               <a
                 href={PERSONAL_INFO.contact.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-4 rounded-xl glass-panel border border-slate-800 hover:border-indigo-500/50 transition-all flex items-center justify-between group"
+                className="clean-card p-3 rounded-xl flex items-center justify-between text-xs font-medium text-zinc-300 hover:text-white group"
               >
-                <div className="flex items-center gap-2.5">
-                  <LinkedinIcon className="w-5 h-5 text-indigo-400" />
-                  <span className="text-xs font-semibold text-slate-200 group-hover:text-white">
-                    LinkedIn Profile
-                  </span>
+                <div className="flex items-center gap-2">
+                  <LinkedinIcon className="w-4 h-4" />
+                  <span>LinkedIn</span>
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-indigo-400" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
               </a>
             </div>
           </motion.div>
 
-          {/* Right Column: Clean Reach-Out Form */}
+          {/* Right Column: Clean Message Form */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 16 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="lg:col-span-7 glass-panel p-8 sm:p-10 rounded-2xl border border-slate-800"
+            className="md:col-span-7 clean-card p-7 sm:p-8 rounded-2xl"
           >
-            <h3 className="text-2xl font-bold text-white mb-2">Send a Direct Message</h3>
-            <p className="text-xs sm:text-sm text-slate-400 mb-6">
-              Fill out this quick form to send a formatted inquiry directly to my inbox.
+            <h3 className="text-lg font-semibold text-white mb-1.5">Direct Message</h3>
+            <p className="text-xs text-zinc-400 mb-6">
+              Send a note directly to my email regarding an opportunity or technical discussion.
             </p>
 
             {sentSuccess ? (
-              <div className="p-6 rounded-xl bg-emerald-950/60 border border-emerald-800/80 text-center space-y-3">
-                <Check className="w-8 h-8 text-emerald-400 mx-auto" />
-                <h4 className="text-lg font-bold text-white">Opening Email Client...</h4>
-                <p className="text-xs text-slate-300">
-                  Your mail app should have launched. If not, feel free to write to{" "}
-                  <strong className="text-cyan-300 font-mono">{PERSONAL_INFO.contact.email}</strong>.
+              <div className="p-6 rounded-xl bg-white/[0.02] border border-white/10 text-center space-y-3">
+                <Check className="w-7 h-7 text-emerald-400 mx-auto" />
+                <h4 className="text-sm font-semibold text-white">Opening Email Client...</h4>
+                <p className="text-xs text-zinc-400">
+                  Your mail app has been launched. Alternatively, email directly at{" "}
+                  <strong className="text-zinc-200 font-mono">{PERSONAL_INFO.contact.email}</strong>.
                 </p>
                 <button
                   onClick={() => setSentSuccess(false)}
-                  className="text-xs text-cyan-400 underline pt-2"
+                  className="text-xs text-zinc-400 underline pt-2 hover:text-white"
                 >
                   Send another message
                 </button>
@@ -248,7 +238,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
               <form onSubmit={handleSendMessage} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-mono text-slate-300 mb-1.5">
+                    <label className="block text-xs font-mono text-zinc-400 mb-1.5">
                       Your Name *
                     </label>
                     <input
@@ -257,12 +247,12 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                       value={senderName}
                       onChange={(e) => setSenderName(e.target.value)}
                       placeholder="e.g. Alex Morgan"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-zinc-200 focus:outline-none focus:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono text-slate-300 mb-1.5">
+                    <label className="block text-xs font-mono text-zinc-400 mb-1.5">
                       Your Email *
                     </label>
                     <input
@@ -271,13 +261,13 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                       value={senderEmail}
                       onChange={(e) => setSenderEmail(e.target.value)}
                       placeholder="alex@company.com"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                      className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-zinc-200 focus:outline-none focus:border-white/30"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono text-slate-300 mb-1.5">
+                  <label className="block text-xs font-mono text-zinc-400 mb-1.5">
                     Subject *
                   </label>
                   <input
@@ -285,13 +275,13 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                     required
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
-                    placeholder="e.g. Credit Risk Analyst Role / Quantitative Discussion"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                    placeholder="e.g. Risk Analyst Role / Quantitative Discussion"
+                    className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-zinc-200 focus:outline-none focus:border-white/30"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono text-slate-300 mb-1.5">
+                  <label className="block text-xs font-mono text-zinc-400 mb-1.5">
                     Message *
                   </label>
                   <textarea
@@ -299,17 +289,17 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                     required
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Describe the opportunity, technical challenge, or project..."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 resize-none"
+                    placeholder="Please share role details, timeline, or inquiries..."
+                    className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-zinc-200 focus:outline-none focus:border-white/30 resize-none"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm text-slate-950 bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 transition-all shadow-md shadow-cyan-500/20 active:scale-98"
+                  className="pill-button pill-button-primary w-full text-xs py-2.5"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>Send Message via Email</span>
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Send Message</span>
                 </button>
               </form>
             )}

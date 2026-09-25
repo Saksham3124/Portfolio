@@ -4,8 +4,11 @@ import React, { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { About } from "@/components/About";
-import { Skills } from "@/components/Skills";
+import { Experience } from "@/components/Experience";
 import { Projects } from "@/components/Projects";
+import { Education } from "@/components/Education";
+import { Skills } from "@/components/Skills";
+import { Certifications } from "@/components/Certifications";
 import { Achievements } from "@/components/Achievements";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
@@ -23,11 +26,11 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#060913] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="relative min-h-screen bg-[#09090b] text-[#fafafa] selection:bg-white/20 selection:text-white">
       {/* Top sticky navigation bar */}
       <Navbar onRequestResume={handleOpenResumeModal} />
 
-      {/* Main page content */}
+      {/* Main page content flow */}
       <main>
         {/* 1. Hero Section */}
         <Hero onRequestResume={handleOpenResumeModal} />
@@ -35,16 +38,25 @@ export default function Home() {
         {/* 2. About Me Section */}
         <About />
 
-        {/* 3. Skills Matrix Section */}
-        <Skills />
+        {/* 3. Professional Experience (LNMIIT LUSIP 2025) */}
+        <Experience />
 
-        {/* 4. Projects & Live Visualizations */}
+        {/* 4. Featured Work (Strictly 3 Flagship Projects) */}
         <Projects />
 
-        {/* 5. Achievements & Certifications */}
+        {/* 5. Education (B.Tech in ECE, BIT Mesra) */}
+        <Education />
+
+        {/* 6. Skills Matrix */}
+        <Skills />
+
+        {/* 7. Certifications & Credentials (Dedicated) */}
+        <Certifications />
+
+        {/* 8. Achievements (Selective Notable Milestones) */}
         <Achievements />
 
-        {/* 6. Contact & Reach Out Section */}
+        {/* 9. Contact & Inquiries */}
         <Contact onRequestResume={handleOpenResumeModal} />
       </main>
 

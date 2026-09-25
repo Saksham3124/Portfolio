@@ -12,7 +12,7 @@ import {
   CheckCircle,
   Copy,
   Check,
-  ShieldAlert,
+  ShieldCheck,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { PERSONAL_INFO } from "@/data/portfolioData";
@@ -29,42 +29,45 @@ export const RequestResumeModal: React.FC<RequestResumeModalProps> = ({
   const [name, setName] = useState("");
   const [organization, setOrganization] = useState("");
   const [email, setEmail] = useState("");
-  const [roleType, setRoleType] = useState("Risk Analytics / Data Analyst");
+  const [roleType, setRoleType] = useState("Risk Analyst / Risk Analytics");
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
 
+  const sanitizeInput = (input: string) => input.replace(/[<>]/g, "").trim();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Trigger visual confetti celebration
     try {
       confetti({
-        particleCount: 80,
-        spread: 70,
+        particleCount: 60,
+        spread: 60,
         origin: { y: 0.6 },
       });
     } catch {
       // Ignore if canvas-confetti is not loaded
     }
 
-    // Construct pre-filled mailto
+    const cleanName = sanitizeInput(name);
+    const cleanOrg = sanitizeInput(organization);
+    const cleanEmail = sanitizeInput(email);
+    const cleanMsg = sanitizeInput(message);
+
     const subject = encodeURIComponent(
-      `Resume Request: ${roleType} - ${organization || "Direct Opportunity"}`
+      `Résumé Request: ${roleType} - ${cleanOrg || "Direct Inquiry"}`
     );
     const body = encodeURIComponent(
-      `Hello Kumar,\n\nI would like to request your comprehensive resume for the following opportunity:\n\n` +
-        `• Name: ${name}\n` +
-        `• Organization: ${organization}\n` +
-        `• Contact Email: ${email}\n` +
-        `• Focus Role: ${roleType}\n` +
-        `• Additional Context: ${message || "N/A"}\n\n` +
-        `Best regards,\n${name}`
+      `Hello Kumar,\n\nI would like to request your official résumé for the following target opportunity:\n\n` +
+        `• Name: ${cleanName}\n` +
+        `• Organization / Team: ${cleanOrg}\n` +
+        `• Contact Email: ${cleanEmail}\n` +
+        `• Target Role: ${roleType}\n` +
+        `• Additional Context: ${cleanMsg || "N/A"}\n\n` +
+        `Best regards,\n${cleanName}`
     );
 
-    // Open mailto link
     window.location.href = `mailto:${PERSONAL_INFO.contact.email}?subject=${subject}&body=${body}`;
-
     setSubmitted(true);
   };
 
@@ -90,42 +93,41 @@ export const RequestResumeModal: React.FC<RequestResumeModalProps> = ({
 
         {/* Modal Window */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          initial={{ opacity: 0, scale: 0.96, y: 16 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-xl rounded-2xl glass-panel bg-navy-950 border border-slate-700/80 shadow-2xl p-6 sm:p-8 z-10 my-8 overflow-hidden"
+          exit={{ opacity: 0, scale: 0.96, y: 16 }}
+          className="relative w-full max-w-lg rounded-2xl clean-card bg-[#0e0e12] border border-white/10 shadow-2xl p-6 sm:p-8 z-10 my-8 overflow-hidden"
         >
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-5 right-5 p-2 rounded-lg text-slate-400 hover:text-white bg-slate-900 border border-slate-800 hover:border-slate-700 transition-colors"
+            className="absolute top-5 right-5 p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-colors"
             aria-label="Close modal"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
 
           {/* Modal Header */}
-          <div className="flex items-start gap-4 mb-6">
-            <div className="p-3 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-indigo-500/20 text-cyan-400 border border-cyan-500/30 shrink-0">
-              <FileText className="w-6 h-6" />
+          <div className="flex items-start gap-3.5 mb-6">
+            <div className="p-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-zinc-200 shrink-0">
+              <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                Request Official Resume
+              <h3 className="text-xl font-semibold text-white tracking-tight">
+                Request Official Résumé
               </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Direct request for tailored credentials, project technical appendices, and references.
+              <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                Direct request for tailored credentials, project appendices, and references.
               </p>
             </div>
           </div>
 
-          {/* Policy Note: Why resume is on-request */}
-          <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300 mb-6 flex items-start gap-2.5">
-            <ShieldAlert className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+          {/* Policy Notice */}
+          <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06] text-xs text-zinc-400 mb-6 flex items-start gap-2.5 leading-relaxed">
+            <ShieldCheck className="w-4 h-4 text-zinc-300 shrink-0 mt-0.5" />
             <span>
-              <strong>Professional Notice:</strong> To ensure recruiters and hiring leaders receive
-              up-to-date versions aligned with their exact domain (Risk Modeling, Data Engineering, or BI),
-              I share resumes directly via verified request.
+              To ensure hiring managers receive an up-to-date version tailored to their specific domain 
+              (Risk Analytics, Data Engineering, or Reporting), résumés are provided via verified request.
             </span>
           </div>
 
@@ -133,103 +135,95 @@ export const RequestResumeModal: React.FC<RequestResumeModalProps> = ({
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-mono text-slate-300 mb-1.5">
-                    Your Full Name *
+                  <label className="block text-xs font-mono text-zinc-400 mb-1.5">
+                    Your Name *
                   </label>
                   <div className="relative">
-                    <User className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                    <User className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-3" />
                     <input
                       type="text"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Sarah Jenkins"
-                      className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-900/90 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                      className="w-full pl-8 pr-3 py-2 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-zinc-200 focus:outline-none focus:border-white/30"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono text-slate-300 mb-1.5">
-                    Company / Organization *
+                  <label className="block text-xs font-mono text-zinc-400 mb-1.5">
+                    Company / Team *
                   </label>
                   <div className="relative">
-                    <Building2 className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                    <Building2 className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-3" />
                     <input
                       type="text"
                       required
                       value={organization}
                       onChange={(e) => setOrganization(e.target.value)}
-                      placeholder="e.g. Fintech Corp / Bank"
-                      className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-900/90 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                      placeholder="e.g. FinTech / Risk Group"
+                      className="w-full pl-8 pr-3 py-2 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-zinc-200 focus:outline-none focus:border-white/30"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-slate-300 mb-1.5">
+                <label className="block text-xs font-mono text-zinc-400 mb-1.5">
                   Your Work Email *
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-3" />
+                  <Mail className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-3" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="sarah@company.com"
-                    className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-900/90 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                    className="w-full pl-8 pr-3 py-2 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-zinc-200 focus:outline-none focus:border-white/30"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-slate-300 mb-1.5">
-                  Target Domain / Role Type
+                <label className="block text-xs font-mono text-zinc-400 mb-1.5">
+                  Target Role Category
                 </label>
                 <select
                   value={roleType}
                   onChange={(e) => setRoleType(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-900/90 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                  className="w-full px-3 py-2 rounded-lg bg-[#141418] border border-white/10 text-xs text-zinc-200 focus:outline-none focus:border-white/30"
                 >
-                  <option value="Risk Analytics / Credit Risk Analyst">
-                    Risk Analytics & Default Modeling
-                  </option>
-                  <option value="Data Engineering / Pipeline Ops">
-                    Data Engineering & SQL / AWS Pipelines
-                  </option>
-                  <option value="Business Intelligence & Reporting">
-                    Business Intelligence (Tableau / Power BI)
-                  </option>
-                  <option value="Research / Hardware & Signal Systems">
-                    Hardware / Signal Systems / R&D
-                  </option>
-                  <option value="Other Inquiries">Other Exploration / Consulting</option>
+                  <option value="Risk Analyst / Risk Analytics">Risk Analyst / Risk Analytics</option>
+                  <option value="Reporting Analyst / Operations Analyst">Reporting Analyst / Operations Analyst</option>
+                  <option value="Data Science Analyst / Decision Support">Data Science Analyst / Decision Support</option>
+                  <option value="Junior / Graduate Data Engineer">Junior / Graduate Data Engineer</option>
+                  <option value="Risk Consultant">Risk Consultant</option>
+                  <option value="General Technical Inquiry">Other Inquiry</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-slate-300 mb-1.5">
-                  Message / Role Context (Optional)
+                <label className="block text-xs font-mono text-zinc-400 mb-1.5">
+                  Context / Notes (Optional)
                 </label>
                 <textarea
                   rows={2}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Share job requisition ID, timeline, or team details..."
-                  className="w-full px-3 py-2 rounded-lg bg-slate-900/90 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 resize-none"
+                  placeholder="Requisition link, team focus, or timeline..."
+                  className="w-full px-3 py-2 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-zinc-200 focus:outline-none focus:border-white/30 resize-none"
                 />
               </div>
 
-              {/* Action Buttons */}
-              <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+              <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full sm:flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 transition-all shadow-md shadow-cyan-500/20 active:scale-98"
+                  className="pill-button pill-button-primary w-full text-xs py-2.5"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>Send Resume Request (Pre-filled Mailto)</span>
+                  <Send className="w-3.5 h-3.5" />
+                  <span>Send Résumé Request (Pre-filled Mailto)</span>
                 </button>
               </div>
             </form>
@@ -239,43 +233,43 @@ export const RequestResumeModal: React.FC<RequestResumeModalProps> = ({
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-6 space-y-4"
             >
-              <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto">
-                <CheckCircle className="w-8 h-8" />
+              <div className="w-12 h-12 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center text-emerald-400 mx-auto">
+                <CheckCircle className="w-6 h-6" />
               </div>
-              <h4 className="text-xl font-bold text-white">Request Dispatched!</h4>
-              <p className="text-xs text-slate-300 max-w-md mx-auto">
-                Your email client should have opened with the formatted request. You can also write
-                to me directly at any time:
+              <h4 className="text-base font-semibold text-white">Request Initialized</h4>
+              <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
+                Your email client should have opened with the formatted request. You can also write 
+                directly at any time:
               </p>
 
-              <div className="flex items-center justify-center gap-3 pt-2">
+              <button
+                onClick={handleCopyEmail}
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-zinc-200 hover:bg-white/[0.08] transition-colors"
+              >
+                {copiedEmail ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                <span>{copiedEmail ? "Copied!" : PERSONAL_INFO.contact.email}</span>
+              </button>
+
+              <div>
                 <button
-                  onClick={handleCopyEmail}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-xs font-mono text-cyan-300 hover:bg-slate-700 transition-colors"
+                  onClick={() => {
+                    setSubmitted(false);
+                    onClose();
+                  }}
+                  className="pill-button text-xs py-1 px-4 mt-2"
                 >
-                  {copiedEmail ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedEmail ? "Email Copied!" : PERSONAL_INFO.contact.email}</span>
+                  Close
                 </button>
               </div>
-
-              <button
-                onClick={() => {
-                  setSubmitted(false);
-                  onClose();
-                }}
-                className="mt-4 px-5 py-2 text-xs font-semibold text-slate-300 hover:text-white bg-slate-900 rounded-lg border border-slate-800"
-              >
-                Close Window
-              </button>
             </motion.div>
           )}
 
-          {/* Quick Mailto Fallback */}
-          <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+          {/* Quick Direct Email Line */}
+          <div className="mt-5 pt-3.5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-500">
             <span>Direct Email:</span>
             <button
               onClick={handleCopyEmail}
-              className="text-cyan-400 hover:underline font-mono flex items-center gap-1"
+              className="text-zinc-300 hover:text-white font-mono flex items-center gap-1"
             >
               <span>{PERSONAL_INFO.contact.email}</span>
               {copiedEmail && <span className="text-emerald-400 text-[10px]">✓</span>}

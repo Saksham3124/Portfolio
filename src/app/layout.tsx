@@ -14,26 +14,28 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Kumar Saksham | Data · Risk · Engineering · Operations",
+  title: "Kumar Saksham — Data · Risk · Engineering",
   description:
-    "Personal Portfolio of Kumar Saksham. Electronics & Communication Engineering graduate from BIT Mesra specializing in Credit Risk Analytics, Forensic Anomaly Detection, PostgreSQL ETL Pipelines, and Tableau & Power BI Dashboards.",
+    "Engineering graduate focused on risk analytics, data engineering, reporting, and decision-support modeling. Hands-on work across credit risk, anomaly detection, customer analytics, and quantitative research.",
   keywords: [
     "Kumar Saksham",
-    "Data Analyst",
     "Risk Analyst",
+    "Risk Analytics",
     "Credit Risk Analytics",
     "PostgreSQL",
-    "Tableau Public",
+    "Tableau",
     "Power BI",
     "BIT Mesra",
+    "LNMIIT",
     "LUSIP Research Fellowship",
     "ETL Pipelines",
     "Anomaly Detection",
+    "Decision Support",
   ],
   authors: [{ name: "Kumar Saksham", url: "https://github.com/Saksham3124" }],
   openGraph: {
-    title: "Kumar Saksham | Data · Risk · Engineering · Operations",
-    description: "Turning Complex Data into Clear, Defensible Decisions.",
+    title: "Kumar Saksham — Data · Risk · Engineering",
+    description: "Turning complex data into clear, defensible decisions.",
     url: "https://github.com/Saksham3124",
     siteName: "Kumar Saksham Portfolio",
     type: "website",
@@ -48,7 +50,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#060913] text-slate-100 min-h-screen selection:bg-cyan-500/30 selection:text-cyan-200`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-[#09090b] text-[#fafafa] min-h-screen selection:bg-white/20 selection:text-white`}
       >
         {children}
       </body>
