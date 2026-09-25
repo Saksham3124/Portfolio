@@ -8,37 +8,80 @@ interface HeroProps {
   onRequestResume: () => void;
 }
 
+const ROTATING_HEADLINES = [
+  "Turning Complex Data into Clear, Defensible Decisions.",
+  "Investigating Data. Validating the Signal. Driving Action.",
+  "Engineering Data Systems for Better Decisions.",
+];
+
 export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
   const [videoError, setVideoError] = useState(false);
 
-  // Subtle single-run headline typing effect
-  const fullHeadline = "Turning Complex Data into Clear, Defensible Decisions.";
+  // Rotating Typewriter State
   const [displayedText, setDisplayedText] = useState("");
-  const [isTypingDone, setIsTypingDone] = useState(false);
+  const [isReducedMotion, setIsReducedMotion] = useState(false);
 
   useEffect(() => {
-    // Respect prefers-reduced-motion
+    // Respect prefers-reduced-motion: render Headline 1 immediately and keep static
     if (
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
-      setDisplayedText(fullHeadline);
-      setIsTypingDone(true);
+      setIsReducedMotion(true);
+      setDisplayedText(ROTATING_HEADLINES[0]);
       return;
     }
 
-    let i = 0;
-    const speed = 25; // 25ms per character: completes in ~1.35s
-    const timer = setInterval(() => {
-      i++;
-      setDisplayedText(fullHeadline.slice(0, i));
-      if (i >= fullHeadline.length) {
-        clearInterval(timer);
-        setIsTypingDone(true);
-      }
-    }, speed);
+    let headlineIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    let timerId: NodeJS.Timeout;
 
-    return () => clearInterval(timer);
+    // Strict editorial timings as requested
+    const typeSpeed = 50;        // 45–60ms per character
+    const holdCompleted = 3500;  // 3–4 seconds pause on completed sentence
+    const backspaceSpeed = 28;   // 25–35ms per character
+    const pauseTransition = 500; // ~500ms pause before typing next headline
+
+    const step = () => {
+      const currentHeadline = ROTATING_HEADLINES[headlineIdx];
+
+      if (!isDeleting) {
+        // Typing forward
+        charIdx++;
+        setDisplayedText(currentHeadline.slice(0, charIdx));
+
+        if (charIdx >= currentHeadline.length) {
+          // Finished typing: pause for 3.5s so user can read comfortably
+          isDeleting = true;
+          timerId = setTimeout(step, holdCompleted);
+          return;
+        }
+
+        timerId = setTimeout(step, typeSpeed);
+      } else {
+        // Backspacing
+        charIdx--;
+        setDisplayedText(currentHeadline.slice(0, charIdx));
+
+        if (charIdx <= 0) {
+          // Finished deleting: transition to next headline after 500ms pause
+          isDeleting = false;
+          headlineIdx = (headlineIdx + 1) % ROTATING_HEADLINES.length;
+          timerId = setTimeout(step, pauseTransition);
+          return;
+        }
+
+        timerId = setTimeout(step, backspaceSpeed);
+      }
+    };
+
+    // Initiate first typing after brief mount delay
+    timerId = setTimeout(step, 120);
+
+    return () => {
+      clearTimeout(timerId);
+    };
   }, []);
 
   return (
@@ -68,7 +111,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       {/* Central Content Container - Generous Spacing */}
       <div className="max-w-4xl mx-auto px-6 text-center w-full relative z-10 flex-1 flex flex-col justify-center items-center">
         
-        {/* Eyebrow & Positioning: DATA · RISK · ENGINEERING · OPERATIONS */}
+        {/* Eyebrow & Positioning: DATA · RISK · ENGINEERING · OPERATIONS (Completely Static) */}
         <div className="flex flex-col items-center gap-2 mb-6 sm:mb-8">
           <span className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-zinc-400">
             {PERSONAL_INFO.name}
@@ -84,20 +127,20 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
           </div>
         </div>
 
-        {/* Dominant Headline with Single-Run Typing Reveal */}
-        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[4.65rem] font-bold tracking-tight text-white leading-[1.08] max-w-4xl mx-auto mb-6 sm:mb-8 min-h-[2.2em] sm:min-h-[2.16em] flex items-center justify-center">
+        {/* Dominant Headline with Stable Height to Eliminate Layout Shifts */}
+        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[4.65rem] font-bold tracking-tight text-white leading-[1.08] max-w-4xl mx-auto mb-6 sm:mb-8 min-h-[140px] sm:min-h-[180px] md:min-h-[220px] lg:min-h-[240px] flex items-center justify-center text-center">
           <span>
             {displayedText}
-            {!isTypingDone && (
+            {!isReducedMotion && (
               <span
-                className="inline-block w-[3px] h-[0.8em] bg-zinc-300 ml-1.5 align-middle animate-pulse"
+                className="inline-block w-[2px] sm:w-[3px] h-[0.82em] bg-zinc-300 ml-1.5 align-middle animate-pulse"
                 aria-hidden="true"
               />
             )}
           </span>
         </h1>
 
-        {/* Static Supporting Text */}
+        {/* Static Supporting Text (Completely Static) */}
         <p className="text-sm sm:text-base md:text-lg text-zinc-400 font-normal leading-relaxed max-w-xl mx-auto mb-8 sm:mb-10">
           {PERSONAL_INFO.heroSupporting}
         </p>
