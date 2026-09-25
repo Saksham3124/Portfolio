@@ -69,29 +69,30 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
         {/* Section Pill */}
         <div className="text-center mb-14">
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+            transition={{ duration: 0.35 }}
             className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3"
           >
             Get in Touch
           </motion.div>
 
           <motion.h2
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+            transition={{ duration: 0.35, delay: 0.05 }}
             className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4"
           >
             Start a Conversation
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.15 }}
+            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+            transition={{ duration: 0.35, delay: 0.1 }}
             className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed"
           >
             Open to Risk Analyst, Reporting Analyst, and Data Engineering opportunities.
@@ -103,9 +104,10 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
           
           {/* Left Column: Direct Contact & Resume Request Trigger */}
           <motion.div
-            initial={{ opacity: 0, x: -16 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+            transition={{ duration: 0.35 }}
             className="md:col-span-5 space-y-4"
           >
             {/* Request Resume Banner Card */}
@@ -209,9 +211,10 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
 
           {/* Right Column: Clean Message Form */}
           <motion.div
-            initial={{ opacity: 0, x: 16 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+            transition={{ duration: 0.35, delay: 0.05 }}
             className="md:col-span-7 clean-card p-7 sm:p-8 rounded-2xl"
           >
             <h3 className="text-lg font-semibold text-white mb-1.5">Direct Message</h3>

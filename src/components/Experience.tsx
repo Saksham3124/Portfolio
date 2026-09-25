@@ -13,29 +13,30 @@ export const Experience: React.FC = () => {
         {/* Section Pill */}
         <div className="text-center mb-14">
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+            transition={{ duration: 0.35 }}
             className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3"
           >
             Professional Experience
           </motion.div>
 
           <motion.h2
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+            transition={{ duration: 0.35, delay: 0.05 }}
             className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4"
           >
             Research & Industry Experience
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.15 }}
+            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+            transition={{ duration: 0.35, delay: 0.1 }}
             className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed"
           >
             Rigorous hands-on algorithmic problem solving and quantitative research.
@@ -47,10 +48,10 @@ export const Experience: React.FC = () => {
           {EXPERIENCE.map((exp, idx) => (
             <motion.div
               key={exp.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
+              viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+              transition={{ duration: 0.4, delay: idx * 0.05 }}
               className="clean-card p-7 sm:p-8 rounded-2xl"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 pb-4 border-b border-white/[0.07]">

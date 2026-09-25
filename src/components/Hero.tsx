@@ -12,7 +12,7 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
   return (
-    <section className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-16 bg-ambient-radial">
+    <section id="hero" className="relative min-h-[90vh] flex items-center justify-center pt-28 pb-16 bg-ambient-radial">
       <div className="max-w-4xl mx-auto px-6 text-center w-full">
         
         {/* Subtle Pre-headline Pill */}

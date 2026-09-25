@@ -113,3 +113,20 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* Ambient glow movement */
+@keyframes pulseSlow {
+  0%, 100% {
+    transform: scale(1) translate(0px, 0px);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.08) translate(15px, -15px);
+    opacity: 0.95;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 14s ease-in-out infinite;
+}
+

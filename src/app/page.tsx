@@ -13,6 +13,7 @@ import { Achievements } from "@/components/Achievements";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { RequestResumeModal } from "@/components/RequestResumeModal";
+import { AnimatedBackground } from "@/components/AnimatedBackground";
 
 export default function Home() {
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
@@ -27,11 +28,14 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen bg-[#09090b] text-[#fafafa] selection:bg-white/20 selection:text-white">
+      {/* Dynamic Animated Ambient Background */}
+      <AnimatedBackground />
+
       {/* Top sticky navigation bar */}
       <Navbar onRequestResume={handleOpenResumeModal} />
 
       {/* Main page content flow */}
-      <main>
+      <main className="relative z-10">
         {/* 1. Hero Section */}
         <Hero onRequestResume={handleOpenResumeModal} />
 

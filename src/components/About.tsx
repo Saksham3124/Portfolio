@@ -40,29 +40,30 @@ export const About: React.FC = () => {
         {/* Section Pill */}
         <div className="text-center mb-14">
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+            transition={{ duration: 0.35 }}
             className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3"
           >
             About & Positioning
           </motion.div>
 
           <motion.h2
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+            transition={{ duration: 0.35, delay: 0.05 }}
             className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4"
           >
             Engineering Rigor in Service of Defensible Decisions
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.15 }}
+            viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+            transition={{ duration: 0.35, delay: 0.1 }}
             className="text-zinc-400 text-base max-w-2xl mx-auto leading-relaxed"
           >
             {PERSONAL_INFO.coreNarrative}
@@ -71,9 +72,10 @@ export const About: React.FC = () => {
 
         {/* Narrative Card */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+          transition={{ duration: 0.4 }}
           className="clean-card p-8 sm:p-10 rounded-2xl mb-12"
         >
           <div className="space-y-5 text-zinc-300 text-sm sm:text-base leading-relaxed">
@@ -102,10 +104,10 @@ export const About: React.FC = () => {
           {pillars.map((pillar, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
+              viewport={{ once: true, margin: "100px 0px 0px 0px" }}
+              transition={{ duration: 0.35, delay: i * 0.05 }}
               className="clean-card p-6 rounded-xl flex flex-col justify-between"
             >
               <div>

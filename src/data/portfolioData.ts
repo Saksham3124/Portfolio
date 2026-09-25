@@ -373,17 +373,7 @@ export const ACHIEVEMENTS: AchievementItem[] = [
     year: "2023",
     badge: "Hackathon Finalist",
     description:
-      "Secured 7th position out of dozens of competitive engineering teams at the BIT Mesra internal round of Smart India Hackathon 2023, presenting a hardware-software integrated solution evaluated on feasibility and impact.",
-    impactMetrics: "Top 7 at Premier Engineering Institution",
-  },
-  {
-    id: "lusip-selection",
-    title: "LUSIP National Research Fellowship Selection",
-    context: "The LNM Institute of Information Technology (LNMIIT)",
-    year: "2025",
-    badge: "Competitive Research Award",
-    description:
-      "Selected through a competitive multi-stage national selection process for the prestigious LUSIP Summer Research Fellowship, receiving full institutional sponsorship to work on 3D chipless RFID optimization algorithms.",
-    impactMetrics: "National Competitive Fellowship",
+      "Secured 7th position out of dozens of competitive engineering teams at the BIT Mesra internal round of Smart India Hackathon 2023, presenting a hardware-software integrated solution evaluated on technical feasibility, operational viability, and measurable impact.",
+    impactMetrics: "Top 7 out of 40+ engineering teams at BIT Mesra",
   },
 ];

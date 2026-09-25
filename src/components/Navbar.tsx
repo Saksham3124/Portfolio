@@ -13,32 +13,72 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>("hero");
 
+  const navLinks = [
+    { name: "About", href: "#about", id: "about" },
+    { name: "Experience", href: "#experience", id: "experience" },
+    { name: "Work", href: "#work", id: "work" },
+    { name: "Education", href: "#education", id: "education" },
+    { name: "Skills", href: "#skills", id: "skills" },
+    { name: "Credentials", href: "#credentials", id: "credentials" },
+    { name: "Achievements", href: "#achievements", id: "achievements" },
+    { name: "Contact", href: "#contact", id: "contact" },
+  ];
+
+  // Active section scroll spy
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
+
+      // If near very top, default to hero
+      if (window.scrollY < 180) {
+        setActiveSection("hero");
+        return;
+      }
+
+      // If scrolled to the bottom of the page, highlight contact
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 70) {
+        setActiveSection("contact");
+        return;
+      }
+
+      const sections = [
+        "about",
+        "experience",
+        "work",
+        "education",
+        "skills",
+        "credentials",
+        "achievements",
+        "contact",
+      ];
+
+      for (const sectionId of sections) {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          // Header sits around 70px height; element is active if its top is under or near header
+          // and bottom hasn't scrolled past
+          if (rect.top <= 260 && rect.bottom >= 140) {
+            setActiveSection(sectionId);
+            return;
+          }
+        }
+      }
     };
-    window.addEventListener("scroll", handleScroll);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const navLinks = [
-    { name: "About", href: "#about" },
-    { name: "Experience", href: "#experience" },
-    { name: "Work", href: "#work" },
-    { name: "Education", href: "#education" },
-    { name: "Skills", href: "#skills" },
-    { name: "Credentials", href: "#credentials" },
-    { name: "Achievements", href: "#achievements" },
-    { name: "Contact", href: "#contact" },
-  ];
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#09090b]/85 backdrop-blur-md border-b border-white/[0.08] shadow-sm py-3"
-          : "bg-transparent py-5"
+          ? "bg-[#09090b]/85 backdrop-blur-md border-b border-white/[0.08] shadow-sm py-2.5"
+          : "bg-transparent py-4 sm:py-5"
       }`}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,21 +93,28 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
             </span>
           </a>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-xs sm:text-[13px] font-medium text-zinc-400 hover:text-white transition-colors"
-              >
-                {link.name}
-              </a>
-            ))}
+          {/* Desktop Nav Links with Active Section Spy Highlight */}
+          <nav className="hidden lg:flex items-center gap-1.5 p-1 rounded-full bg-white/[0.02] border border-white/[0.06]">
+            {navLinks.map((link) => {
+              const isActive = activeSection === link.id;
+              return (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className={`text-xs font-medium px-3 py-1.5 rounded-full transition-all duration-200 relative ${
+                    isActive
+                      ? "text-white bg-white/10 shadow-sm border border-white/15"
+                      : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]"
+                  }`}
+                >
+                  {link.name}
+                </a>
+              );
+            })}
           </nav>
 
           {/* Prominent External Links & CTA */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2.5">
             {/* Prominent GitHub Button in Sticky Top Bar */}
             <a
               href={PERSONAL_INFO.contact.github}
@@ -133,17 +180,25 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
             transition={{ duration: 0.15 }}
             className="lg:hidden bg-[#09090b]/95 border-b border-zinc-800 px-6 py-5 shadow-2xl backdrop-blur-2xl"
           >
-            <div className="flex flex-col gap-3">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-sm font-medium text-zinc-300 hover:text-white py-1"
-                >
-                  {link.name}
-                </a>
-              ))}
+            <div className="flex flex-col gap-2">
+              {navLinks.map((link) => {
+                const isActive = activeSection === link.id;
+                return (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`text-sm font-medium py-1.5 px-3 rounded-lg transition-colors flex items-center justify-between ${
+                      isActive
+                        ? "text-white bg-white/10 font-semibold"
+                        : "text-zinc-400 hover:text-white"
+                    }`}
+                  >
+                    <span>{link.name}</span>
+                    {isActive && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />}
+                  </a>
+                );
+              })}
 
               <div className="pt-4 border-t border-zinc-800 flex flex-col gap-2.5">
                 <a
