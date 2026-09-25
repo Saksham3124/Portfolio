@@ -63,7 +63,7 @@ export const PERSONAL_INFO = {
   roleTitle: "Data · Risk · Engineering",
   heroHeadline: "Turning complex data into clear, defensible decisions.",
   heroSupporting:
-    "Engineering graduate focused on risk analytics, data engineering, reporting, and analytical problem solving, with hands-on work across credit risk, anomaly detection, customer analytics, and technical research.",
+    "Engineering graduate focused on risk analytics, data engineering, reporting, and analytical problem solving.",
   coreNarrative:
     "An engineering graduate applying analytical thinking, data engineering, and risk-focused analysis to turn complex data into reliable insights and decision support.",
   contact: {
@@ -74,12 +74,19 @@ export const PERSONAL_INFO = {
     location: "India",
   },
   keyMetrics: [
-    { label: "Loan Applicants Audited", value: "307K+", detail: "Credit default risk stratification" },
-    { label: "Fraud Detection Heuristic", value: "3-Tier", detail: "Automated GST anomaly scoring" },
-    { label: "Retail Category Analytics", value: "AWS + SQL", detail: "Promotional elasticity & basket affinity" },
-    { label: "Operational Telemetry Ingest", value: "Real-Time", detail: "Scheduled pipeline & risk dashboard" },
+    { label: "Invoice Records", value: "50K+", detail: "Forensic GST anomaly detection" },
+    { label: "Loan Applications", value: "307K+", detail: "Credit default risk stratification" },
+    { label: "Transactions", value: "2.6M+", detail: "Behavioral retail customer clustering" },
+    { label: "Transaction Value", value: "$8.06M", detail: "Promotional elasticity & sales uplift" },
   ],
 };
+
+export const HERO_METRICS = [
+  { value: "50K+", label: "Invoice Records", sub: "GST Forensic Audit" },
+  { value: "307K+", label: "Loan Applications", sub: "Default Stratification" },
+  { value: "2.6M+", label: "Transactions", sub: "Customer Segmentation" },
+  { value: "$8.06M", label: "Transaction Value", sub: "Promotional Uplift" },
+];
 
 export const EXPERIENCE: ExperienceItem[] = [
   {

@@ -27,7 +27,7 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#09090b] text-[#fafafa] selection:bg-white/20 selection:text-white">
+    <div className="relative min-h-screen bg-[#030304] text-[#fafafa] selection:bg-white/20 selection:text-white">
       {/* Dynamic Animated Ambient Background */}
       <AnimatedBackground />
 

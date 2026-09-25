@@ -2,9 +2,9 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, ArrowDown, ArrowUpRight, Mail } from "lucide-react";
-import { GithubIcon, LinkedinIcon } from "@/components/BrandIcons";
-import { PERSONAL_INFO } from "@/data/portfolioData";
+import { ArrowRight, ArrowDown } from "lucide-react";
+import { PERSONAL_INFO, HERO_METRICS } from "@/data/portfolioData";
+import { AnalyticalField } from "@/components/AnalyticalField";
 
 interface HeroProps {
   onRequestResume: () => void;
@@ -12,134 +12,159 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
   return (
-    <section id="hero" className="relative min-h-[90vh] flex items-center justify-center pt-28 pb-16 bg-ambient-radial">
-      <div className="max-w-4xl mx-auto px-6 text-center w-full">
+    <section
+      id="hero"
+      className="relative min-h-screen flex flex-col justify-between pt-32 sm:pt-40 pb-0 overflow-hidden bg-ambient-radial"
+    >
+      {/* Central Content Container with Generous Negative Space */}
+      <div className="max-w-4xl mx-auto px-6 text-center w-full relative z-10 flex-1 flex flex-col justify-center">
         
-        {/* Subtle Pre-headline Pill */}
+        {/* Step 2: Small Identity Eyebrow & Positioning */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-300 mb-8"
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="flex flex-col items-center gap-2 mb-6 sm:mb-8"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          <span>Data · Risk · Engineering</span>
+          <span className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.26em] text-zinc-400">
+            {PERSONAL_INFO.name}
+          </span>
+          <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-zinc-400">
+            <span>Data</span>
+            <span className="text-zinc-600">·</span>
+            <span>Risk</span>
+            <span className="text-zinc-600">·</span>
+            <span>Engineering</span>
+          </div>
         </motion.div>
 
-        {/* Clean, Impactful Display Headline */}
+        {/* Step 3: Dominant Multi-line Headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-[1.08] mb-6"
+          transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-[4.65rem] font-bold tracking-tight text-white leading-[1.08] max-w-4xl mx-auto mb-6 sm:mb-8"
         >
-          <span>Turning complex data into </span>
-          <span className="text-gradient-subtle block sm:inline">
-            clear, defensible decisions.
-          </span>
+          <span>Turning Complex Data into</span>
+          <br className="hidden sm:inline" />
+          <span className="text-zinc-100 sm:ml-2">Clear, Defensible Decisions.</span>
         </motion.h1>
 
-        {/* Supporting Copy */}
+        {/* Step 4: Short, Deliberate Supporting Text */}
         <motion.p
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mx-auto max-w-2xl text-base sm:text-lg text-zinc-400 font-normal leading-relaxed mb-10"
+          transition={{ duration: 0.55, delay: 0.2, ease: "easeOut" }}
+          className="text-sm sm:text-base md:text-lg text-zinc-400 font-normal leading-relaxed max-w-xl mx-auto mb-8 sm:mb-10"
         >
           {PERSONAL_INFO.heroSupporting}
         </motion.p>
 
-        {/* Primary Action Buttons */}
+        {/* Step 5: Understated Hero CTA Buttons */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex flex-wrap items-center justify-center gap-3.5 mb-12"
+          transition={{ duration: 0.5, delay: 0.28, ease: "easeOut" }}
+          className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-6"
         >
           <a
             href="#work"
-            className="pill-button pill-button-primary"
+            className="hero-btn hero-btn-primary"
           >
-            <span>View Work</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>View Selected Work</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </a>
 
           <button
             onClick={onRequestResume}
-            className="pill-button"
+            className="hero-btn hero-btn-secondary"
           >
-            <span>Request Résumé</span>
+            <span>Download Resume</span>
             <ArrowDown className="w-3.5 h-3.5 text-zinc-400" />
           </button>
         </motion.div>
 
-        {/* Prominent Direct Links Strip: GitHub ↗, LinkedIn ↗, Email ↗ */}
+        {/* Understated Social Links Strip */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.35 }}
-          className="flex flex-wrap items-center justify-center gap-3 pt-6 border-t border-white/[0.06]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.36, ease: "easeOut" }}
+          className="flex items-center justify-center gap-3 text-xs font-mono text-zinc-400 mb-6 sm:mb-8"
         >
-          {/* Prominent GitHub Button in Hero */}
           <a
             href={PERSONAL_INFO.contact.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="pill-button text-xs py-2 px-4 bg-white/[0.02]"
-            title="Visit GitHub (@Saksham3124)"
+            className="hover:text-white transition-colors"
           >
-            <GithubIcon className="w-3.5 h-3.5 text-zinc-300" />
-            <span>GitHub (Saksham3124)</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
+            GitHub
           </a>
-
-          {/* LinkedIn Link */}
+          <span className="text-zinc-600">·</span>
           <a
             href={PERSONAL_INFO.contact.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="pill-button text-xs py-2 px-4 bg-white/[0.02]"
-            title="LinkedIn Profile"
+            className="hover:text-white transition-colors"
           >
-            <LinkedinIcon className="w-3.5 h-3.5 text-zinc-300" />
-            <span>LinkedIn</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
+            LinkedIn
           </a>
-
-          {/* Direct Email Link */}
+          <span className="text-zinc-600">·</span>
           <a
             href={`mailto:${PERSONAL_INFO.contact.email}`}
-            className="pill-button text-xs py-2 px-4 bg-white/[0.02]"
-            title="Send Email"
+            className="hover:text-white transition-colors"
           >
-            <Mail className="w-3.5 h-3.5 text-zinc-300" />
-            <span>Email</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
+            Email
           </a>
-        </motion.div>
-
-        {/* Key Metrics / Impact Strip */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.45 }}
-          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4"
-        >
-          {PERSONAL_INFO.keyMetrics.map((metric, i) => (
-            <div
-              key={i}
-              className="clean-card p-5 rounded-xl text-left"
-            >
-              <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-1">
-                {metric.value}
-              </div>
-              <div className="text-xs font-medium text-zinc-300">{metric.label}</div>
-              <div className="text-[11px] text-zinc-500 mt-1">{metric.detail}</div>
-            </div>
-          ))}
         </motion.div>
 
       </div>
+
+      {/* Step 6: The "Analytical Field" Interactive 3D Visual */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.2, delay: 0.45, ease: "easeOut" }}
+        className="w-full relative z-0 mt-[-40px] sm:mt-[-50px] mb-[-20px]"
+      >
+        <AnalyticalField />
+
+        {/* Subtle Minimalist Scroll Indicator */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 pointer-events-none opacity-60">
+          <span className="text-[9px] font-mono tracking-[0.25em] text-zinc-400 uppercase">
+            Scroll
+          </span>
+          <div className="w-[1px] h-6 bg-gradient-to-b from-zinc-500 via-zinc-400 to-transparent" />
+        </div>
+      </motion.div>
+
+      {/* Step 11: Editorial Impact Metrics Strip (Horizontal information strip) */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.55, ease: "easeOut" }}
+        className="relative z-10 w-full border-t border-white/[0.07] bg-[#030304]/80 backdrop-blur-md"
+      >
+        <div className="max-w-5xl mx-auto px-6 py-6 sm:py-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-white/[0.07]">
+            {HERO_METRICS.map((metric, i) => (
+              <div
+                key={i}
+                className={`pt-4 md:pt-0 ${i === 0 ? "" : "md:pl-8"} ${i === HERO_METRICS.length - 1 ? "" : "md:pr-8"}`}
+              >
+                <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-1">
+                  {metric.value}
+                </div>
+                <div className="text-xs font-medium text-zinc-300">
+                  {metric.label}
+                </div>
+                <div className="text-[10px] font-mono text-zinc-400 mt-1">
+                  {metric.sub}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
     </section>
   );
 };
