@@ -122,7 +122,7 @@ export const AnimatedBackground: React.FC = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 bg-[#09090b]">
+    <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 bg-[#000000]">
       {/* Floating subtle ambient colored glow orbs with CSS keyframe animation */}
       <div className="absolute top-[-10%] left-[20%] w-[500px] h-[500px] rounded-full bg-cyan-600/[0.07] blur-[120px] animate-pulse-slow pointer-events-none" />
       <div className="absolute top-[35%] right-[-5%] w-[600px] h-[600px] rounded-full bg-indigo-600/[0.06] blur-[140px] animate-pulse-slow pointer-events-none" />

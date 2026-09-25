@@ -191,6 +191,7 @@ export const FEATURED_PROJECTS: Project[] = [
     ],
     tags: ["AWS Athena", "AWS S3", "Python", "SQL", "Power BI", "Pandas", "Customer Segmentation"],
     githubUrl: "https://github.com/Saksham3124/dunnhumby-customer-promotional-opportunity",
+    tableauUrl: "https://public.tableau.com/app/profile/kumar.saksham2703/vizzes",
     featured: true,
   },
 ];

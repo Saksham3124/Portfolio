@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, FileText, ArrowUpRight, Mail } from "lucide-react";
+import { ArrowRight, ArrowDown, ArrowUpRight, Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/BrandIcons";
 import { PERSONAL_INFO } from "@/data/portfolioData";
 
@@ -23,7 +23,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-300 mb-8"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          <span>Data • Risk • Engineering</span>
+          <span>Data · Risk · Engineering</span>
         </motion.div>
 
         {/* Clean, Impactful Display Headline */}
@@ -31,7 +31,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-4xl sm:text-6xl md:text-7xl font-semibold tracking-tight text-white leading-[1.08] mb-6"
+          className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-[1.08] mb-6"
         >
           <span>Turning complex data into </span>
           <span className="text-gradient-subtle block sm:inline">
@@ -68,8 +68,8 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             onClick={onRequestResume}
             className="pill-button"
           >
-            <FileText className="w-4 h-4 text-zinc-400" />
             <span>Request Résumé</span>
+            <ArrowDown className="w-3.5 h-3.5 text-zinc-400" />
           </button>
         </motion.div>
 
