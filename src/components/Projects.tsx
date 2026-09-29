@@ -37,7 +37,7 @@ export const Projects: React.FC = () => {
           </h2>
 
           <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
-            Three core evidence-based projects supporting customer opportunity modeling, credit risk stratification, and forensic anomaly detection.
+            Three core evidence-based projects supporting customer opportunity modeling, forensic anomaly detection, and regulatory data reliability.
           </p>
         </motion.div>
 
@@ -74,11 +74,19 @@ export const Projects: React.FC = () => {
                 </p>
 
                 {/* Metrics Strip */}
-                <div className="grid grid-cols-3 gap-2 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] mb-6">
+                <div
+                  className={`grid ${
+                    project.metrics.length === 4
+                      ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4"
+                      : "grid-cols-3"
+                  } gap-2 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] mb-6`}
+                >
                   {project.metrics.map((m, mIdx) => (
                     <div key={mIdx} className="text-center">
-                      <div className="text-[10px] text-zinc-400 font-mono truncate">{m.label}</div>
-                      <div className="text-xs sm:text-sm font-bold text-white mt-0.5 truncate">
+                      <div className="text-[10px] text-zinc-400 font-mono leading-tight">
+                        {m.label}
+                      </div>
+                      <div className="text-xs sm:text-sm font-bold text-white mt-0.5">
                         {m.value}
                       </div>
                     </div>
@@ -156,7 +164,7 @@ export const Projects: React.FC = () => {
             aria-expanded={showSupporting}
             className="group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-mono font-medium text-zinc-300 bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 hover:border-white/20 hover:text-white focus:outline-none focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-white/30 active:bg-white/[0.05] transition-all duration-200 cursor-pointer backdrop-blur-md"
           >
-            <span>{showSupporting ? "Hide Supporting Pipelines" : "Inspect Supporting Pipelines (Rail Telemetry, Financial Modeling)"}</span>
+            <span>{showSupporting ? "Hide Supporting Pipelines" : "Inspect Supporting Pipelines (Credit Risk, Rail Telemetry, Financial Modeling)"}</span>
             <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-200 transition-transform duration-200 ${showSupporting ? "rotate-180" : ""}`} />
           </button>
 
@@ -175,13 +183,24 @@ export const Projects: React.FC = () => {
                     </div>
                   </div>
                   <p className="text-xs text-zinc-400 mb-3">{sp.description}</p>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
+                    {sp.tableauUrl && (
+                      <a
+                        href={sp.tableauUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                      >
+                        <TableauIcon className="w-3.5 h-3.5" />
+                        <span>View Dashboard ↗</span>
+                      </a>
+                    )}
                     {sp.githubUrl && (
                       <a
                         href={sp.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white"
+                        className="inline-flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white transition-colors"
                       >
                         <GithubIcon className="w-3.5 h-3.5" />
                         <span>View Codebase ↗</span>

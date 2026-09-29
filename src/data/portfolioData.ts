@@ -1,7 +1,7 @@
 export interface Project {
   id: string;
   title: string;
-  category: "Risk Analytics" | "Fraud & Anomaly Detection" | "Customer & Promotional Analytics";
+  category: "Risk Analytics" | "Fraud & Anomaly Detection" | "Customer & Promotional Analytics" | "Data Engineering · Data Reliability" | string;
   targetRoleRelevance: string[];
   tagline: string;
   description: string;
@@ -86,16 +86,16 @@ export const PERSONAL_INFO = {
   },
   keyMetrics: [
     { label: "Invoice Records", value: "50K+", detail: "Forensic GST anomaly detection" },
-    { label: "Loan Applications", value: "307K+", detail: "Credit default risk stratification" },
     { label: "Transactions", value: "2.6M+", detail: "Behavioral retail customer clustering" },
+    { label: "E-Way Bill Records", value: "10K+", detail: "Regulatory data reliability pipeline" },
     { label: "Transaction Value", value: "$8.06M", detail: "Promotional elasticity & sales uplift" },
   ],
 };
 
 export const IMPACT_METRICS = [
   { value: "50K+", label: "Invoice Records", sub: "GST Forensic Audit" },
-  { value: "307K+", label: "Loan Applications", sub: "Default Stratification" },
   { value: "2.6M+", label: "Transactions", sub: "Customer Segmentation" },
+  { value: "10K+", label: "E-Way Bill Records", sub: "Data Reliability Pipeline" },
   { value: "$8.06M", label: "Transaction Value", sub: "Promotional Uplift" },
 ];
 
@@ -213,31 +213,6 @@ export const FEATURED_PROJECTS: Project[] = [
     featured: true,
   },
   {
-    id: "credit-risk-analytics",
-    title: "Credit Risk Analytics & Default Prediction",
-    category: "Risk Analytics",
-    targetRoleRelevance: ["Risk Analytics", "Risk Analyst", "Data Science Analyst", "Decision Support"],
-    tagline: "Comprehensive loan portfolio risk stratification on 307K+ applicants with AI narrative layer",
-    description:
-      "End-to-end credit risk analysis pipeline auditing 307,511 loan applicants. Leveraged PostgreSQL and Python to perform demographic and credit bureau correlation modeling, isolating default indicators and debt-to-income default thresholds visualized in an executive Tableau dashboard.",
-    architectureHighlights: [
-      "Audited 307,511 real-world loan applications across multi-table relational PostgreSQL schema",
-      "Modeled delinquency probability tiers across borrower age brackets, credit history, and income ratios",
-      "Evaluated default distribution patterns identifying an 8.07% overall portfolio default rate",
-      "Designed dynamic Tableau executive dashboard with scenario filtering and portfolio stress testing",
-    ],
-    metrics: [
-      { label: "Applicants", value: "307,511" },
-      { label: "Default Rate", value: "8.07%" },
-      { label: "Risk Indicators", value: "18+ Features" },
-    ],
-    tags: ["Python", "SQL", "PostgreSQL", "Tableau", "Pandas", "Credit Risk Modeling", "EDA"],
-    githubUrl: "https://github.com/Saksham3124/credit-risk-analytics",
-    tableauUrl:
-      "https://public.tableau.com/app/profile/kumar.saksham2703/viz/CreditRiskAnalysis_17802306468670/CreditRiskAnalyticsDashboard?publish=yes",
-    featured: true,
-  },
-  {
     id: "gst-anomaly-detection",
     title: "GST Invoice Anomaly Detection & Vendor Risk Scoring",
     category: "Fraud & Anomaly Detection",
@@ -261,10 +236,66 @@ export const FEATURED_PROJECTS: Project[] = [
     tableauUrl: "https://public.tableau.com/app/profile/kumar.saksham2703/viz/GST__/Dashboard1",
     featured: true,
   },
+  {
+    id: "ewaybill-data-reliability",
+    title: "DGCI&S Road E-Way Bill Data Quality & Reliability Pipeline",
+    category: "Data Engineering · Data Reliability",
+    targetRoleRelevance: ["Data Engineering", "Data Reliability", "Data Quality", "Pipeline Architecture"],
+    tagline: "Automated reliability validation, multi-layer reconciliation & PASS/FAIL gate for published regulatory datasets",
+    description:
+      "End-to-end reliability pipeline for validating published E-Way Bill datasets before promotion to trusted analytical storage.",
+    architectureHighlights: [
+      "Built a reliability evaluation layer across schema, data quality, source-total, cross-table reconciliation, and cross-year statistical checks.",
+      "Designed a PASS/FAIL reliability gate that blocks unreliable data from trusted PostgreSQL tables and creates incidents for critical failures.",
+      "Verified failure handling through 7 controlled corruption scenarios and 125 automated tests, blocking missing records, duplicates, invalid values, structural defects, and an INR 500 Cr alteration.",
+    ],
+    metrics: [
+      { label: "Trusted Records", value: "10,089" },
+      { label: "Automated Tests", value: "125" },
+      { label: "Corruption Scenarios", value: "7" },
+      { label: "Corrupted Rows Promoted", value: "0" },
+    ],
+    tags: [
+      "Python",
+      "Pandas",
+      "PostgreSQL",
+      "Apache Airflow",
+      "Docker",
+      "SciPy",
+      "Streamlit",
+      "pytest",
+    ],
+    githubUrl: "https://github.com/Saksham3124/ewaybill-data-reliability-pipeline",
+    featured: true,
+  },
 ];
 
 // SUPPORTING PROJECTS (Accessible via secondary view for deep dive)
 export const SUPPORTING_PROJECTS: Project[] = [
+  {
+    id: "credit-risk-analytics",
+    title: "Credit Risk Analytics & Default Prediction",
+    category: "Risk Analytics",
+    targetRoleRelevance: ["Risk Analytics", "Risk Analyst", "Data Science Analyst", "Decision Support"],
+    tagline: "Comprehensive loan portfolio risk stratification on 307K+ applicants with AI narrative layer",
+    description:
+      "End-to-end credit risk analysis pipeline auditing 307,511 loan applicants. Leveraged PostgreSQL and Python to perform demographic and credit bureau correlation modeling, isolating default indicators and debt-to-income default thresholds visualized in an executive Tableau dashboard.",
+    architectureHighlights: [
+      "Audited 307,511 real-world loan applications across multi-table relational PostgreSQL schema",
+      "Modeled delinquency probability tiers across borrower age brackets, credit history, and income ratios",
+      "Evaluated default distribution patterns identifying an 8.07% overall portfolio default rate",
+      "Designed dynamic Tableau executive dashboard with scenario filtering and portfolio stress testing",
+    ],
+    metrics: [
+      { label: "Applicants", value: "307,511" },
+      { label: "Default Rate", value: "8.07%" },
+      { label: "Risk Indicators", value: "18+ Features" },
+    ],
+    tags: ["Python", "SQL", "PostgreSQL", "Tableau", "Pandas", "Credit Risk Modeling", "EDA"],
+    githubUrl: "https://github.com/Saksham3124/credit-risk-analytics",
+    tableauUrl:
+      "https://public.tableau.com/app/profile/kumar.saksham2703/viz/CreditRiskAnalysis_17802306468670/CreditRiskAnalyticsDashboard?publish=yes",
+  },
   {
     id: "rail-delay-pipeline",
     title: "Automated Rail Delay Operation Monitoring Pipeline",

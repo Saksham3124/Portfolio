@@ -110,7 +110,7 @@ export const Highlights: React.FC = () => {
             Audited Portfolio Telemetry & Impact
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400 mt-2 max-w-xl">
-            Real dataset scale analyzed across forensic invoice audit, credit default stratification, and multi-million transaction retail lakes.
+            Real dataset scale analyzed across forensic invoice audit, regulatory data reliability pipelines, and multi-million transaction retail lakes.
           </p>
         </motion.div>
 
@@ -131,20 +131,20 @@ export const Highlights: React.FC = () => {
             borderRight
           />
           <MetricCounter
-            end={307}
-            decimals={0}
-            suffix="K+"
-            label="Loan Applications"
-            sub="Default Stratification"
-            borderLeft
-            borderRight
-          />
-          <MetricCounter
             end={2.6}
             decimals={1}
             suffix="M+"
             label="Transactions"
             sub="Customer Segmentation"
+            borderLeft
+            borderRight
+          />
+          <MetricCounter
+            end={10}
+            decimals={0}
+            suffix="K+"
+            label="E-Way Bill Records"
+            sub="Data Reliability Pipeline"
             borderLeft
             borderRight
           />
