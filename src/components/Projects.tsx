@@ -11,6 +11,73 @@ import {
 import { GithubIcon, TableauIcon } from "@/components/BrandIcons";
 import { FEATURED_PROJECTS, SUPPORTING_PROJECTS } from "@/data/portfolioData";
 
+interface MetricItem {
+  label: string;
+  value: string;
+}
+
+const ProjectMetrics: React.FC<{ metrics: MetricItem[] }> = ({ metrics }) => {
+  const isFourMetrics = metrics.length === 4;
+
+  const renderLabel = (label: string) => {
+    if (label === "Corrupted Rows Promoted") {
+      return (
+        <span className="block leading-tight">
+          <span className="block">Corrupted Rows</span>
+          <span className="block">Promoted</span>
+        </span>
+      );
+    }
+    if (isFourMetrics) {
+      const parts = label.split(" ");
+      if (parts.length === 2) {
+        return (
+          <span className="block leading-tight">
+            <span className="block">{parts[0]}</span>
+            <span className="block">{parts[1]}</span>
+          </span>
+        );
+      }
+    }
+    return <span className="block leading-tight">{label}</span>;
+  };
+
+  return (
+    <div
+      className={`grid ${
+        isFourMetrics ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"
+      } gap-y-3 gap-x-1.5 sm:gap-x-2 px-2.5 py-3 sm:px-3 rounded-xl bg-white/[0.02] border border-white/[0.06] mb-6`}
+    >
+      {metrics.map((m, mIdx) => (
+        <div
+          key={mIdx}
+          className="flex flex-col items-center justify-between text-center min-w-0"
+        >
+          {/* Label Container: consistent min-height for uniform baseline alignment */}
+          <div className="w-full min-h-[28px] sm:min-h-[30px] flex items-center justify-center text-center">
+            <div
+              className={`${
+                isFourMetrics
+                  ? "text-[8.5px] sm:text-[9.5px] xl:text-[10px]"
+                  : "text-[9.5px] sm:text-[10px]"
+              } text-zinc-400 font-mono tracking-tight text-center`}
+            >
+              {renderLabel(m.label)}
+            </div>
+          </div>
+
+          {/* Value Container: bold, prominent, identical vertical baseline */}
+          <div className="w-full flex items-center justify-center pt-1">
+            <div className="text-xs sm:text-sm font-bold text-white tracking-tight">
+              {m.value}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export const Projects: React.FC = () => {
   const [showSupporting, setShowSupporting] = useState(false);
   const shouldReduceMotion = useReducedMotion();
@@ -74,24 +141,7 @@ export const Projects: React.FC = () => {
                 </p>
 
                 {/* Metrics Strip */}
-                <div
-                  className={`grid ${
-                    project.metrics.length === 4
-                      ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4"
-                      : "grid-cols-3"
-                  } gap-2 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] mb-6`}
-                >
-                  {project.metrics.map((m, mIdx) => (
-                    <div key={mIdx} className="text-center">
-                      <div className="text-[10px] text-zinc-400 font-mono leading-tight">
-                        {m.label}
-                      </div>
-                      <div className="text-xs sm:text-sm font-bold text-white mt-0.5">
-                        {m.value}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <ProjectMetrics metrics={project.metrics} />
 
                 {/* Architecture Highlights */}
                 <div className="mb-6">
