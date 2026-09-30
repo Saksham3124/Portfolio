@@ -71,12 +71,12 @@ export interface AchievementItem {
 
 export const PERSONAL_INFO = {
   name: "Kumar Saksham",
-  roleTitle: "DATA · RISK · ENGINEERING · OPERATIONS",
+  roleTitle: "DATA · RISK · ANALYTICS · OPERATIONS",
   heroHeadline: "Turning Complex Data into Clear, Defensible Decisions.",
   heroSupporting:
-    "Engineering graduate focused on risk analytics, data engineering, reporting, and analytical problem solving.",
+    "Engineering graduate focused on analytics, risk, data-driven problem solving, and operational decision support.",
   coreNarrative:
-    "An engineering graduate applying analytical thinking, data engineering, and risk-focused analysis to turn complex data into reliable insights and decision support.",
+    "An engineering graduate applying an engineering mindset, statistical methods, and reliable data workflows to turn complex datasets into decision-ready insights.",
   contact: {
     phone: "+91 9166552458",
     email: "kumarsaksham560@gmail.com",
@@ -87,16 +87,16 @@ export const PERSONAL_INFO = {
   keyMetrics: [
     { label: "Invoice Records", value: "50K+", detail: "Forensic GST anomaly detection" },
     { label: "Transactions", value: "2.6M+", detail: "Behavioral retail customer clustering" },
+    { label: "Sales Analyzed", value: "$8.06M", detail: "Promotional elasticity & sales uplift" },
     { label: "E-Way Bill Records", value: "10K+", detail: "Regulatory data reliability pipeline" },
-    { label: "Transaction Value", value: "$8.06M", detail: "Promotional elasticity & sales uplift" },
   ],
 };
 
 export const IMPACT_METRICS = [
   { value: "50K+", label: "Invoice Records", sub: "GST Forensic Audit" },
   { value: "2.6M+", label: "Transactions", sub: "Customer Segmentation" },
+  { value: "$8.06M", label: "Sales Analyzed", sub: "Promotional Uplift" },
   { value: "10K+", label: "E-Way Bill Records", sub: "Data Reliability Pipeline" },
-  { value: "$8.06M", label: "Transaction Value", sub: "Promotional Uplift" },
 ];
 
 export const HERO_METRICS = IMPACT_METRICS;
@@ -191,47 +191,47 @@ export const EDUCATION: EducationItem = {
 export const FEATURED_PROJECTS: Project[] = [
   {
     id: "dunnhumby-promotional-analytics",
-    title: "Promotional Opportunity & Customer Segmentation Analysis",
+    title: "Customer & Promotional Opportunity Analytics",
     category: "Customer & Promotional Analytics",
     targetRoleRelevance: ["Customer Analytics", "Reporting", "Decision Support", "Business-Facing Analytics"],
-    tagline: "Retail customer segmentation, transaction basket affinity & promotional uplift modeling in Power BI",
+    tagline: "Retail customer segmentation, transaction basket affinity & promotional opportunity modeling in Power BI",
     description:
-      "Large-scale customer and promotional opportunity analysis on Dunnhumby transaction data. Partitioned and queried large data volumes in AWS S3 using AWS Athena serverless SQL and PostgreSQL, uncovering high-ROI promotional levers and segmenting behavioral customer clusters in Power BI.",
+      "An end-to-end customer analytics solution using the dunnhumby Complete Journey dataset, analyzing 2.6M transactions across 2,500 households representing $8.06M in sales to identify targeted promotional opportunities.",
     architectureHighlights: [
-      "Engineered partitioned S3 data lake queried via serverless AWS Athena distributed SQL",
-      "Conducted behavioral customer segmentation across 2,500 households and 2.6M+ transactions",
-      "Evaluated discount elasticity across product categories to safeguard retail profit margins",
-      "Constructed executive Power BI reporting dashboards detailing customer lifetime value and promotional uplift",
+      "Conducted behavioral customer segmentation across 2,500 households and 2.6M+ transactions ($8.06M sales)",
+      "Executed analytical translation and cross-validation across Python, PostgreSQL, and AWS Athena",
+      "Identified 10 highly engaged households with strong category affinity and zero recorded campaign history",
+      "Constructed a three-page executive Power BI dashboard and quantified an illustrative $18.1K sensitivity case",
     ],
     metrics: [
       { label: "Transactions", value: "2.6M+" },
       { label: "Households", value: "2,500" },
       { label: "Sales Analyzed", value: "$8.06M" },
     ],
-    tags: ["Power BI", "Python", "PostgreSQL", "AWS Athena", "SQL", "Pandas", "Customer Segmentation"],
+    tags: ["Python", "SQL", "PostgreSQL", "AWS S3", "AWS Athena", "Power BI"],
     githubUrl: "https://github.com/Saksham3124/dunnhumby-customer-promotional-opportunity",
     featured: true,
   },
   {
     id: "gst-anomaly-detection",
-    title: "GST Invoice Anomaly Detection & Vendor Risk Scoring",
+    title: "GST Invoice Anomaly Detection & Vendor Risk Scoring System",
     category: "Fraud & Anomaly Detection",
     targetRoleRelevance: ["Risk", "Fraud Detection", "Data Quality", "Operations Analytics", "Data Engineering"],
-    tagline: "3-layer forensic rule engine with SQL window functions, statistical outlier detection & audit dashboard",
+    tagline: "Four-layer forensic risk framework with statistical anomaly detection, vendor scoring & AI narratives in Tableau",
     description:
-      "Architected an automated 3-layer forensic anomaly detection system to identify suspicious tax credit claims, circular invoicing patterns, and vendor compliance discrepancies across 50,000+ invoices in PostgreSQL and Tableau.",
+      "An end-to-end invoice analytics and vendor risk solution analyzing 50K+ GST invoices across 210 vendors to detect anomalies, quantify vendor risk, and support audit prioritization.",
     architectureHighlights: [
-      "Engineered 3-tier heuristic: Volume Spikes, Tax Discrepancy Ratios, and Circular Flow Patterns",
-      "Authored high-performance PostgreSQL window functions to detect temporal and transactional outliers",
-      "Formulated multi-factor Vendor Risk Scoring (VRS) framework for audit prioritization",
-      "Constructed drill-down Tableau forensic dashboard tracking vendor risk tiers and recoverable capital",
+      "Engineered a four-layer risk analytics framework combining rule-based validation, Z-Score & IQR statistical anomaly detection",
+      "Formulated weighted vendor risk scoring identifying 7,500+ suspicious invoices (15%) and 32 HIGH-risk vendors",
+      "Integrated Gemini API explanation layer generating 32 evidence-grounded narratives without altering deterministic scores",
+      "Constructed drill-down Tableau forensic dashboard connecting 32 vendor narratives with recoverable audit capital",
     ],
     metrics: [
       { label: "Invoices Audited", value: "50K+" },
-      { label: "Rule Engine", value: "3-Layer" },
-      { label: "Database", value: "PostgreSQL" },
+      { label: "Rule Engine", value: "4-Layer" },
+      { label: "High-Risk Vendors", value: "32" },
     ],
-    tags: ["SQL Window Functions", "PostgreSQL", "Python", "Tableau", "Fraud Detection", "Risk Scoring"],
+    tags: ["Python", "SQL", "PostgreSQL", "Tableau", "Gemini API"],
     githubUrl: "https://github.com/Saksham3124/gst-invoice-anomaly-detection",
     tableauUrl: "https://public.tableau.com/app/profile/kumar.saksham2703/viz/GST__/Dashboard1",
     featured: true,
@@ -239,15 +239,16 @@ export const FEATURED_PROJECTS: Project[] = [
   {
     id: "ewaybill-data-reliability",
     title: "DGCI&S Road E-Way Bill Data Quality & Reliability Pipeline",
-    category: "Data Engineering · Data Reliability",
-    targetRoleRelevance: ["Data Engineering", "Data Reliability", "Data Quality", "Pipeline Architecture"],
-    tagline: "Automated reliability validation, multi-layer reconciliation & PASS/FAIL gate for published regulatory datasets",
+    category: "Data Quality · Statistical Analytics · Reliability",
+    targetRoleRelevance: ["Data Quality", "Statistical Analytics", "Reliability", "Data Engineering"],
+    tagline: "Automated reliability validation, KS & PSI statistical analysis & Airflow PASS/FAIL gate for regulatory datasets",
     description:
-      "End-to-end reliability pipeline for validating published E-Way Bill datasets before promotion to trusted analytical storage.",
+      "An analytical data-quality and reliability system evaluating 10,089 E-Way Bill records across FY2022–23 and FY2023–24.",
     architectureHighlights: [
-      "Built a reliability evaluation layer across schema, data quality, source-total, cross-table reconciliation, and cross-year statistical checks.",
-      "Designed a PASS/FAIL reliability gate that blocks unreliable data from trusted PostgreSQL tables and creates incidents for critical failures.",
-      "Verified failure handling through 7 controlled corruption scenarios and 125 automated tests, blocking missing records, duplicates, invalid values, structural defects, and an INR 500 Cr alteration.",
+      "Built multi-layer reliability validation and reconciliation for 10,089 E-Way Bill records across FY2022–23 and FY2023–24",
+      "Conducted Kolmogorov-Smirnov (KS) and PSI year-over-year statistical analysis generating 204 statistical results",
+      "Designed an automated Airflow PASS/FAIL reliability gate blocking unvalidated data from trusted PostgreSQL tables",
+      "Verified failure handling via 7 controlled corruption scenarios and 125 tests, blocking a controlled INR 500 Cr alteration",
     ],
     metrics: [
       { label: "Trusted Records", value: "10,089" },
@@ -257,13 +258,12 @@ export const FEATURED_PROJECTS: Project[] = [
     ],
     tags: [
       "Python",
-      "Pandas",
+      "SQL",
       "PostgreSQL",
       "Apache Airflow",
       "Docker",
       "SciPy",
       "Streamlit",
-      "pytest",
     ],
     githubUrl: "https://github.com/Saksham3124/ewaybill-data-reliability-pipeline",
     featured: true,
@@ -365,52 +365,54 @@ export const SUPPORTING_PROJECTS: Project[] = [
 
 export const SKILL_GROUPS = [
   {
-    name: "Programming & Automation",
-    description: "Scripting, querying, data manipulation, and scheduled workflow orchestration",
-    skills: [
-      "Python",
-      "SQL",
-      "Pandas",
-      "NumPy",
-      "MATLAB",
-      "APScheduler",
-    ],
+    name: "Programming",
+    description: "Core scripting and scientific programming languages",
+    skills: ["Python", "SQL", "MATLAB"],
   },
   {
-    name: "AI & APIs",
-    description: "Generative intelligence integration, programmatic interfaces, and automated validation",
-    skills: [
-      "LLM APIs",
-      "Generative AI",
-      "API Integration",
-      "Data Validation",
-    ],
+    name: "Data Analytics",
+    description: "Statistical modeling, exploratory analysis, and numerical computing",
+    skills: ["Pandas", "NumPy", "SciPy", "Statistical Analysis", "EDA"],
   },
   {
-    name: "Data Engineering & Cloud",
-    description: "Relational modeling, pipeline architecture, and cloud data warehousing",
+    name: "Databases",
+    description: "Relational data modeling, schema design, and query optimization",
+    skills: ["PostgreSQL"],
+  },
+  {
+    name: "Analytics & BI",
+    description: "Interactive executive reporting, dashboards, and data applications",
+    skills: ["Power BI", "Tableau", "Streamlit", "Excel"],
+  },
+  {
+    name: "Cloud",
+    description: "Cloud storage architectures and serverless distributed query engines",
+    skills: ["AWS S3", "AWS Athena"],
+  },
+  {
+    name: "Data & Engineering",
+    description: "Automated pipelines, reliability validation, and container orchestration",
     skills: [
-      "PostgreSQL",
       "ETL/ELT",
       "Data Pipelines",
-      "Data Warehousing",
-      "AWS (S3, Athena, RDS)",
-      "Git",
+      "Data Quality & Validation",
+      "Apache Airflow",
+      "Docker",
     ],
   },
   {
-    name: "Analytics & Tools",
-    description: "Statistical modeling, anomaly identification, and business intelligence reporting",
-    skills: [
-      "Statistical Analysis",
-      "Exploratory Data Analysis",
-      "Anomaly Detection",
-      "Power BI",
-      "Tableau",
-      "Advanced Excel",
-      "Jupyter",
-    ],
+    name: "Tools",
+    description: "Version control, exploratory computing, and job scheduling",
+    skills: ["Git", "Jupyter", "APScheduler"],
   },
+];
+
+export const AREAS_OF_INTEREST = [
+  "Product and customer analytics",
+  "Risk and statistical analysis",
+  "Data quality and analytical reliability",
+  "Cloud-based analytics and data workflows",
+  "Operational and decision-support systems",
 ];
 
 export const CERTIFICATIONS: CredentialCategory[] = [

@@ -1,6 +1,6 @@
 # Kumar Saksham — Professional Portfolio Website
 
-> **Data · Risk · Engineering · Operations**  
+> **Data · Risk · Analytics · Operations**  
 > *"Turning Complex Data into Clear, Defensible Decisions."*
 
 A high-performance personal portfolio website built with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**, and **Framer Motion**. Designed for showcasing quantitative risk analytics pipelines, forensic SQL anomaly detection engines, and executive Tableau / Power BI business intelligence solutions.
@@ -11,7 +11,7 @@ A high-performance personal portfolio website built with **Next.js 14 (App Route
 
 - **High-Impact Hero Section:**
   - Dynamic kinetic typing effect for core quantitative specializations.
-  - Interactive **Live Risk Matrix Widget** highlighting scale (307K+ loan applicants, 3-layer anomaly detection, real-time train delay telemetry).
+  - Interactive **Live Risk Matrix Widget** highlighting scale (50K+ invoice records, 2.6M+ transactions, 10K+ E-Way bill records).
   - Prominent **GitHub (`@Saksham3124`)** and **LinkedIn** direct access badges in both the sticky navigation bar and the Hero section.
   - Primary CTAs: `View My Work →` (smooth anchor scroll) and `Request Resume ↓` (interactive modal).
 
@@ -22,10 +22,11 @@ A high-performance personal portfolio website built with **Next.js 14 (App Route
 
 - **Verified GitHub & Tableau Live Integrations:**
   - Direct links to Kumar Saksham's real GitHub repositories and interactive Tableau Public dashboards:
+    - **Customer & Promotional Opportunity Analytics:** AWS Athena & S3 retail analytics on 2.6M+ transactions ([GitHub Repo](https://github.com/Saksham3124/dunnhumby-customer-promotional-opportunity))
+    - **GST Invoice Anomaly Detection & Vendor Risk Scoring:** Four-layer risk analytics framework & AI narratives ([GitHub Repo](https://github.com/Saksham3124/gst-invoice-anomaly-detection) | [Live Tableau Dashboard](https://public.tableau.com/app/profile/kumar.saksham2703/viz/GST__/Dashboard1))
+    - **DGCI&S Road E-Way Bill Data Quality & Reliability Pipeline:** Automated validation, KS/PSI drift analysis & Airflow PASS/FAIL gate ([GitHub Repo](https://github.com/Saksham3124/ewaybill-data-reliability-pipeline))
     - **Credit Risk Analytics:** 307K+ loan applicants default modeling ([GitHub Repo](https://github.com/Saksham3124/credit-risk-analytics) | [Live Tableau Dashboard](https://public.tableau.com/app/profile/kumar.saksham2703/viz/CreditRiskAnalysis_17802306468670/CreditRiskAnalyticsDashboard?publish=yes))
-    - **GST Invoice Anomaly Detection:** 3-layer window function forensic engine ([GitHub Repo](https://github.com/Saksham3124/gst-invoice-anomaly-detection) | [Live Tableau Dashboard](https://public.tableau.com/app/profile/kumar.saksham2703/viz/GST__/Dashboard1))
     - **Automated Rail Delay Monitoring Pipeline:** Real-time APScheduler + Postgres dual storage ([GitHub Repo](https://github.com/Saksham3124/Automated-Rail-Delay-Operation-Monitoring-Pipeline))
-    - **Dunnhumby Customer & Promotional Opportunity:** AWS Athena & S3 retail analytics ([GitHub Repo](https://github.com/Saksham3124/dunnhumby-customer-promotional-opportunity))
     - **Olist E-Commerce Delivery Risk Analysis:** 100K+ orders logistics audit ([GitHub Repo](https://github.com/Saksham3124/olist-ecommerce-delivery-analysis) | [Live Tableau Dashboard](https://public.tableau.com/app/profile/kumar.saksham2703/viz/OlistDeliveryPerformanceAnalysis_17789432992130/OlistDeliverryAnalysis?publish=yes))
     - **LUSIP Research Fellowship (2025):** 3D chipless RFID tags & MATLAB optimization.
     - **Spending Analytics & Budget Forecasting:** Django + Naive Bayes ML ([GitHub Repo](https://github.com/Saksham3124/Spending-Analytics-Forecasting))

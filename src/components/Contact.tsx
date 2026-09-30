@@ -62,7 +62,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
     const cleanMessage = sanitizeInput(message);
 
     const mailtoSubject = encodeURIComponent(
-      cleanSubject || `Inquiry from ${cleanName} regarding Risk / Data Analytics`
+      cleanSubject || `Inquiry from ${cleanName} regarding Analytics / Risk / Operations`
     );
     const mailtoBody = encodeURIComponent(
       `Hello Kumar,\n\n${cleanMessage}\n\nFrom: ${cleanName}\nContact Email: ${cleanEmail}`
@@ -86,8 +86,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
           </h2>
 
           <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
-            Open to Risk Analyst, Reporting Analyst, and Data Engineering opportunities.
-            Reach out directly or send a message.
+            Open to analytics, risk, product, operations, and data-focused opportunities. Reach out directly or send a message.
           </p>
         </motion.div>
 

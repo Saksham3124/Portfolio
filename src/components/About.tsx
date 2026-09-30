@@ -35,9 +35,9 @@ export const About: React.FC = () => {
     },
     {
       icon: <Cpu className="w-4 h-4 text-zinc-300" />,
-      title: "Engineering & Systems Thinking",
+      title: "Analytical Problem Solving",
       description:
-        "Applying engineering principles to technical research, structured problem solving, and reliable analytical systems.",
+        "Applying structured analysis, statistical rigor, and engineering principles to solve complex operational and decision problems.",
     },
   ];
 
@@ -52,11 +52,11 @@ export const About: React.FC = () => {
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-3">
-            Engineering Rigor in Service of Defensible Decisions
+            Analytics in Service of Better Decisions
           </h2>
 
           <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-            Translating mathematical systems, research discipline, and data engineering into reliable business and risk intelligence.
+            I apply an engineering mindset to analytics, risk, and operational problems—combining structured analysis, statistical methods, and reliable data workflows to turn complex datasets into decision-ready insights.
           </p>
         </motion.div>
 

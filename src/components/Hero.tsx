@@ -111,7 +111,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       {/* Central Content Container - Generous Spacing */}
       <div className="max-w-4xl mx-auto px-6 text-center w-full relative z-10 flex-1 flex flex-col justify-center items-center">
         
-        {/* Eyebrow & Positioning: DATA · RISK · ENGINEERING · OPERATIONS (Completely Static) */}
+        {/* Eyebrow & Positioning: DATA · RISK · ANALYTICS · OPERATIONS (Completely Static) */}
         <div className="flex flex-col items-center gap-2 mb-6 sm:mb-8">
           <span className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-zinc-400">
             {PERSONAL_INFO.name}
@@ -121,7 +121,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             <span className="text-zinc-600">·</span>
             <span>Risk</span>
             <span className="text-zinc-600">·</span>
-            <span>Engineering</span>
+            <span>Analytics</span>
             <span className="text-zinc-600">·</span>
             <span>Operations</span>
           </div>

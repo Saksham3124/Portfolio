@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { SKILL_GROUPS } from "@/data/portfolioData";
+import { SKILL_GROUPS, AREAS_OF_INTEREST } from "@/data/portfolioData";
 
 export const Skills: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
@@ -29,16 +29,16 @@ export const Skills: React.FC = () => {
           </h2>
 
           <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
-            Focused toolchain built around risk modeling, relational data engineering, and business reporting.
+            Focused toolchain built around analytics, statistical modeling, data workflows, and decision support.
           </p>
         </motion.div>
 
-        {/* 4 Skill Categories Grid with Staggered Subtle Reveal */}
+        {/* 7 Skill Categories Grid with Staggered Subtle Reveal */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {SKILL_GROUPS.map((group, idx) => (
             <motion.div
               key={group.name}
-              {...fadeUp(0.08 + idx * 0.06)}
+              {...fadeUp(0.08 + idx * 0.04)}
               className="clean-card p-7 sm:p-8 rounded-2xl flex flex-col justify-between"
             >
               <div>
@@ -59,6 +59,35 @@ export const Skills: React.FC = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Areas of Interest Card */}
+        <motion.div
+          {...fadeUp(0.38)}
+          className="mt-6 clean-card p-7 sm:p-8 rounded-2xl border border-white/[0.08]"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6">
+            <div>
+              <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-zinc-400 mb-1">
+                Domain Alignment
+              </div>
+              <h3 className="text-lg font-semibold text-white">Areas of Interest</h3>
+            </div>
+            <p className="text-xs text-zinc-400 max-w-md">
+              Focus areas spanning analytics, risk, product, and data-driven operational decision support.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2.5">
+            {AREAS_OF_INTEREST.map((interest) => (
+              <span
+                key={interest}
+                className="px-3.5 py-1.5 rounded-full text-xs font-medium text-zinc-200 bg-white/[0.04] border border-white/10 hover:border-white/20 transition-colors"
+              >
+                {interest}
+              </span>
+            ))}
+          </div>
+        </motion.div>
 
       </div>
     </section>

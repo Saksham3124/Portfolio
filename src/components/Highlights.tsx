@@ -140,21 +140,21 @@ export const Highlights: React.FC = () => {
             borderRight
           />
           <MetricCounter
+            end={8.06}
+            decimals={2}
+            prefix="$"
+            suffix="M"
+            label="Sales Analyzed"
+            sub="Promotional Uplift"
+            borderLeft
+            borderRight
+          />
+          <MetricCounter
             end={10}
             decimals={0}
             suffix="K+"
             label="E-Way Bill Records"
             sub="Data Reliability Pipeline"
-            borderLeft
-            borderRight
-          />
-          <MetricCounter
-            end={8.06}
-            decimals={2}
-            prefix="$"
-            suffix="M"
-            label="Transaction Value"
-            sub="Promotional Uplift"
             borderLeft
           />
         </motion.div>

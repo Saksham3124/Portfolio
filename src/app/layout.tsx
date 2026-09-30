@@ -14,15 +14,16 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Kumar Saksham — Data · Risk · Engineering · Operations",
+  title: "Kumar Saksham — Data · Risk · Analytics · Operations",
   description:
-    "Engineering graduate focused on risk analytics, data engineering, reporting, and decision-support modeling. Hands-on work across credit risk, anomaly detection, customer analytics, and quantitative research.",
+    "Engineering graduate focused on analytics, risk, data-driven problem solving, and operational decision support.",
   keywords: [
     "Kumar Saksham",
     "Risk Analyst",
     "Risk Analytics",
-    "Credit Risk Analytics",
     "Operations Analytics",
+    "Customer Analytics",
+    "Data Quality",
     "PostgreSQL",
     "Tableau",
     "Power BI",
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Kumar Saksham", url: "https://github.com/Saksham3124" }],
   openGraph: {
-    title: "Kumar Saksham — Data · Risk · Engineering · Operations",
+    title: "Kumar Saksham — Data · Risk · Analytics · Operations",
     description: "Turning Complex Data into Clear, Defensible Decisions.",
     url: "https://github.com/Saksham3124",
     siteName: "Kumar Saksham Portfolio",

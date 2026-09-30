@@ -150,7 +150,7 @@ export const Projects: React.FC = () => {
                     <span>Technical Highlights</span>
                   </div>
                   <ul className="space-y-1.5">
-                    {project.architectureHighlights.slice(0, 3).map((h, hIdx) => (
+                    {project.architectureHighlights.slice(0, 4).map((h, hIdx) => (
                       <li key={hIdx} className="text-xs text-zinc-400 flex items-start gap-2">
                         <CheckCircle2 className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
                         <span className="leading-snug">{h}</span>
