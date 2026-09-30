@@ -33,7 +33,7 @@ export const Skills: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* 7 Skill Categories Grid with Staggered Subtle Reveal */}
+        {/* 4 Skill Categories Grid with Staggered Subtle Reveal */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {SKILL_GROUPS.map((group, idx) => (
             <motion.div

@@ -62,7 +62,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
     const cleanMessage = sanitizeInput(message);
 
     const mailtoSubject = encodeURIComponent(
-      cleanSubject || `Inquiry from ${cleanName} regarding Analytics / Risk / Operations`
+      cleanSubject || `Inquiry from ${cleanName} regarding Analytics / Risk / Product`
     );
     const mailtoBody = encodeURIComponent(
       `Hello Kumar,\n\n${cleanMessage}\n\nFrom: ${cleanName}\nContact Email: ${cleanEmail}`

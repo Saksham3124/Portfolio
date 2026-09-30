@@ -1,6 +1,6 @@
-# Kumar Saksham — Professional Portfolio Website
+# Kumar Saksham: Professional Portfolio Website
 
-> **Data · Risk · Analytics · Operations**  
+> **Data · Analytics · Risk · Product**  
 > *"Turning Complex Data into Clear, Defensible Decisions."*
 
 A high-performance personal portfolio website built with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**, and **Framer Motion**. Designed for showcasing quantitative risk analytics pipelines, forensic SQL anomaly detection engines, and executive Tableau / Power BI business intelligence solutions.
