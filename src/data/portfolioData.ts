@@ -187,7 +187,7 @@ export const EDUCATION: EducationItem = {
   ],
 };
 
-// 3 PRIMARY FLAGSHIP PROJECTS (EQUAL VISUAL WEIGHT)
+// FEATURED FLAGSHIP PROJECTS (EQUAL VISUAL WEIGHT)
 export const FEATURED_PROJECTS: Project[] = [
   {
     id: "dunnhumby-promotional-analytics",
@@ -266,6 +266,29 @@ export const FEATURED_PROJECTS: Project[] = [
       "Streamlit",
     ],
     githubUrl: "https://github.com/Saksham3124/ewaybill-data-reliability-pipeline",
+    featured: true,
+  },
+  {
+    id: "payment-status-recovery",
+    title: "Payment Status Recovery",
+    category: "Product Management · Fintech",
+    targetRoleRelevance: ["Payment Reliability", "Product Management", "Fintech"],
+    tagline: "UPI Transaction Uncertainty Engine",
+    description:
+      "Designed a fintech prototype that resolves uncertain UPI payment outcomes using deterministic, evidence-based recovery logic. The system evaluates synthetic payment evidence across the remitter bank, payment switch, and beneficiary bank to distinguish confirmed failures from unresolved transactions and prevent unsafe duplicate retries.",
+    architectureHighlights: [
+      "Evidence-based transaction recovery with explicit retry-safety rules.",
+      "Transaction investigation and support-case management workflows.",
+      "Product analytics for recovery outcomes and support funnels.",
+    ],
+    metrics: [
+      { label: "Synthetic Cases", value: "13" },
+      { label: "Banking Telemetry", value: "4-Party" },
+      { label: "Automated Tests", value: "88" },
+    ],
+    tags: ["Next.js", "TypeScript", "Tailwind CSS", "Vitest"],
+    githubUrl: "https://github.com/Saksham3124/payment-status-recovery",
+    liveUrl: "https://payment-status-recovery.vercel.app",
     featured: true,
   },
 ];

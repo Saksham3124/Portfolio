@@ -6,6 +6,7 @@ import {
   ArrowUpRight,
   CheckCircle2,
   ChevronDown,
+  ExternalLink,
   Layers,
 } from "lucide-react";
 import { GithubIcon, TableauIcon } from "@/components/BrandIcons";
@@ -104,12 +105,12 @@ export const Projects: React.FC = () => {
           </h2>
 
           <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
-            Three core evidence-based projects supporting customer opportunity modeling, forensic anomaly detection, and regulatory data reliability.
+            Evidence-based projects supporting customer opportunity modeling, forensic anomaly detection, regulatory data reliability, and payment uncertainty recovery.
           </p>
         </motion.div>
 
-        {/* 3 Primary Flagship Projects in an Evenly Balanced 3-Column Grid with Equal Visual Weight */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+        {/* Flagship Projects Grid (Balanced 2x2 on Desktop, Clean Stacking on Mobile) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
           {FEATURED_PROJECTS.map((project, idx) => (
             <motion.article
               key={project.id}
@@ -174,6 +175,20 @@ export const Projects: React.FC = () => {
 
               {/* Action Buttons: Only show links that actually exist */}
               <div className="pt-4 border-t border-white/[0.07] flex flex-wrap items-center gap-2 mt-auto">
+                {project.liveUrl && (
+                  <a
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="pill-button pill-button-primary text-xs py-1.5 px-3"
+                    title="View Live Demo"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Live Demo</span>
+                    <ArrowUpRight className="w-3 h-3" />
+                  </a>
+                )}
+
                 {project.tableauUrl && (
                   <a
                     href={project.tableauUrl}

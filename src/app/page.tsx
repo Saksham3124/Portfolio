@@ -64,7 +64,7 @@ export default function Home() {
         {/* 4. Professional Experience (LNMIIT LUSIP 2025) */}
         <Experience />
 
-        {/* 5. Featured Work (Strictly 3 Flagship Projects) */}
+        {/* 5. Featured Work (Flagship Projects) */}
         <Projects />
 
         {/* 6. Education (B.Tech in ECE, BIT Mesra) */}
