@@ -405,7 +405,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       <HeroCanvas containerRef={containerRef} />
 
       {/* 4. Main Two-Column Hero Composition (Consistent Top Inset & Decoupled Grid) */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 flex-1 flex flex-col justify-center pt-[calc(env(safe-area-inset-top,0px)+4.5rem)] sm:pt-28 lg:pt-32 xl:pt-36 pb-3 sm:pb-8">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 flex-1 flex flex-col justify-center pt-[calc(env(safe-area-inset-top,0px)+4.5rem)] sm:pt-28 lg:pt-32 xl:pt-36 pb-3 sm:pb-4">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center gap-6 lg:gap-10">
           
           {/* LEFT COLUMN: Left-Aligned Headline, Positioning & Action CTAs */}
@@ -671,7 +671,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       </div>
 
       {/* 5. Bottom-Left Scroll Indicator Matching Reference Mockup */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-1 sm:pt-0 pb-3 sm:pb-6 flex items-center justify-start shrink-0">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-1 sm:pt-0 pb-3 sm:pb-3.5 flex items-center justify-start shrink-0">
         <motion.a
           href="#about"
           onClick={handleScrollToAbout}
