@@ -331,9 +331,9 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
               </div>
             </div>
 
-            {/* Supporting Narrative Text */}
+            {/* Supporting Narrative Text (Dynamically loaded from Admin CMS Studio) */}
             <p className="text-base sm:text-lg md:text-xl text-zinc-400 font-normal leading-relaxed max-w-xl mb-7 sm:mb-9">
-              I build data-driven solutions that combine analytics, risk modeling, and reliable systems to solve real-world problems.
+              {personalInfo.heroSupporting || "Engineering graduate focused on analytics, risk, customer insights, and AI-assisted decision systems."}
             </p>
 
             {/* Action Control Buttons Matching Mockup */}
