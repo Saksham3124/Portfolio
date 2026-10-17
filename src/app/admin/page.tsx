@@ -294,6 +294,81 @@ export default function AdminPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  // Rotating Headline helpers
+  const getHeadlines = (): string[] => {
+    if (
+      data.personalInfo.heroRotatingHeadlines &&
+      data.personalInfo.heroRotatingHeadlines.length > 0
+    ) {
+      return data.personalInfo.heroRotatingHeadlines;
+    }
+    return [
+      data.personalInfo.heroHeadline || "Turning Complex Data into Clear, Defensible Decisions.",
+      "Investigating Data. Validating the Signal. Driving Action.",
+      "Engineering Data Systems for Better Decisions.",
+    ];
+  };
+
+  const updateHeadline = (index: number, value: string) => {
+    const list = [...getHeadlines()];
+    list[index] = value;
+    setData({
+      ...data,
+      personalInfo: {
+        ...data.personalInfo,
+        heroRotatingHeadlines: list,
+        heroHeadline: list[0] || value,
+      },
+    });
+    setIsDirty(true);
+  };
+
+  const moveHeadline = (index: number, direction: "up" | "down") => {
+    const list = [...getHeadlines()];
+    const targetIdx = direction === "up" ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+    const temp = list[index];
+    list[index] = list[targetIdx];
+    list[targetIdx] = temp;
+    setData({
+      ...data,
+      personalInfo: {
+        ...data.personalInfo,
+        heroRotatingHeadlines: list,
+        heroHeadline: list[0],
+      },
+    });
+    setIsDirty(true);
+  };
+
+  const addHeadline = () => {
+    const list = [...getHeadlines(), "New high-impact rotating headline sentence."];
+    setData({
+      ...data,
+      personalInfo: {
+        ...data.personalInfo,
+        heroRotatingHeadlines: list,
+        heroHeadline: list[0],
+      },
+    });
+    setIsDirty(true);
+  };
+
+  const deleteHeadline = (index: number) => {
+    const current = getHeadlines();
+    if (current.length <= 1) return;
+    const list = current.filter((_, i) => i !== index);
+    setData({
+      ...data,
+      personalInfo: {
+        ...data.personalInfo,
+        heroRotatingHeadlines: list,
+        heroHeadline: list[0] || "",
+      },
+    });
+    setIsDirty(true);
+  };
+
   // Project helpers
   const moveProject = (index: number, direction: "up" | "down", isFeatured: boolean) => {
     const listKey = isFeatured ? "featuredProjects" : "supportingProjects";
@@ -643,22 +718,81 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="text-xs font-mono text-zinc-400 uppercase tracking-wider block mb-1.5">
-                    Hero Main Headline
-                  </label>
-                  <input
-                    type="text"
-                    value={data.personalInfo.heroHeadline}
-                    onChange={(e) => {
-                      setData({
-                        ...data,
-                        personalInfo: { ...data.personalInfo, heroHeadline: e.target.value },
-                      });
-                      setIsDirty(true);
-                    }}
-                    className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none focus:border-white/30"
-                  />
+                {/* Hero Rotating Headlines (Typewriter Sequence) */}
+                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/[0.06]">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs font-mono uppercase text-zinc-300 tracking-wider font-semibold">
+                          Rotating Typewriter Headlines
+                        </label>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                          {getHeadlines().length} Sentences
+                        </span>
+                      </div>
+                      <p className="text-xs text-zinc-400 mt-1">
+                        These sentences type out and rotate automatically on the live portfolio hero section. You can edit any sentence, change their rotation order, or add/delete lines.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={addHeadline}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs font-semibold text-white transition-all shrink-0 self-start sm:self-auto"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-blue-400" />
+                      <span>Add Headline</span>
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {getHeadlines().map((hl, hlIdx) => (
+                      <div
+                        key={hlIdx}
+                        className="flex items-center gap-2.5 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/10 transition-colors"
+                      >
+                        <span className="text-[11px] font-mono text-zinc-400 px-2.5 py-1 rounded bg-white/[0.04] border border-white/5 shrink-0">
+                          #{hlIdx + 1}
+                        </span>
+                        <input
+                          type="text"
+                          value={hl}
+                          onChange={(e) => updateHeadline(hlIdx, e.target.value)}
+                          placeholder={`Headline sentence #${hlIdx + 1}`}
+                          className="flex-1 px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none focus:border-white/30"
+                        />
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => moveHeadline(hlIdx, "up")}
+                            disabled={hlIdx === 0}
+                            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30 disabled:hover:bg-transparent"
+                            title="Move Up"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveHeadline(hlIdx, "down")}
+                            disabled={hlIdx === getHeadlines().length - 1}
+                            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30 disabled:hover:bg-transparent"
+                            title="Move Down"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteHeadline(hlIdx)}
+                            disabled={getHeadlines().length <= 1}
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-20 disabled:hover:bg-transparent"
+                            title="Delete Headline"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <div>

@@ -20,12 +20,20 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
   const [isReducedMotion, setIsReducedMotion] = useState(false);
 
   const rotatingHeadlines = useMemo(
-    () => [
-      personalInfo.heroHeadline || "Turning Complex Data into Clear, Defensible Decisions.",
-      "Investigating Data. Validating the Signal. Driving Action.",
-      "Engineering Data Systems for Better Decisions.",
-    ],
-    [personalInfo.heroHeadline]
+    () => {
+      if (
+        personalInfo.heroRotatingHeadlines &&
+        personalInfo.heroRotatingHeadlines.length > 0
+      ) {
+        return personalInfo.heroRotatingHeadlines;
+      }
+      return [
+        personalInfo.heroHeadline || "Turning Complex Data into Clear, Defensible Decisions.",
+        "Investigating Data. Validating the Signal. Driving Action.",
+        "Engineering Data Systems for Better Decisions.",
+      ];
+    },
+    [personalInfo.heroRotatingHeadlines, personalInfo.heroHeadline]
   );
 
   useEffect(() => {
