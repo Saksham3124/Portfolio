@@ -42,7 +42,17 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ targetSection }) =
           }
         }, 120);
         return () => clearTimeout(timer);
-      } else if (!window.location.hash) {
+      } else if (window.location.hash) {
+        const hashId = window.location.hash.replace("#", "");
+        const actualId = hashId === "projects" ? "work" : hashId;
+        const timer = setTimeout(() => {
+          const el = document.getElementById(actualId);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 140);
+        return () => clearTimeout(timer);
+      } else {
         window.scrollTo(0, 0);
       }
     }

@@ -1,11 +1,5 @@
-import { PortfolioView } from "@/components/PortfolioView";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Projects | Kumar Saksham",
-  description: "Evidence-based flagship and supporting analytical solutions.",
-};
+import { redirect } from "next/navigation";
 
 export default function ProjectsPage() {
-  return <PortfolioView targetSection="work" />;
+  redirect("/#projects");
 }

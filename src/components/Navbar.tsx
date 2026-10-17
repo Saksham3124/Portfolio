@@ -19,13 +19,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
   const [activeSection, setActiveSection] = useState<string>("hero");
 
   const navLinks = [
-    { name: "About", href: "/about", id: "about" },
-    { name: "Experience", href: "/experience", id: "experience" },
-    { name: "Work", href: "/work", id: "work" },
-    { name: "Education", href: "/education", id: "education" },
-    { name: "Skills", href: "/skills", id: "skills" },
-    { name: "Credentials", href: "/credentials", id: "credentials" },
-    { name: "Contact", href: "/contact", id: "contact" },
+    { name: "About", href: "#about", id: "about" },
+    { name: "Experience", href: "#experience", id: "experience" },
+    { name: "Work", href: "#work", id: "work" },
+    { name: "Education", href: "#education", id: "education" },
+    { name: "Skills", href: "#skills", id: "skills" },
+    { name: "Credentials", href: "#credentials", id: "credentials" },
+    { name: "Contact", href: "#contact", id: "contact" },
   ];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, id: string) => {
@@ -33,9 +33,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
-      window.history.pushState(null, "", href);
+      const hash = id === "work" ? "#projects" : `#${id}`;
+      window.history.pushState(null, "", hash);
     } else {
-      window.location.href = href;
+      window.location.href = `/${href}`;
     }
   };
 
