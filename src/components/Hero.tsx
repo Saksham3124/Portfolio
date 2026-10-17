@@ -114,7 +114,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
   return (
     <section
       id="hero"
-      className="relative min-h-[92vh] sm:min-h-screen flex flex-col justify-between pt-32 sm:pt-40 pb-12 overflow-hidden bg-[#030304]"
+      className="relative z-10 min-h-[92vh] sm:min-h-screen flex flex-col justify-between pt-32 sm:pt-40 pb-20 sm:pb-28 overflow-hidden bg-[#030304]"
     >
       {/* Background Video Layer */}
       {videoEnabled && !videoError && (

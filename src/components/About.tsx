@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import React, { useRef } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ShieldCheck, Database, LineChart, Cpu } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
 
@@ -9,6 +9,16 @@ export const About: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
   const { data } = usePortfolio();
   const about = data.about;
+
+  // Scroll-linked elevation transition over hero lower boundary
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "start 65%"],
+  });
+
+  const rawY = useTransform(scrollYProgress, [0, 1], [44, 0]);
+  const panelY = shouldReduceMotion ? 0 : rawY;
 
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
@@ -32,7 +42,18 @@ export const About: React.FC = () => {
   };
 
   return (
-    <section id="about" className="py-24 relative border-t border-white/[0.06] bg-[#030304]">
+    <motion.section
+      ref={sectionRef}
+      id="about"
+      style={{ y: panelY }}
+      className="relative z-20 -mt-12 sm:-mt-16 md:-mt-20 pt-8 sm:pt-12 pb-24 rounded-t-[32px] sm:rounded-t-[44px] md:rounded-t-[48px] bg-[#060609] border-t border-x border-white/[0.08] shadow-[0_-25px_60px_rgba(0,0,0,0.9),0_-1px_0_rgba(255,255,255,0.08)] scroll-mt-16 sm:scroll-mt-20"
+    >
+      {/* Architectural Top Notch Accent */}
+      <div
+        aria-hidden="true"
+        className="w-12 h-1 rounded-full bg-white/15 mx-auto mb-8 sm:mb-12 mt-1 pointer-events-none"
+      />
+
       <div className="max-w-4xl mx-auto px-6">
         
         {/* Section Pill & Heading */}
@@ -89,6 +110,6 @@ export const About: React.FC = () => {
         </div>
 
       </div>
-    </section>
+    </motion.section>
   );
 };

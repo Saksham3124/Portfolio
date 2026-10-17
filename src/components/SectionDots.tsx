@@ -108,28 +108,22 @@ export const SectionDots: React.FC = () => {
               aria-label={`Jump to section ${sec.num}: ${sec.name}`}
               aria-current={isActive ? "true" : undefined}
             >
-              {/* Contextual Number and Name Label to the left of the rail */}
-              <div
-                className={`flex items-center gap-1.5 mr-3 transition-all duration-200 pointer-events-none ${
-                  isActive
-                    ? "opacity-100 translate-x-0"
-                    : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 translate-x-1 group-hover:translate-x-0"
-                }`}
-              >
+              {/* Persistent Number and Name Label to the left of the rail on desktop */}
+              <div className="flex items-center gap-1.5 mr-3 whitespace-nowrap transition-all duration-200 pointer-events-none">
                 <span
                   className={`font-mono text-[9px] tracking-wider transition-colors duration-200 ${
                     isActive
                       ? "text-blue-400 font-semibold"
-                      : "text-zinc-500 group-hover:text-zinc-400"
+                      : "text-zinc-600 group-hover:text-zinc-400"
                   }`}
                 >
                   {sec.num}
                 </span>
                 <span
-                  className={`font-mono text-[10px] tracking-widest uppercase transition-colors duration-200 ${
+                  className={`font-mono text-[9.5px] tracking-widest uppercase transition-colors duration-200 ${
                     isActive
                       ? "text-white font-semibold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]"
-                      : "text-zinc-400 group-hover:text-zinc-200"
+                      : "text-zinc-500 group-hover:text-zinc-300"
                   }`}
                 >
                   {sec.name}

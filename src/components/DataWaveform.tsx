@@ -4,8 +4,8 @@ import React, { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 
 interface Particle {
-  baseXRatio: number; // 0.14 - 0.84 of container width
-  baseYRatio: number; // 0.02 - 0.98 of container height
+  baseXRatio: number; // 0 to 1 (exponential falloff from left)
+  baseYRatio: number; // 0.02 to 0.98 (vertical distribution)
   driftSpeedX: number;
   driftSpeedY: number;
   driftAmpX: number;
@@ -15,9 +15,9 @@ interface Particle {
   oy: number; // interactive repulsion offset Y
   ovx: number; // velocity X
   ovy: number; // velocity Y
-  radius: number; // 0.55 - 1.45 px (1 - 3 CSS px diameter)
-  baseAlpha: number; // 0.20 - 0.58
-  colorBase: string; // RGB string e.g. "6, 182, 212"
+  radius: number; // 0.55 - 1.4 px (1 - 2.8 CSS px diameter)
+  baseAlpha: number; // 0.22 - 0.55
+  colorBase: string; // RGB string
   pulseSpeed: number;
   pulsePhase: number;
 }
@@ -65,7 +65,7 @@ export const DataWaveform: React.FC = () => {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    // Track cursor position for subtle localized repulsion
+    // Track cursor position for localized repulsion throughout particle field
     const mousePos = { x: -1000, y: -1000 };
     const handlePointerMove = (e: PointerEvent) => {
       mousePos.x = e.clientX;
@@ -81,31 +81,35 @@ export const DataWaveform: React.FC = () => {
       document.documentElement.addEventListener("pointerleave", handlePointerLeave, { passive: true });
     }
 
-    // Curated color palette: muted slate blue, deep cobalt, soft sky, cyan accents
+    // Curated color palette: electric cyan, sky blue, royal blue, ice blue, muted slate
     const colorPalette = [
-      "148, 163, 184", // Muted slate / steel blue (neutral, understated)
-      "59, 130, 246",  // Deep royal / cobalt blue
-      "56, 189, 248",  // Soft electric sky blue
-      "6, 182, 212",   // Electric cyan accent
-      "147, 197, 253", // Pale luminous sky blue
+      "6, 182, 212",   // Electric cyan
+      "56, 189, 248",  // Electric sky blue
+      "59, 130, 246",  // Royal / cobalt blue
+      "147, 197, 253", // Soft luminous light blue
+      "148, 163, 184", // Muted slate / steel blue
     ];
 
-    // Increased particle density: ~60% increase from baseline 34 -> 55 particles (28 on touch)
-    const particleCount = isTouch ? 28 : 55;
+    // Particle count: 68 on desktop, 30 on touch devices
+    const particleCount = isTouch ? 30 : 68;
 
-    // Subtle natural clustering attractor centers along the vertical strip
-    const clusterAttractors = [0.22, 0.48, 0.76];
+    // Natural clustering attractor centers along the vertical axis
+    const clusterAttractors = [0.18, 0.42, 0.68, 0.88];
 
     const particles: Particle[] = Array.from({ length: particleCount }, (_, idx) => {
-      let baseY: number;
+      // Horizontal sampling with exponential power curve (x = u^2.3):
+      // Highest concentration hugs the far-left edge, then fades outward toward the center of the page
+      const u = Math.random();
+      const baseXRatio = Math.max(0.02, Math.min(0.96, Math.pow(u, 2.3)));
 
-      // ~35% of particles form subtle organic cluster groupings around attractors
+      let baseY: number;
+      // ~30% of particles form subtle organic cluster groupings around attractors
       if (idx % 3 === 0) {
         const attractor = clusterAttractors[(idx / 3) % clusterAttractors.length];
         const jitter = (Math.random() - 0.5) * 0.12;
-        baseY = Math.max(0.04, Math.min(0.96, attractor + jitter));
+        baseY = Math.max(0.03, Math.min(0.97, attractor + jitter));
       } else {
-        // Remaining 65% distribute evenly along the visible height with slight stratified jitter
+        // Remaining 70% distribute across the visible height with stratified jitter
         const segmentHeight = 1 / particleCount;
         baseY = Math.max(
           0.02,
@@ -115,19 +119,19 @@ export const DataWaveform: React.FC = () => {
 
       // Particle size distribution:
       // ~75% tiny (0.55 - 0.95 px radius => 1.1 - 1.9 CSS px diameter)
-      // ~25% slightly larger (1.05 - 1.45 px radius) for visual depth
+      // ~25% slightly larger (1.05 - 1.4 px radius) for visual depth
       const isLarger = Math.random() < 0.25;
       const radius = isLarger
-        ? 1.05 + Math.random() * 0.4
+        ? 1.05 + Math.random() * 0.35
         : 0.55 + Math.random() * 0.4;
 
-      // Opacity: mostly low/subtle (0.20 - 0.42), occasional accent at 0.55
+      // Base opacity
       const baseAlpha = isLarger
-        ? 0.38 + Math.random() * 0.2
-        : 0.2 + Math.random() * 0.25;
+        ? 0.35 + Math.random() * 0.2
+        : 0.22 + Math.random() * 0.24;
 
       return {
-        baseXRatio: 0.14 + Math.random() * 0.72,
+        baseXRatio,
         baseYRatio: baseY,
         driftSpeedX: 0.00025 + Math.random() * 0.00045,
         driftSpeedY: 0.0003 + Math.random() * 0.0005,
@@ -163,7 +167,7 @@ export const DataWaveform: React.FC = () => {
 
       if (heroFade > 0.005) {
         const elapsed = now - startTime;
-        const interactionRadius = 75; // Localized cursor interaction radius
+        const interactionRadius = 80; // Localized cursor interaction radius
 
         for (let i = 0; i < particles.length; i++) {
           const p = particles[i];
@@ -177,7 +181,7 @@ export const DataWaveform: React.FC = () => {
           const currentX = p.baseXRatio * width + driftX + p.ox;
           const currentY = p.baseYRatio * height + driftY + p.oy;
 
-          // 2. Cursor repulsion physics (only if pointer is active within interaction radius)
+          // 2. Cursor repulsion physics (anywhere particles are present across the field)
           let proximityBoost = 0;
           if (!isTouch && !shouldReduceMotion && mousePos.x > -500) {
             const dx = currentX - mousePos.x;
@@ -194,13 +198,13 @@ export const DataWaveform: React.FC = () => {
               p.ovy += Math.sin(angle) * force * 1.35;
 
               // Subtle luminescence boost when cursor is near
-              proximityBoost = force * 0.32;
+              proximityBoost = force * 0.35;
             }
           }
 
-          // 3. Smooth spring return to original resting anchor with damping
-          p.ovx += -p.ox * 0.05;
-          p.ovy += -p.oy * 0.05;
+          // 3. Smooth spring return to resting position with damping
+          p.ovx += -p.ox * 0.048;
+          p.ovy += -p.oy * 0.048;
           p.ovx *= 0.88;
           p.ovy *= 0.88;
           p.ox += p.ovx;
@@ -213,22 +217,26 @@ export const DataWaveform: React.FC = () => {
             p.oy = (p.oy / offsetDist) * 16;
           }
 
-          // 4. Subtle alpha breathing / twinkle
+          // 4. Lateral opacity fade toward the center of the page:
+          // Highest brilliance along far-left edge, smoothly tapering off as X approaches width
+          const lateralFade = Math.max(0.12, 1 - Math.pow(Math.min(1, currentX / width), 1.25));
+
+          // 5. Subtle alpha breathing / twinkle
           const pulse =
             0.85 + Math.sin(elapsed * p.pulseSpeed + p.pulsePhase) * 0.15;
           const finalAlpha = Math.min(
             1,
-            (p.baseAlpha * pulse + proximityBoost) * heroFade
+            (p.baseAlpha * pulse * lateralFade + proximityBoost) * heroFade
           );
 
-          // 5. Render particle
+          // 6. Render particle
           ctx.save();
           if (proximityBoost > 0.08) {
             ctx.shadowColor = "rgba(6, 182, 212, 0.85)";
             ctx.shadowBlur = 4;
             ctx.fillStyle = `rgba(186, 230, 253, ${finalAlpha})`;
           } else {
-            ctx.shadowColor = `rgba(${p.colorBase}, 0.4)`;
+            ctx.shadowColor = `rgba(${p.colorBase}, 0.35)`;
             ctx.shadowBlur = p.radius > 1.1 ? 2.5 : 0;
             ctx.fillStyle = `rgba(${p.colorBase}, ${finalAlpha})`;
           }
@@ -266,7 +274,7 @@ export const DataWaveform: React.FC = () => {
   return (
     <div
       aria-hidden="true"
-      className="fixed left-0 top-0 h-screen w-14 sm:w-16 md:w-20 z-20 pointer-events-none select-none overflow-hidden hidden sm:block"
+      className="fixed left-0 top-0 h-screen w-64 sm:w-80 md:w-96 lg:w-[420px] z-20 pointer-events-none select-none overflow-hidden hidden sm:block"
     >
       <canvas
         ref={canvasRef}
