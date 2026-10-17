@@ -49,11 +49,11 @@ const DOMAIN_PINS: DomainPin[] = [
     targetId: "work",
     nodeX: 50,
     nodeY: 50,
-    pinX: 20,
+    pinX: 24,
     pinY: 42,
-    controlX: 34,
+    controlX: 36,
     controlY: 46,
-    style: { top: "34%", left: "4%" },
+    style: { top: "34%", left: "12%" },
   },
   {
     id: "risk",
@@ -63,11 +63,11 @@ const DOMAIN_PINS: DomainPin[] = [
     targetId: "experience",
     nodeX: 50,
     nodeY: 50,
-    pinX: 44,
+    pinX: 46,
     pinY: 76,
-    controlX: 47,
+    controlX: 48,
     controlY: 64,
-    style: { top: "68%", left: "28%" },
+    style: { top: "68%", left: "30%" },
   },
   {
     id: "product",
@@ -77,11 +77,11 @@ const DOMAIN_PINS: DomainPin[] = [
     targetId: "work",
     nodeX: 50,
     nodeY: 50,
-    pinX: 80,
+    pinX: 82,
     pinY: 58,
-    controlX: 68,
+    controlX: 70,
     controlY: 54,
-    style: { top: "48%", left: "65%" },
+    style: { top: "48%", left: "67%" },
   },
 ];
 
@@ -196,20 +196,20 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
         </video>
       )}
 
-      {/* 2. Interactive Cursor-Reactive Particle Network & Data Wave Stream Canvas */}
-      <HeroCanvas containerRef={containerRef} />
-
-      {/* 3. Deep Tonal Overlays to keep headline dominant and cohesive */}
+      {/* 2. Deep Tonal Overlays to keep headline dominant and cohesive */}
       <div className="absolute inset-0 pointer-events-none bg-[#030304]/60 z-0" />
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#030304] via-[#030304]/85 to-transparent z-0" />
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#030304] via-transparent to-[#030304]/70 z-0" />
       <div className="absolute inset-0 pointer-events-none bg-ambient-radial opacity-30 z-0" />
 
+      {/* 3. Interactive Cursor-Reactive Particle Network & Data Wave Stream Canvas */}
+      <HeroCanvas containerRef={containerRef} />
+
       {/* 4. Main Two-Column Hero Composition */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex-1 flex flex-col lg:flex-row items-center justify-between pt-24 sm:pt-28 pb-4">
         
         {/* LEFT COLUMN: Left-Aligned Headline, Positioning & Action CTAs */}
-        <div className="w-full lg:w-[48%] xl:w-[46%] flex flex-col items-start text-left shrink-0 z-20">
+        <div className="w-full lg:w-[44%] xl:w-[42%] flex flex-col items-start text-left shrink-0 z-20">
           
           {/* Eyebrow Positioning: DATA · RISK · ENGINEERING · PRODUCT */}
           <div className="inline-flex items-center gap-2 mb-4 sm:mb-5">
@@ -315,10 +315,10 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
         </div>
 
         {/* RIGHT COLUMN: Integrated Domain Visualization (4 Domain Pins & Central Nexus) */}
-        <div className="w-full lg:w-[52%] xl:w-[54%] flex items-center justify-center relative mt-8 lg:mt-0 h-[380px] sm:h-[460px] lg:h-[520px]">
+        <div className="w-full lg:w-[56%] xl:w-[58%] flex items-center justify-center relative mt-8 lg:mt-0 h-[380px] sm:h-[460px] lg:h-[520px] lg:pl-6 xl:pl-10">
           
           {/* Desktop Floating Constellation Visualization */}
-          <div className="relative w-full h-full max-w-[580px] max-h-[500px] flex items-center justify-center">
+          <div className="relative w-full h-full max-w-[540px] max-h-[480px] flex items-center justify-center">
             
             {/* Curved Connecting SVG Lines Layer */}
             <svg

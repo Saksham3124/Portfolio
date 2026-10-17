@@ -97,8 +97,8 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
 
     // 1. Data Wave Streams: Curving flowing ribbons of glowing particle nodes
     const waveParticles: WaveParticle[] = [];
-    const waveCount = 5;
-    const particlesPerWave = isTouch ? 35 : 65;
+    const waveCount = 6;
+    const particlesPerWave = isTouch ? 40 : 80;
 
     for (let w = 0; w < waveCount; w++) {
       for (let i = 0; i < particlesPerWave; i++) {
@@ -112,10 +112,10 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
 
         waveParticles.push({
           baseX: xFraction,
-          baseY: 0.52 + w * 0.08,
-          radius: 0.75 + Math.random() * 1.35,
+          baseY: 0.50 + w * 0.08,
+          radius: 1.0 + Math.random() * 1.5,
           color,
-          alpha: 0.40 + Math.random() * 0.35,
+          alpha: 0.60 + Math.random() * 0.35,
           waveIndex: w,
           phaseOffset: xFraction * Math.PI * 3 + w * 1.2,
           speed: 0.0006 + (w % 3) * 0.0003,
@@ -129,12 +129,12 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
 
     // 2. Ambient & Nexus Particles:
     // Concentrated cluster near the domain nexus on the right (~0.72 width, 0.48 height)
-    // Subtle, sparse field behind the headline on the left
+    // Rich sparkling ambient field across the hero
     const ambientParticles: AmbientParticle[] = [];
-    const ambientCount = isTouch ? 50 : 120;
+    const ambientCount = isTouch ? 70 : 160;
 
     for (let i = 0; i < ambientCount; i++) {
-      const isNexus = i < (isTouch ? 30 : 80);
+      const isNexus = i < (isTouch ? 45 : 105);
       let xRatio: number;
       let yRatio: number;
       let color: string;
@@ -146,23 +146,23 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
         const dist = Math.pow(Math.random(), 0.75) * 0.32;
         xRatio = Math.max(0.48, Math.min(0.96, 0.72 + Math.cos(angle) * dist * 0.8));
         yRatio = Math.max(0.12, Math.min(0.88, 0.48 + Math.sin(angle) * dist));
-        color = Math.random() < 0.35 ? "6, 182, 212" : "56, 189, 248";
-        baseAlpha = 0.35 + Math.random() * 0.45;
+        color = Math.random() < 0.4 ? "6, 182, 212" : "56, 189, 248";
+        baseAlpha = 0.65 + Math.random() * 0.35;
       } else {
-        // Subtle, restrained left-side particles behind headline
-        xRatio = 0.04 + Math.random() * 0.42;
-        yRatio = 0.15 + Math.random() * 0.75;
-        color = "59, 130, 246";
-        baseAlpha = 0.12 + Math.random() * 0.18; // Very subtle for pristine text legibility
+        // Sparkling left-side particles behind headline
+        xRatio = 0.04 + Math.random() * 0.45;
+        yRatio = 0.12 + Math.random() * 0.78;
+        color = Math.random() < 0.5 ? "56, 189, 248" : "6, 182, 212";
+        baseAlpha = 0.30 + Math.random() * 0.35;
       }
 
       ambientParticles.push({
         xRatio,
         yRatio,
-        radius: isNexus ? 0.8 + Math.random() * 1.4 : 0.65 + Math.random() * 0.6,
+        radius: isNexus ? 1.1 + Math.random() * 1.5 : 0.85 + Math.random() * 0.85,
         color,
         baseAlpha,
-        pulseSpeed: 0.001 + Math.random() * 0.002,
+        pulseSpeed: 0.0012 + Math.random() * 0.0022,
         pulsePhase: Math.random() * Math.PI * 2,
         driftX: (Math.random() - 0.5) * 4,
         driftY: (Math.random() - 0.5) * 4,
@@ -337,7 +337,7 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none z-0"
+      className="absolute inset-0 w-full h-full pointer-events-none z-[1]"
       style={{ pointerEvents: "none" }}
     />
   );
