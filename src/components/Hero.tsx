@@ -209,6 +209,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             href={personalInfo.contact.github}
             target="_blank"
             rel="noopener noreferrer"
+            data-cursor="view"
             whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
             whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
             transition={{ type: "spring", stiffness: 450, damping: 18 }}
@@ -221,6 +222,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             href={personalInfo.contact.linkedin}
             target="_blank"
             rel="noopener noreferrer"
+            data-cursor="view"
             whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
             whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
             transition={{ type: "spring", stiffness: 450, damping: 18 }}

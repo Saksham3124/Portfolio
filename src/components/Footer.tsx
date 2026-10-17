@@ -35,6 +35,7 @@ export const Footer: React.FC<FooterProps> = ({ onRequestResume }) => {
               href={personalInfo.contact.github}
               target="_blank"
               rel="noopener noreferrer"
+              data-cursor="view"
               className="pill-button text-xs py-1.5 px-3.5 bg-white/[0.02]"
               title="GitHub Profile"
             >
@@ -46,6 +47,7 @@ export const Footer: React.FC<FooterProps> = ({ onRequestResume }) => {
               href={personalInfo.contact.linkedin}
               target="_blank"
               rel="noopener noreferrer"
+              data-cursor="view"
               className="pill-button text-xs py-1.5 px-3.5 bg-white/[0.02]"
               title="LinkedIn Profile"
             >

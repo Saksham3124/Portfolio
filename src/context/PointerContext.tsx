@@ -65,11 +65,11 @@ export const PointerProvider: React.FC<{ children: React.ReactNode }> = ({
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
-      const projectBtn = target.closest("[data-cursor='project']");
-      if (projectBtn) {
+      const viewBtn = target.closest("[data-cursor='project'], [data-cursor='view']");
+      if (viewBtn) {
         setCursorVariant("project");
         setIsHoveringProject(true);
-        const cardEl = projectBtn.closest("article, .clean-card");
+        const cardEl = viewBtn.closest("article, .clean-card");
         const titleEl = cardEl ? cardEl.querySelector("h3, h4") : null;
         setHoveredProjectTitle(titleEl ? titleEl.textContent : null);
         return;

@@ -202,6 +202,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                 href={personalInfo.contact.github}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-cursor="view"
                 whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -1.5 }}
                 whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 450, damping: 20 }}
@@ -218,6 +219,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                 href={personalInfo.contact.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-cursor="view"
                 whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -1.5 }}
                 whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 450, damping: 20 }}

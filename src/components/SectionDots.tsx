@@ -5,18 +5,18 @@ import { motion, useReducedMotion } from "framer-motion";
 
 interface SectionItem {
   id: string;
+  num: string;
   name: string;
 }
 
 const SECTIONS: SectionItem[] = [
-  { id: "about", name: "About" },
-  { id: "highlights", name: "Highlights" },
-  { id: "experience", name: "Experience" },
-  { id: "work", name: "Projects" },
-  { id: "education", name: "Education" },
-  { id: "skills", name: "Skills" },
-  { id: "credentials", name: "Credentials" },
-  { id: "contact", name: "Contact" },
+  { id: "about", num: "01", name: "About" },
+  { id: "experience", num: "02", name: "Experience" },
+  { id: "work", num: "03", name: "Projects" },
+  { id: "education", num: "04", name: "Education" },
+  { id: "skills", num: "05", name: "Skills" },
+  { id: "credentials", num: "06", name: "Credentials" },
+  { id: "contact", num: "07", name: "Contact" },
 ];
 
 export const SectionDots: React.FC = () => {
@@ -26,8 +26,8 @@ export const SectionDots: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Hide dots when in the hero section (< 300px from top)
-      if (window.scrollY < 260) {
+      // Hide rail when in the hero section (< 240px from top)
+      if (window.scrollY < 240) {
         setIsVisible(false);
         setActiveSection("");
         return;
@@ -35,18 +35,24 @@ export const SectionDots: React.FC = () => {
 
       setIsVisible(true);
 
-      // If scrolled to very bottom of page, highlight contact
-      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80) {
+      // If scrolled to bottom of page, activate contact
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 80
+      ) {
         setActiveSection("contact");
         return;
       }
 
-      // Check section bounding rects
+      // Check section bounding rects for highest active accuracy
       for (const sec of SECTIONS) {
         const el = document.getElementById(sec.id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= window.innerHeight * 0.4 && rect.bottom >= window.innerHeight * 0.2) {
+          if (
+            rect.top <= window.innerHeight * 0.42 &&
+            rect.bottom >= window.innerHeight * 0.18
+          ) {
             setActiveSection(sec.id);
             return;
           }
@@ -64,19 +70,30 @@ export const SectionDots: React.FC = () => {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
-      const targetPath = id === "highlights" ? "/about" : `/${id}`;
+      const targetPath = id === "work" ? "/projects" : `/${id}`;
       window.history.pushState(null, "", targetPath);
     }
   };
 
   return (
-    <aside
-      aria-label="Section Navigation"
-      className={`fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-center gap-3 transition-opacity duration-300 ${
+    <nav
+      aria-label="Section navigation rail"
+      className={`fixed right-6 sm:right-8 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-end transition-opacity duration-300 pointer-events-auto select-none ${
         isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >
-      <div className="p-2 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md flex flex-col gap-2.5">
+      {/* 
+        Open Vertical Rail:
+        - Continuous thin muted line running through the center of all markers
+        - No bulky background container pill
+      */}
+      <div className="relative flex flex-col items-end py-1">
+        {/* Continuous thin vertical line in muted grey */}
+        <div
+          aria-hidden="true"
+          className="absolute right-[5px] top-2 bottom-2 w-[1px] bg-white/10 pointer-events-none"
+        />
+
         {SECTIONS.map((sec) => {
           const isActive = activeSection === sec.id;
           return (
@@ -84,29 +101,55 @@ export const SectionDots: React.FC = () => {
               key={sec.id}
               href={`#${sec.id}`}
               onClick={(e) => scrollToSection(sec.id, e)}
-              whileHover={shouldReduceMotion ? {} : { scale: 1.3 }}
-              whileTap={shouldReduceMotion ? {} : { scale: 0.9 }}
-              transition={{ type: "spring", stiffness: 450, damping: 18 }}
-              className="group relative flex items-center justify-center p-1 cursor-pointer"
-              aria-label={`Jump to ${sec.name}`}
+              whileHover={shouldReduceMotion ? {} : { x: -2 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.94 }}
+              transition={{ type: "spring", stiffness: 450, damping: 20 }}
+              className="group relative flex items-center justify-end py-3 pr-0 cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-400 focus-visible:rounded"
+              aria-label={`Jump to section ${sec.num}: ${sec.name}`}
+              aria-current={isActive ? "true" : undefined}
             >
-              {/* Tooltip Label */}
-              <div className="absolute right-7 px-2 py-1 rounded bg-[#0e0e12] border border-white/10 text-[10px] font-mono text-zinc-200 tracking-wide whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none shadow-lg">
-                {sec.name}
+              {/* Contextual Number and Name Label to the left of the rail */}
+              <div
+                className={`flex items-center gap-1.5 mr-3 transition-all duration-200 pointer-events-none ${
+                  isActive
+                    ? "opacity-100 translate-x-0"
+                    : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 translate-x-1 group-hover:translate-x-0"
+                }`}
+              >
+                <span
+                  className={`font-mono text-[9px] tracking-wider transition-colors duration-200 ${
+                    isActive
+                      ? "text-blue-400 font-semibold"
+                      : "text-zinc-500 group-hover:text-zinc-400"
+                  }`}
+                >
+                  {sec.num}
+                </span>
+                <span
+                  className={`font-mono text-[10px] tracking-widest uppercase transition-colors duration-200 ${
+                    isActive
+                      ? "text-white font-semibold drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]"
+                      : "text-zinc-400 group-hover:text-zinc-200"
+                  }`}
+                >
+                  {sec.name}
+                </span>
               </div>
 
-              {/* Dot Indicator */}
-              <span
-                className={`transition-all duration-200 rounded-full ${
-                  isActive
-                    ? "w-2 h-2 bg-white ring-2 ring-white/30 scale-110"
-                    : "w-1.5 h-1.5 bg-zinc-600 group-hover:bg-zinc-300"
-                }`}
-              />
+              {/* Circular Rail Marker Centered on the Line */}
+              <div className="w-[11px] h-[11px] flex items-center justify-center relative z-10">
+                <span
+                  className={`rounded-full transition-all duration-200 ${
+                    isActive
+                      ? "w-2.5 h-2.5 bg-blue-400 shadow-[0_0_10px_rgba(56,189,248,0.85)] ring-4 ring-blue-500/25 scale-100"
+                      : "w-1.5 h-1.5 bg-zinc-600 group-hover:bg-zinc-300 group-hover:scale-125"
+                  }`}
+                />
+              </div>
             </motion.a>
           );
         })}
       </div>
-    </aside>
+    </nav>
   );
 };

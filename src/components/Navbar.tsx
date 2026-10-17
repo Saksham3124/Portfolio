@@ -142,6 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
               href={personalInfo.contact.github}
               target="_blank"
               rel="noopener noreferrer"
+              data-cursor="view"
               whileHover={shouldReduceMotion ? {} : { scale: 1.05, y: -1 }}
               whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
               transition={{ type: "spring", stiffness: 450, damping: 18 }}
@@ -158,6 +159,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
               href={personalInfo.contact.linkedin}
               target="_blank"
               rel="noopener noreferrer"
+              data-cursor="view"
               whileHover={shouldReduceMotion ? {} : { scale: 1.12, rotate: -4 }}
               whileTap={shouldReduceMotion ? {} : { scale: 0.9 }}
               transition={{ type: "spring", stiffness: 500, damping: 16 }}
@@ -242,6 +244,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
                   href={personalInfo.contact.github}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-cursor="view"
                   className="flex items-center justify-between px-3.5 py-2 rounded-lg bg-zinc-900 text-zinc-200 text-xs font-medium border border-zinc-800"
                 >
                   <div className="flex items-center gap-2">
@@ -255,6 +258,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
                   href={personalInfo.contact.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-cursor="view"
                   className="flex items-center justify-between px-3.5 py-2 rounded-lg bg-zinc-900 text-zinc-200 text-xs font-medium border border-zinc-800"
                 >
                   <div className="flex items-center gap-2">

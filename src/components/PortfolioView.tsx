@@ -18,6 +18,7 @@ import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { BackToTop } from "@/components/BackToTop";
 import { PointerProvider } from "@/context/PointerContext";
 import { CustomCursor } from "@/components/CustomCursor";
+import { DataWaveform } from "@/components/DataWaveform";
 
 interface PortfolioViewProps {
   targetSection?: string;
@@ -64,7 +65,10 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ targetSection }) =
         {/* Dynamic Animated Ambient Background */}
         <AnimatedBackground />
 
-        {/* Fixed Right-side Vertical Section Dots for Desktop */}
+        {/* Animated Data Waveform along the Left Viewport Edge */}
+        <DataWaveform />
+
+        {/* Fixed Right-side Vertical Section Navigation Rail */}
         <SectionDots />
 
         {/* Top sticky navigation bar */}
