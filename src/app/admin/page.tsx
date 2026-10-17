@@ -184,8 +184,16 @@ export default function AdminPage() {
       } else {
         setIsDirty(false);
         showToast("Portfolio changes successfully saved and applied to live site!");
-        // Notify other tabs / live preview
-        window.dispatchEvent(new Event("portfolio-data-updated"));
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem("portfolio_cached_data", JSON.stringify(data));
+          } catch {
+            // Ignore
+          }
+          window.dispatchEvent(
+            new CustomEvent("portfolio_data_updated", { detail: data })
+          );
+        }
       }
     } catch {
       showToast("Network error while saving changes", "error");

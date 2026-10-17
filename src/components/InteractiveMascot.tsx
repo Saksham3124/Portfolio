@@ -15,6 +15,7 @@ export const InteractiveMascot: React.FC = () => {
   const {
     mouseX,
     mouseY,
+    cursorVariant,
     isHoveringProject,
     isTouchDevice,
     isMascotDismissed,
@@ -24,17 +25,29 @@ export const InteractiveMascot: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
   const mascotRef = useRef<HTMLDivElement | null>(null);
 
-  // Scroll visibility: appears after scrolling past hero section (> 380px)
+  // Scroll visibility & Session entrance tracking
   const [hasScrolledPastHero, setHasScrolledPastHero] = useState(false);
+  const [alreadyEnteredSession, setAlreadyEnteredSession] = useState(false);
+  const [hasLanded, setHasLanded] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [isNearCursor, setIsNearCursor] = useState(false);
 
-  // Springs for bounded pupil movement (no React re-renders)
-  const pupilTargetX = useSpring(0, { stiffness: 350, damping: 25 });
-  const pupilTargetY = useSpring(0, { stiffness: 350, damping: 25 });
+  // Check if entrance already played during this page session
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const entered = sessionStorage.getItem("portfolio_mascot_entered");
+        if (entered === "true") {
+          setAlreadyEnteredSession(true);
+          setHasLanded(true);
+        }
+      } catch {
+        // Ignore session storage errors
+      }
+    }
+  }, []);
 
-  // Check scroll position
+  // Monitor scroll to trigger entrance when scrolling past hero section (> 380px)
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 380) {
@@ -56,13 +69,13 @@ export const InteractiveMascot: React.FC = () => {
     let timeoutId: NodeJS.Timeout;
 
     const scheduleBlink = () => {
-      const nextDelay = 4000 + Math.random() * 3000;
+      const nextDelay = 4200 + Math.random() * 2800;
       timeoutId = setTimeout(() => {
         setIsBlinking(true);
         setTimeout(() => {
           setIsBlinking(false);
           scheduleBlink();
-        }, 140);
+        }, 130);
       }, nextDelay);
     };
 
@@ -70,234 +83,315 @@ export const InteractiveMascot: React.FC = () => {
     return () => clearTimeout(timeoutId);
   }, [shouldReduceMotion]);
 
-  // Frame-by-frame pupil tracking using single shared MotionValues
+  // Motion springs for Full-Body Cursor Tracking (Layer 2 & 3)
+  // These springs update DOM transforms directly with 0 React re-renders!
+  const bodyRotate = useSpring(0, { stiffness: 180, damping: 22, mass: 0.6 });
+  const bodyShiftX = useSpring(0, { stiffness: 200, damping: 24, mass: 0.5 });
+  const postureTiltY = useSpring(0, { stiffness: 190, damping: 22, mass: 0.5 });
+  const headTilt = useSpring(0, { stiffness: 220, damping: 20, mass: 0.4 });
+  const pupilX = useSpring(0, { stiffness: 360, damping: 26, mass: 0.3 });
+  const pupilY = useSpring(0, { stiffness: 360, damping: 26, mass: 0.3 });
+
+  // Frame-by-frame full body and eye cursor tracking
   useAnimationFrame(() => {
-    if (!mascotRef.current || shouldReduceMotion || isTouchDevice) return;
+    if (!mascotRef.current || shouldReduceMotion || isTouchDevice || !hasLanded) return;
 
-    const rect = mascotRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height * 0.42; // Eye-level anchor
-
-    const dx = mouseX.get() - centerX;
-    const dy = mouseY.get() - centerY;
-    const distance = Math.hypot(dx, dy);
-
-    // Check if cursor is hovering close to mascot (< 140px)
-    if (distance < 140 && !isNearCursor) {
-      setIsNearCursor(true);
-    } else if (distance >= 140 && isNearCursor) {
-      setIsNearCursor(false);
+    // Check if cursor has left the window or is hidden
+    if (cursorVariant === "hidden") {
+      bodyRotate.set(0);
+      bodyShiftX.set(0);
+      postureTiltY.set(0);
+      headTilt.set(0);
+      pupilX.set(0);
+      pupilY.set(0);
+      return;
     }
 
+    const rect = mascotRef.current.getBoundingClientRect();
+    const mascotCenterX = rect.left + rect.width / 2;
+    const mascotCenterY = rect.top + rect.height * 0.42;
+
+    const curX = mouseX.get();
+    const curY = mouseY.get();
+
+    // If mouse has not moved yet
+    if (curX < 0 || curY < 0) return;
+
+    const dx = curX - mascotCenterX;
+    const dy = curY - mascotCenterY;
+    const dist = Math.hypot(dx, dy);
+
+    // Normalize horizontal and vertical positions across viewport
+    const winWidth = typeof window !== "undefined" ? window.innerWidth : 1200;
+    const winHeight = typeof window !== "undefined" ? window.innerHeight : 800;
+
+    // Normalized horizontal vector: Mascot is at bottom-left, so dx is almost always positive
+    const normX = Math.max(0, Math.min(1, dx / (winWidth * 0.85)));
+    // Normalized vertical vector: -dy reaches upward toward top of screen
+    const normY = Math.max(0, Math.min(1, -dy / (winHeight * 0.85)));
+
+    // 1. Full Body Rotation: Leans subtly rightward toward visitor's cursor (up to ~7deg)
+    let targetRotate = normX * 8 - 1;
+
+    // 2. Lateral Body Shift: Shifts slightly (up to 5px rightward)
+    let targetShiftX = normX * 5.2;
+
+    // 3. Posture Adjustment: Stretches/tilts upward when looking toward top of screen
+    let targetPostureY = -normY * 4.2;
+
+    // 4. Head and Visor Tilt
+    let targetHeadTilt = normX * 6 - normY * 3.5;
+
+    // 5. Glance towards hovered project card
+    if (isHoveringProject) {
+      targetRotate += 3.5;
+      targetShiftX += 1.8;
+      targetPostureY -= 2.5;
+      targetHeadTilt += 4;
+    }
+
+    // 6. Bounded Pupil Tracking: strictly clamped within eye socket visor bounds
     const angle = Math.atan2(dy, dx);
+    const maxHorizontalPupil = 4.6;
+    const maxVerticalPupil = 2.8;
+    const pullFactor = Math.min(1, dist / 260);
 
-    // Bounded pupil movement: stays comfortably inside the visor sockets
-    const maxHorizontal = 4.5;
-    const maxVertical = 2.8;
+    const targetPupilX = Math.cos(angle) * maxHorizontalPupil * pullFactor;
+    const targetPupilY = Math.sin(angle) * maxVerticalPupil * pullFactor;
 
-    const pull = Math.min(1, distance / 240);
-    const targetX = Math.cos(angle) * maxHorizontal * pull;
-    const targetY = Math.sin(angle) * maxVertical * pull;
-
-    pupilTargetX.set(targetX);
-    pupilTargetY.set(targetY);
+    // Apply values to springs
+    bodyRotate.set(targetRotate);
+    bodyShiftX.set(targetShiftX);
+    postureTiltY.set(targetPostureY);
+    headTilt.set(targetHeadTilt);
+    pupilX.set(targetPupilX);
+    pupilY.set(targetPupilY);
   });
 
-  // Never render on touch devices or if dismissed by user
+  // Never render on touch devices or if dismissed
   if (isTouchDevice || isMascotDismissed) {
     return null;
   }
 
   const isVisible = hasScrolledPastHero;
 
+  // Handle completion of physical landing jump
+  const handleEntranceComplete = () => {
+    setHasLanded(true);
+    setAlreadyEnteredSession(true);
+    if (typeof window !== "undefined") {
+      try {
+        sessionStorage.setItem("portfolio_mascot_entered", "true");
+      } catch {
+        // Ignore
+      }
+    }
+  };
+
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.aside
+        <aside
           ref={mascotRef}
-          aria-label="Interactive digital companion"
-          initial={
-            shouldReduceMotion
-              ? { opacity: 0 }
-              : { opacity: 0, y: 40, scale: 0.85 }
-          }
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={
-            shouldReduceMotion
-              ? { opacity: 0 }
-              : { opacity: 0, y: 25, scale: 0.75 }
-          }
-          transition={
-            shouldReduceMotion
-              ? { duration: 0.2 }
-              : { type: "spring", stiffness: 360, damping: 22 }
-          }
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          className="fixed bottom-20 right-6 z-30 hidden sm:flex flex-col items-center select-none"
+          aria-label="Interactive portfolio companion"
+          className="fixed bottom-6 left-6 z-30 hidden sm:flex flex-col items-center select-none pointer-events-auto"
         >
-          {/* Subtle Ambient Floor Shadow */}
+          {/* LAYER 1: Independent Entrance Jump & Landing Squash/Stretch */}
           <motion.div
+            initial={
+              alreadyEnteredSession || shouldReduceMotion
+                ? { y: 0, opacity: 1, scaleY: 1, scaleX: 1 }
+                : { y: 140, opacity: 0, scaleY: 1.22, scaleX: 0.82 }
+            }
             animate={
-              shouldReduceMotion
-                ? {}
+              alreadyEnteredSession || shouldReduceMotion
+                ? { y: 0, opacity: 1, scaleY: 1, scaleX: 1 }
                 : {
-                    scale: [1, 0.88, 1],
-                    opacity: [0.35, 0.2, 0.35],
+                    // Physical bounce: jumps from below screen -> slight overshoot (-16px) -> subtle squash on landing -> settles
+                    y: [140, -16, 4, -2, 0],
+                    opacity: [0, 1, 1, 1, 1],
+                    scaleY: [1.22, 0.94, 1.06, 0.98, 1],
+                    scaleX: [0.82, 1.08, 0.95, 1.01, 1],
                   }
             }
             transition={
-              shouldReduceMotion
-                ? {}
+              alreadyEnteredSession || shouldReduceMotion
+                ? { duration: 0.2 }
                 : {
-                    repeat: Infinity,
-                    duration: 3.6,
-                    ease: "easeInOut",
+                    duration: 0.85,
+                    times: [0, 0.45, 0.72, 0.88, 1],
+                    ease: [0.22, 1.15, 0.36, 1],
                   }
             }
-            className="w-12 h-2.5 rounded-full bg-black/60 blur-[3px] mt-1 -mb-1"
-          />
-
-          {/* Floating Robot Body with Natural Idle Breathing */}
-          <motion.div
-            animate={
-              shouldReduceMotion
-                ? {}
-                : {
-                    y: [0, -3.5, 0],
-                    rotate: isHoveringProject ? -4 : isNearCursor ? 3 : 0,
-                  }
-            }
-            transition={
-              shouldReduceMotion
-                ? {}
-                : {
-                    y: {
-                      repeat: Infinity,
-                      duration: 3.6,
-                      ease: "easeInOut",
-                    },
-                    rotate: {
-                      type: "spring",
-                      stiffness: 300,
-                      damping: 18,
-                    },
-                  }
-            }
-            className="relative flex flex-col items-center group cursor-default"
+            onAnimationComplete={handleEntranceComplete}
+            exit={{
+              y: 60,
+              opacity: 0,
+              scale: 0.8,
+              transition: { duration: 0.25, ease: "easeIn" },
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className="relative flex flex-col items-center"
           >
-            {/* Dismiss Button (Discreet X) */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                dismissMascot();
+            {/* Ambient Ground Shadow with Physical Reactivity */}
+            <motion.div
+              animate={
+                shouldReduceMotion
+                  ? {}
+                  : {
+                      scale: [1, 0.9, 1],
+                      opacity: [0.45, 0.28, 0.45],
+                    }
+              }
+              transition={
+                shouldReduceMotion
+                  ? {}
+                  : {
+                      repeat: Infinity,
+                      duration: 3.8,
+                      ease: "easeInOut",
+                    }
+              }
+              className="w-14 h-3 rounded-full bg-black/70 blur-[4px] absolute -bottom-1 z-0"
+            />
+
+            {/* LAYER 2: Full-Body Cursor Lean, Lateral Shift & Organic Idle Floating */}
+            <motion.div
+              style={{
+                rotate: bodyRotate,
+                x: bodyShiftX,
               }}
-              title="Dismiss companion"
-              aria-label="Dismiss mascot companion"
-              className={`absolute -top-2 -right-2 z-20 p-1 rounded-full bg-[#121217] border border-white/10 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all duration-200 shadow-md ${
-                isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
-              }`}
+              animate={
+                shouldReduceMotion || !hasLanded
+                  ? {}
+                  : {
+                      y: [0, -3.2, 0],
+                    }
+              }
+              transition={
+                shouldReduceMotion
+                  ? {}
+                  : {
+                      repeat: Infinity,
+                      duration: 3.8,
+                      ease: "easeInOut",
+                    }
+              }
+              className="relative z-10 flex flex-col items-center group cursor-default"
             >
-              <X className="w-2.5 h-2.5" />
-            </button>
+              {/* Dismiss Button (Accessible, discreet circular close) */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  dismissMascot();
+                }}
+                title="Dismiss companion for this session"
+                aria-label="Dismiss mascot companion"
+                className={`absolute -top-2 -right-2 z-30 w-5 h-5 rounded-full bg-[#0a0d14]/90 border border-white/20 text-zinc-300 hover:text-white hover:bg-zinc-800 transition-all duration-200 shadow-lg flex items-center justify-center ${
+                  isHovered
+                    ? "opacity-100 scale-100"
+                    : "opacity-0 scale-75 pointer-events-none"
+                }`}
+              >
+                <X className="w-2.5 h-2.5" />
+              </button>
 
-            {/* Telemetry Antenna with Glowing LED Tip */}
-            <div className="flex flex-col items-center mb-[-2px] relative z-0">
+              {/* LAYER 3: Head Tilt & Vertical Posture Adjustment */}
               <motion.div
-                animate={
-                  shouldReduceMotion
-                    ? {}
-                    : {
-                        scale: isHoveringProject ? [1, 1.4, 1] : [1, 1.15, 1],
-                        opacity: isHoveringProject ? [0.8, 1, 0.8] : [0.6, 0.9, 0.6],
-                      }
-                }
-                transition={
-                  shouldReduceMotion
-                    ? {}
-                    : {
-                        repeat: Infinity,
-                        duration: isHoveringProject ? 0.9 : 2.2,
-                        ease: "easeInOut",
-                      }
-                }
-                className="w-2 h-2 rounded-full bg-[#38bdf8] shadow-[0_0_8px_#38bdf8]"
-              />
-              <div className="w-[1.5px] h-3 bg-zinc-600 rounded-full" />
-            </div>
+                style={{
+                  rotate: headTilt,
+                  y: postureTiltY,
+                }}
+                className="relative"
+              >
+                {/* 
+                  AERO / LUMINA: Sculpted Pearl-White & Luminous Silver 3D Character
+                  - Clean, organic aerodynamic silhouette
+                  - High contrast against black #030304 background
+                  - NO clunky antennas, NO robot ear blocks
+                */}
+                <div className="relative w-[56px] h-[64px] rounded-[22px] bg-gradient-to-b from-[#ffffff] via-[#f1f5f9] to-[#cbd5e1] border border-white/80 shadow-[0_12px_28px_rgba(0,0,0,0.65),0_0_18px_rgba(56,189,248,0.25),inset_0_2px_4px_rgba(255,255,255,0.95)] flex flex-col items-center justify-between p-2.5 overflow-hidden">
+                  
+                  {/* Top Directional Specular Sheen (Gives polished 3D ceramic/pearl depth) */}
+                  <div className="absolute top-0 inset-x-2 h-[2px] bg-gradient-to-r from-transparent via-white to-transparent opacity-95" />
 
-            {/* Robot Head & Chassis */}
-            <div className="relative w-[54px] h-[58px] rounded-[18px] bg-gradient-to-b from-[#1b1c24] via-[#121319] to-[#09090d] border border-white/[0.14] shadow-[0_8px_24px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.2)] flex flex-col items-center justify-between p-2 overflow-hidden">
-              {/* Subtle metallic bevel highlight */}
-              <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                  {/* Soft Internal Cyan Ambient Ambient Rim Lighting */}
+                  <div className="absolute inset-0 rounded-[22px] bg-gradient-to-tr from-cyan-400/10 via-transparent to-white/40 pointer-events-none" />
 
-              {/* Obsidian Visor Screen */}
-              <div className="relative w-full h-[28px] rounded-[12px] bg-[#040407] border border-white/[0.08] flex items-center justify-center gap-2 px-1.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)] overflow-hidden">
-                {/* Diagonal Glass Reflection */}
-                <div className="absolute -top-3 -left-2 w-14 h-8 bg-gradient-to-br from-white/[0.08] to-transparent rotate-[-25deg] pointer-events-none" />
+                  {/* Curved Obsidian Glass Visor Screen */}
+                  <div className="relative w-full h-[29px] rounded-[13px] bg-[#05070c] border border-black/80 flex items-center justify-center gap-2.5 px-2 shadow-[inset_0_2px_6px_rgba(0,0,0,0.9),0_1px_2px_rgba(255,255,255,0.5)] overflow-hidden mt-0.5">
+                    
+                    {/* Diagonal Visor Glass Curvature Reflection */}
+                    <div className="absolute -top-3 -left-3 w-16 h-8 bg-gradient-to-br from-white/[0.14] via-white/[0.04] to-transparent rotate-[-22deg] pointer-events-none" />
 
-                {/* Left Eye */}
-                <div className="relative w-3.5 h-4 rounded-full bg-black/70 flex items-center justify-center overflow-hidden">
-                  <motion.div
-                    style={{
-                      x: pupilTargetX,
-                      y: pupilTargetY,
-                    }}
-                    animate={{
-                      scaleY: isBlinking ? 0.08 : 1,
-                      scale: isHoveringProject ? 1.15 : 1,
-                    }}
-                    transition={{
-                      scaleY: { duration: 0.1 },
-                      scale: { duration: 0.2 },
-                    }}
-                    className="w-2.5 h-3 rounded-full bg-[#38bdf8] shadow-[0_0_8px_#38bdf8] flex items-center justify-center"
-                  >
-                    {/* Inner Pupil Glimmer */}
-                    <div className="w-1 h-1 rounded-full bg-white/90" />
-                  </motion.div>
+                    {/* LAYER 4: Left Eye & Pupil (Bounded Tracking) */}
+                    <div className="relative w-3.5 h-4 rounded-full bg-black/60 flex items-center justify-center overflow-hidden">
+                      <motion.div
+                        style={{
+                          x: pupilX,
+                          y: pupilY,
+                        }}
+                        animate={{
+                          scaleY: isBlinking ? 0.08 : 1,
+                          scale: isHoveringProject ? 1.15 : 1,
+                        }}
+                        transition={{
+                          scaleY: { duration: 0.1 },
+                          scale: { duration: 0.2 },
+                        }}
+                        className="w-2.5 h-3.5 rounded-full bg-gradient-to-b from-[#67e8f9] to-[#0284c7] shadow-[0_0_8px_#38bdf8] flex items-center justify-center"
+                      >
+                        {/* Luminous Core Glimmer */}
+                        <div className="w-1 h-1 rounded-full bg-white shadow-[0_0_3px_#ffffff]" />
+                      </motion.div>
+                    </div>
+
+                    {/* LAYER 4: Right Eye & Pupil (Bounded Tracking) */}
+                    <div className="relative w-3.5 h-4 rounded-full bg-black/60 flex items-center justify-center overflow-hidden">
+                      <motion.div
+                        style={{
+                          x: pupilX,
+                          y: pupilY,
+                        }}
+                        animate={{
+                          scaleY: isBlinking ? 0.08 : 1,
+                          scale: isHoveringProject ? 1.15 : 1,
+                        }}
+                        transition={{
+                          scaleY: { duration: 0.1 },
+                          scale: { duration: 0.2 },
+                        }}
+                        className="w-2.5 h-3.5 rounded-full bg-gradient-to-b from-[#67e8f9] to-[#0284c7] shadow-[0_0_8px_#38bdf8] flex items-center justify-center"
+                      >
+                        {/* Luminous Core Glimmer */}
+                        <div className="w-1 h-1 rounded-full bg-white shadow-[0_0_3px_#ffffff]" />
+                      </motion.div>
+                    </div>
+                  </div>
+
+                  {/* Micro Telemetry Status Pill (Recessed Cyan Indicator Notch) */}
+                  <div className="w-full flex items-center justify-between px-1.5 pt-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full bg-[#0284c7] shadow-[0_0_5px_#38bdf8] ${
+                          isHoveringProject ? "animate-ping" : "animate-pulse"
+                        }`}
+                      />
+                      <span className="text-[7.5px] font-mono tracking-wider text-slate-600 uppercase font-bold">
+                        {isHoveringProject ? "TARGET" : "ONLINE"}
+                      </span>
+                    </div>
+                    <div className="w-4 h-[2px] rounded-full bg-slate-300" />
+                  </div>
                 </div>
 
-                {/* Right Eye */}
-                <div className="relative w-3.5 h-4 rounded-full bg-black/70 flex items-center justify-center overflow-hidden">
-                  <motion.div
-                    style={{
-                      x: pupilTargetX,
-                      y: pupilTargetY,
-                    }}
-                    animate={{
-                      scaleY: isBlinking ? 0.08 : 1,
-                      scale: isHoveringProject ? 1.15 : 1,
-                    }}
-                    transition={{
-                      scaleY: { duration: 0.1 },
-                      scale: { duration: 0.2 },
-                    }}
-                    className="w-2.5 h-3 rounded-full bg-[#38bdf8] shadow-[0_0_8px_#38bdf8] flex items-center justify-center"
-                  >
-                    {/* Inner Pupil Glimmer */}
-                    <div className="w-1 h-1 rounded-full bg-white/90" />
-                  </motion.div>
-                </div>
-              </div>
-
-              {/* Lower Body Micro Telemetry Decal */}
-              <div className="w-full flex items-center justify-between px-1 pt-1 opacity-70">
-                <div className="flex items-center gap-1">
-                  <span className="w-1 h-1 rounded-full bg-blue-400/80 animate-pulse" />
-                  <span className="text-[7px] font-mono tracking-wider text-zinc-400 uppercase font-semibold">
-                    {isHoveringProject ? "REC" : "SYS"}
-                  </span>
-                </div>
-                <div className="w-4 h-[1.5px] rounded bg-white/10" />
-              </div>
-            </div>
-
-            {/* Flanking Ear Sensor Dials */}
-            <div className="absolute top-[22px] -left-1.5 w-1.5 h-4 rounded-l-md bg-[#161720] border-l border-y border-white/10 shadow-sm" />
-            <div className="absolute top-[22px] -right-1.5 w-1.5 h-4 rounded-r-md bg-[#161720] border-r border-y border-white/10 shadow-sm" />
+                {/* Subtle base shadow gradient */}
+                <div className="absolute inset-x-2 -bottom-1 h-2 rounded-full bg-slate-400/20 blur-sm pointer-events-none" />
+              </motion.div>
+            </motion.div>
           </motion.div>
-        </motion.aside>
+        </aside>
       )}
     </AnimatePresence>
   );

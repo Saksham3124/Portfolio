@@ -104,7 +104,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ targetSection }) =
         {/* Global Footer */}
         <Footer onRequestResume={handleOpenResumeModal} />
 
-        {/* Interactive 3D Robot Companion Mascot (appears after hero, fixed bottom-20 right-6) */}
+        {/* Interactive 3D Pearl Companion Mascot (appears after hero, fixed bottom-6 left-6) */}
         <InteractiveMascot />
 
         {/* Sticky Bottom-Right Quick Back to Top Bubble */}

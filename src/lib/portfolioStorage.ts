@@ -19,18 +19,10 @@ export { DEFAULT_PORTFOLIO_CONTENT };
 // In-memory cache for fast read/writes
 let memoryCache: PortfolioContentData | null = null;
 
-function getDataFilePath(): string {
-  const localPath = path.join(process.cwd(), "src", "data", "portfolioContent.json");
-  const localDir = path.dirname(localPath);
-  if (fs.existsSync(localDir)) {
-    try {
-      fs.accessSync(localDir, fs.constants.W_OK);
-      return localPath;
-    } catch {
-      // Read-only serverless fallback
-    }
-  }
-  return path.join("/tmp", "portfolioContent.json");
+function getCandidateFilePaths(): { primaryPath: string; tempPath: string } {
+  const primaryPath = path.join(process.cwd(), "src", "data", "portfolioContent.json");
+  const tempPath = path.join("/tmp", "portfolioContent.json");
+  return { primaryPath, tempPath };
 }
 
 /**
@@ -41,10 +33,30 @@ export function getPortfolioData(): PortfolioContentData {
     return memoryCache;
   }
 
-  const filePath = getDataFilePath();
-  if (fs.existsSync(filePath)) {
+  const { primaryPath, tempPath } = getCandidateFilePaths();
+  let candidatePath: string | null = null;
+
+  // Check if tempPath exists (runtime save in serverless) vs primaryPath
+  const hasTemp = fs.existsSync(tempPath);
+  const hasPrimary = fs.existsSync(primaryPath);
+
+  if (hasTemp && hasPrimary) {
     try {
-      const raw = fs.readFileSync(filePath, "utf-8");
+      const tempStat = fs.statSync(tempPath);
+      const primaryStat = fs.statSync(primaryPath);
+      candidatePath = tempStat.mtimeMs >= primaryStat.mtimeMs ? tempPath : primaryPath;
+    } catch {
+      candidatePath = primaryPath;
+    }
+  } else if (hasTemp) {
+    candidatePath = tempPath;
+  } else if (hasPrimary) {
+    candidatePath = primaryPath;
+  }
+
+  if (candidatePath && fs.existsSync(candidatePath)) {
+    try {
+      const raw = fs.readFileSync(candidatePath, "utf-8");
       const parsed = JSON.parse(raw);
       // Merge with defaults to ensure any missing fields are safely populated
       const merged: PortfolioContentData = {
@@ -87,13 +99,26 @@ export async function savePortfolioData(
 
     memoryCache = withTimestamp;
 
-    const filePath = getDataFilePath();
-    const dir = path.dirname(filePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
+    const { primaryPath, tempPath } = getCandidateFilePaths();
+    let savedPath = primaryPath;
 
-    fs.writeFileSync(filePath, JSON.stringify(withTimestamp, null, 2), "utf-8");
+    // Attempt primary path first
+    try {
+      const dir = path.dirname(primaryPath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(primaryPath, JSON.stringify(withTimestamp, null, 2), "utf-8");
+      savedPath = primaryPath;
+    } catch {
+      // Read-only serverless fallback: write to /tmp
+      const tempDir = path.dirname(tempPath);
+      if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+      }
+      fs.writeFileSync(tempPath, JSON.stringify(withTimestamp, null, 2), "utf-8");
+      savedPath = tempPath;
+    }
 
     // Optional: If GitHub Token and Repo are configured in environment variables, commit to GitHub
     if (process.env.GITHUB_TOKEN && process.env.GITHUB_REPO) {
@@ -104,7 +129,7 @@ export async function savePortfolioData(
       }
     }
 
-    return { success: true, filePath };
+    return { success: true, filePath: savedPath };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);
     return { success: false, filePath: "", error: errorMsg };
@@ -116,10 +141,13 @@ export async function savePortfolioData(
  */
 export function resetPortfolioData(): boolean {
   memoryCache = DEFAULT_PORTFOLIO_CONTENT;
-  const filePath = getDataFilePath();
+  const { primaryPath, tempPath } = getCandidateFilePaths();
   try {
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    if (fs.existsSync(primaryPath)) {
+      fs.unlinkSync(primaryPath);
+    }
+    if (fs.existsSync(tempPath)) {
+      fs.unlinkSync(tempPath);
     }
     return true;
   } catch {

@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/next'
 import { Providers } from "@/components/Providers";
+import { getPortfolioData } from "@/lib/portfolioStorage";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -64,6 +65,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialData = getPortfolioData();
+
   return (
     <html lang="en" className="dark scroll-smooth">
       <head>
@@ -78,7 +81,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-[#030304] text-[#fafafa] min-h-screen selection:bg-white/20 selection:text-white`}
       >
-        <Providers>{children}</Providers>
+        <Providers initialData={initialData}>{children}</Providers>
         <Analytics />
       </body>
     </html>
