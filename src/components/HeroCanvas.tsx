@@ -9,7 +9,6 @@ interface WaveParticle {
   radius: number;
   color: string;
   alpha: number;
-  isAmber?: boolean;
   waveIndex: number;
   phaseOffset: number;
   speed: number;
@@ -102,24 +101,21 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
     const particlesPerWave = isTouch ? 35 : 65;
 
     for (let w = 0; w < waveCount; w++) {
-      const isAmberWave = w === waveCount - 1; // Lower wave has warm amber depth embers
       for (let i = 0; i < particlesPerWave; i++) {
         const xFraction = i / (particlesPerWave - 1);
-        const color = isAmberWave
-          ? i % 4 === 0
-            ? "245, 158, 11" // Warm amber
-            : "56, 189, 248" // Sky blue
-          : w % 2 === 0
-          ? "6, 182, 212"  // Electric cyan
-          : "56, 189, 248"; // Vivid sky blue
+        const color =
+          w % 3 === 0
+            ? "6, 182, 212"   // Electric cyan
+            : w % 3 === 1
+            ? "56, 189, 248"  // Vivid sky blue
+            : "186, 230, 253"; // Luminous ice blue
 
         waveParticles.push({
           baseX: xFraction,
           baseY: 0.52 + w * 0.08,
           radius: 0.75 + Math.random() * 1.35,
           color,
-          alpha: isAmberWave ? 0.35 + Math.random() * 0.3 : 0.45 + Math.random() * 0.35,
-          isAmber: isAmberWave && i % 4 === 0,
+          alpha: 0.40 + Math.random() * 0.35,
           waveIndex: w,
           phaseOffset: xFraction * Math.PI * 3 + w * 1.2,
           speed: 0.0006 + (w % 3) * 0.0003,
@@ -251,10 +247,6 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
           ctx.shadowColor = "rgba(6, 182, 212, 0.9)";
           ctx.shadowBlur = 8;
           ctx.fillStyle = `rgba(224, 242, 254, ${alpha})`;
-        } else if (wp.isAmber) {
-          ctx.shadowColor = "rgba(245, 158, 11, 0.5)";
-          ctx.shadowBlur = 4;
-          ctx.fillStyle = `rgba(245, 158, 11, ${alpha})`;
         } else {
           ctx.shadowColor = `rgba(${wp.color}, 0.35)`;
           ctx.shadowBlur = wp.radius > 1.2 ? 3.5 : 0;

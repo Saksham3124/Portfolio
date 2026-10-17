@@ -17,14 +17,12 @@ interface DomainPin {
   subtitle: string;
   icon: React.ComponentType<{ className?: string }>;
   targetId: string;
-  // Percentage coordinates inside the right visualization container (viewBox 0-100)
   nodeX: number;
   nodeY: number;
   pinX: number;
   pinY: number;
   controlX: number;
   controlY: number;
-  // Positioning classes for the pin card container
   style: React.CSSProperties;
 }
 
@@ -87,6 +85,13 @@ const DOMAIN_PINS: DomainPin[] = [
   },
 ];
 
+const ROTATING_PHRASES = [
+  "Analytics",
+  "Risk Modelling",
+  "Data Systems",
+  "Product Thinking",
+];
+
 export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
   const containerRef = useRef<HTMLElement | null>(null);
   const { data } = usePortfolio();
@@ -95,6 +100,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
 
   const [hoveredPin, setHoveredPin] = useState<string | null>(null);
   const [videoError, setVideoError] = useState(false);
+  const [displayedPhrase, setDisplayedPhrase] = useState(ROTATING_PHRASES[0]);
 
   const videoUrl =
     (personalInfo as { heroVideoUrl?: string }).heroVideoUrl ||
@@ -105,6 +111,59 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
   useEffect(() => {
     setVideoError(false);
   }, [videoUrl]);
+
+  // Character-by-character rotating typewriter animation for the key domain phrase
+  useEffect(() => {
+    if (shouldReduceMotion) {
+      setDisplayedPhrase(ROTATING_PHRASES[0]);
+      return;
+    }
+
+    let currentIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    let timerId: NodeJS.Timeout;
+
+    const typeSpeed = 50;        // 45-55ms per character
+    const holdCompleted = 2600;  // 2.6s hold on completed phrase
+    const backspaceSpeed = 28;   // 25-30ms per character backspacing
+    const pauseTransition = 350; // brief pause before typing next phrase
+
+    const step = () => {
+      const targetPhrase = ROTATING_PHRASES[currentIdx];
+
+      if (!isDeleting) {
+        charIdx++;
+        setDisplayedPhrase(targetPhrase.slice(0, charIdx));
+
+        if (charIdx >= targetPhrase.length) {
+          isDeleting = true;
+          timerId = setTimeout(step, holdCompleted);
+          return;
+        }
+
+        timerId = setTimeout(step, typeSpeed);
+      } else {
+        charIdx--;
+        setDisplayedPhrase(targetPhrase.slice(0, charIdx));
+
+        if (charIdx <= 0) {
+          isDeleting = false;
+          currentIdx = (currentIdx + 1) % ROTATING_PHRASES.length;
+          timerId = setTimeout(step, pauseTransition);
+          return;
+        }
+
+        timerId = setTimeout(step, backspaceSpeed);
+      }
+    };
+
+    timerId = setTimeout(step, 400);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [shouldReduceMotion]);
 
   const handlePinClick = (e: React.MouseEvent, targetId: string) => {
     e.preventDefault();
@@ -122,7 +181,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       id="hero"
       className="relative w-full h-screen min-h-[680px] flex flex-col justify-between overflow-hidden bg-[#030304] select-none"
     >
-      {/* 1. Ambient Background Video (Subtle Base Layer) */}
+      {/* 1. Ambient Background Video (Toned-down opacity so headline is primary) */}
       {videoEnabled && !videoError && (
         <video
           key={videoUrl}
@@ -131,7 +190,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
           muted
           playsInline
           onError={() => setVideoError(true)}
-          className="absolute inset-0 w-full h-full object-cover opacity-25 pointer-events-none transition-opacity duration-1000 z-0"
+          className="absolute inset-0 w-full h-full object-cover opacity-18 pointer-events-none transition-opacity duration-1000 z-0"
         >
           <source src={videoUrl} type="video/mp4" />
         </video>
@@ -140,9 +199,11 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       {/* 2. Interactive Cursor-Reactive Particle Network & Data Wave Stream Canvas */}
       <HeroCanvas containerRef={containerRef} />
 
-      {/* 3. Ambient Vignettes & Radial Soft Glow */}
-      <div className="absolute inset-0 pointer-events-none bg-ambient-radial opacity-35 z-0" />
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#030304] via-transparent to-[#030304]/60 z-0" />
+      {/* 3. Deep Tonal Overlays to keep headline dominant and cohesive */}
+      <div className="absolute inset-0 pointer-events-none bg-[#030304]/60 z-0" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#030304] via-[#030304]/85 to-transparent z-0" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#030304] via-transparent to-[#030304]/70 z-0" />
+      <div className="absolute inset-0 pointer-events-none bg-ambient-radial opacity-30 z-0" />
 
       {/* 4. Main Two-Column Hero Composition */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex-1 flex flex-col lg:flex-row items-center justify-between pt-24 sm:pt-28 pb-4">
@@ -157,21 +218,27 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             </span>
           </div>
 
-          {/* Dominant Left-Aligned Headline with Restrained Blue Emphasis */}
-          <h1 className="text-3xl sm:text-5xl md:text-[3.5rem] lg:text-[4.1rem] font-bold tracking-tight text-white leading-[1.08] mb-5 sm:mb-6">
+          {/* Dominant Left-Aligned Headline with Stable Height and Rotating Phrase */}
+          <h1 className="text-3xl sm:text-5xl md:text-[3.4rem] lg:text-[3.9rem] font-bold tracking-tight text-white leading-[1.1] mb-5 sm:mb-6 min-h-[140px] sm:min-h-[175px] md:min-h-[195px] lg:min-h-[220px] flex items-center">
             <span>
               Turning Complex Data
               <br />
-              into Clear,
+              into Clear Decisions with
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-400 to-cyan-300">
-                Defensible Decisions.
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-400 to-cyan-300 inline-flex items-baseline">
+                <span>{displayedPhrase}</span>
+                {!shouldReduceMotion && (
+                  <span
+                    className="inline-block w-[2px] sm:w-[3px] h-[0.82em] bg-cyan-400 ml-1.5 align-middle animate-pulse"
+                    aria-hidden="true"
+                  />
+                )}
               </span>
             </span>
           </h1>
 
           {/* Supporting Narrative Text */}
-          <p className="text-sm sm:text-base md:text-lg text-zinc-400 font-normal leading-relaxed max-w-lg mb-8 sm:mb-9">
+          <p className="text-sm sm:text-base md:text-lg text-zinc-400 font-normal leading-relaxed max-w-lg mb-7 sm:mb-8">
             I build data-driven solutions that combine analytics, risk modeling, and reliable systems to solve real-world problems.
           </p>
 
@@ -200,6 +267,51 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
               <span>Get In Touch</span>
             </motion.button>
           </div>
+
+          {/* Compact Understated Social Links Row */}
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs sm:text-[13px] font-mono text-zinc-400 mt-5 sm:mt-6">
+            <motion.a
+              href={personalInfo.contact.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor="view"
+              whileHover={shouldReduceMotion ? {} : { y: -1 }}
+              transition={{ type: "spring", stiffness: 450, damping: 20 }}
+              className="hover:text-white transition-colors cursor-pointer"
+              aria-label="GitHub Profile"
+            >
+              GitHub
+            </motion.a>
+
+            <span className="text-zinc-600 select-none" aria-hidden="true">·</span>
+
+            <motion.a
+              href={personalInfo.contact.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor="view"
+              whileHover={shouldReduceMotion ? {} : { y: -1 }}
+              transition={{ type: "spring", stiffness: 450, damping: 20 }}
+              className="hover:text-white transition-colors cursor-pointer"
+              aria-label="LinkedIn Profile"
+            >
+              LinkedIn
+            </motion.a>
+
+            <span className="text-zinc-600 select-none" aria-hidden="true">·</span>
+
+            <motion.a
+              href={`mailto:${personalInfo.contact.email}`}
+              data-cursor="view"
+              whileHover={shouldReduceMotion ? {} : { y: -1 }}
+              transition={{ type: "spring", stiffness: 450, damping: 20 }}
+              className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4 cursor-pointer"
+              aria-label={`Send email to ${personalInfo.contact.email}`}
+            >
+              {personalInfo.contact.email}
+            </motion.a>
+          </div>
+
         </div>
 
         {/* RIGHT COLUMN: Integrated Domain Visualization (4 Domain Pins & Central Nexus) */}
