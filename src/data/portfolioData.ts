@@ -69,6 +69,52 @@ export interface AchievementItem {
   impactMetrics?: string;
 }
 
+export interface HeroVideoPreset {
+  id: string;
+  title: string;
+  url: string;
+  description: string;
+  category: string;
+}
+
+export const HERO_VIDEO_PRESETS: HeroVideoPreset[] = [
+  {
+    id: "topography",
+    title: "Topological Surface Mesh (Default)",
+    url: "/videos/hero-background.mp4",
+    description: "Mathematical 3D contour terrain with ambient dimensional depth.",
+    category: "Analytics & Modeling",
+  },
+  {
+    id: "forensic-nodes",
+    title: "Forensic Node Network",
+    url: "/videos/hero-forensic-nodes.mp4",
+    description: "Interconnected data nodes, anomaly clusters, and dynamic relational vectors.",
+    category: "Risk & Fraud Anomaly",
+  },
+  {
+    id: "telemetry-streams",
+    title: "Telemetry Pipeline Streams",
+    url: "/videos/hero-telemetry-streams.mp4",
+    description: "High-throughput parallel data rails with glowing packet pulses.",
+    category: "Data Pipelines & Engineering",
+  },
+  {
+    id: "coordinate-radar",
+    title: "Radar & Coordinate Grid Sweep",
+    url: "/videos/hero-coordinate-radar.mp4",
+    description: "Engineering azimuth rings, crosshair telemetry, and sweeping radar phosphor.",
+    category: "Signals & Telemetry",
+  },
+  {
+    id: "particles-drift",
+    title: "Constellation Particles Drift",
+    url: "/videos/hero-particles-drift.mp4",
+    description: "Deep ambient floating particles and subtle clustering dynamics.",
+    category: "Customer Insights & Clustering",
+  },
+];
+
 export const PERSONAL_INFO = {
   name: "Kumar Saksham",
   roleTitle: "DATA · ANALYTICS · RISK · PRODUCT",
@@ -80,6 +126,8 @@ export const PERSONAL_INFO = {
   ],
   heroSupporting:
     "Engineering graduate focused on analytics, risk, customer insights, and AI-assisted decision systems.",
+  heroVideoEnabled: true,
+  heroVideoUrl: "/videos/hero-background.mp4",
   coreNarrative:
     "I combine structured analysis, statistical methods, and reliable data workflows to solve customer, risk, and data-quality problems and support better decisions.",
   contact: {

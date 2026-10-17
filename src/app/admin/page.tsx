@@ -40,7 +40,7 @@ import {
   PortfolioContentData,
   DEFAULT_PORTFOLIO_CONTENT,
 } from "@/lib/portfolioModel";
-import { Project } from "@/data/portfolioData";
+import { Project, HERO_VIDEO_PRESETS } from "@/data/portfolioData";
 
 export default function AdminPage() {
   // Auth state
@@ -1078,23 +1078,28 @@ export default function AdminPage() {
                   />
                 </div>
 
-                {/* Hero Background Video Settings */}
-                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-4">
-                  <div className="flex items-center justify-between">
+                {/* Hero Background Video Settings & Switcher */}
+                <div className="p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
                       <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400">
                         <Video className="w-4 h-4" />
                       </div>
                       <div>
-                        <label className="text-xs font-mono uppercase text-zinc-300 tracking-wider font-semibold">
-                          Hero Background Ambient Video
-                        </label>
-                        <p className="text-xs text-zinc-400">
-                          Controls the looping ambient video layer in the background of the hero section.
+                        <div className="flex items-center gap-2">
+                          <label className="text-xs font-mono uppercase text-zinc-200 tracking-wider font-semibold">
+                            Hero Background Ambient Video
+                          </label>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/30">
+                            {data.personalInfo.heroVideoEnabled !== false ? "Enabled" : "Disabled"}
+                          </span>
+                        </div>
+                        <p className="text-xs text-zinc-400 mt-0.5">
+                          Select from 5 curated ambient video loops or specify a custom video URL.
                         </p>
                       </div>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
+                    <label className="relative inline-flex items-center cursor-pointer shrink-0">
                       <input
                         type="checkbox"
                         checked={data.personalInfo.heroVideoEnabled !== false}
@@ -1114,9 +1119,97 @@ export default function AdminPage() {
                     </label>
                   </div>
 
+                  {/* Preset Video Cards Grid */}
                   <div>
-                    <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                      Video File URL / Path
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="text-[11px] font-mono uppercase tracking-wider text-zinc-300 font-semibold">
+                        Choose a Video Preset
+                      </label>
+                      <span className="text-[11px] font-mono text-zinc-500">
+                        Click any card to switch
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                      {HERO_VIDEO_PRESETS.map((preset) => {
+                        const isSelected =
+                          (data.personalInfo.heroVideoUrl || "/videos/hero-background.mp4") ===
+                          preset.url;
+                        return (
+                          <div
+                            key={preset.id}
+                            onClick={() => {
+                              setData({
+                                ...data,
+                                personalInfo: {
+                                  ...data.personalInfo,
+                                  heroVideoUrl: preset.url,
+                                  heroVideoEnabled: true,
+                                },
+                              });
+                              setIsDirty(true);
+                            }}
+                            className={`p-3.5 rounded-xl border transition-all duration-200 cursor-pointer flex flex-col justify-between group ${
+                              isSelected
+                                ? "bg-blue-500/[0.08] border-blue-500/50 shadow-lg ring-1 ring-blue-500/30"
+                                : "bg-white/[0.02] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.04]"
+                            }`}
+                          >
+                            <div>
+                              {/* Video Mini Preview Thumbnail */}
+                              <div className="relative w-full h-24 rounded-lg overflow-hidden bg-black/60 border border-white/10 mb-3">
+                                <video
+                                  src={preset.url}
+                                  autoPlay
+                                  loop
+                                  muted
+                                  playsInline
+                                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity pointer-events-none"
+                                />
+                                {isSelected && (
+                                  <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-blue-600 text-white text-[10px] font-mono font-semibold flex items-center gap-1 shadow-md">
+                                    <Check className="w-3 h-3" />
+                                    <span>Active</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="flex items-center gap-1.5 mb-1.5">
+                                <span className="text-[10px] font-mono text-zinc-400 px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/5">
+                                  {preset.category}
+                                </span>
+                              </div>
+
+                              <h4 className="text-xs font-semibold text-white tracking-tight group-hover:text-blue-300 transition-colors">
+                                {preset.title}
+                              </h4>
+                              <p className="text-[11px] text-zinc-400 mt-1 leading-snug line-clamp-2">
+                                {preset.description}
+                              </p>
+                            </div>
+
+                            <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-[10px] font-mono">
+                              <span className="text-zinc-500 truncate max-w-[140px]">{preset.url}</span>
+                              <span
+                                className={
+                                  isSelected
+                                    ? "text-blue-400 font-semibold"
+                                    : "text-zinc-400 group-hover:text-zinc-200"
+                                }
+                              >
+                                {isSelected ? "Selected ✓" : "Select →"}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Custom URL Input */}
+                  <div className="pt-3 border-t border-white/[0.06]">
+                    <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1.5 font-semibold">
+                      Custom Video URL or Local File Path
                     </label>
                     <input
                       type="text"
@@ -1132,10 +1225,10 @@ export default function AdminPage() {
                         setIsDirty(true);
                       }}
                       placeholder="/videos/hero-background.mp4 or https://your-cdn.com/video.mp4"
-                      className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
+                      className="w-full px-3 py-2 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none focus:border-white/30 font-mono"
                     />
-                    <p className="text-[11px] text-zinc-500 mt-1 font-mono">
-                      Tip: Place any MP4 inside your project&apos;s <code className="text-zinc-300">/public/videos/</code> directory and reference it as <code className="text-zinc-300">/videos/filename.mp4</code>, or paste a direct public HTTPS URL.
+                    <p className="text-[11px] text-zinc-500 mt-1.5 font-mono">
+                      Current Active Source: <code className="text-zinc-300 font-bold">{data.personalInfo.heroVideoUrl || "/videos/hero-background.mp4"}</code>
                     </p>
                   </div>
                 </div>
