@@ -218,22 +218,20 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             </span>
           </div>
 
-          {/* Dominant Left-Aligned Headline with Stable Height and Rotating Phrase */}
-          <h1 className="text-3xl sm:text-5xl md:text-[3.4rem] lg:text-[3.9rem] font-bold tracking-tight text-white leading-[1.1] mb-5 sm:mb-6 min-h-[140px] sm:min-h-[175px] md:min-h-[195px] lg:min-h-[220px] flex items-center">
-            <span>
-              Turning Complex Data
-              <br />
-              into Clear Decisions with
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-400 to-cyan-300 inline-flex items-baseline">
-                <span>{displayedPhrase}</span>
-                {!shouldReduceMotion && (
-                  <span
-                    className="inline-block w-[2px] sm:w-[3px] h-[0.82em] bg-cyan-400 ml-1.5 align-middle animate-pulse"
-                    aria-hidden="true"
-                  />
-                )}
+          {/* Dominant Left-Aligned Headline with Stable Height and Natural Multi-line Wrapping */}
+          <h1 className="text-2xl sm:text-4xl md:text-[2.85rem] lg:text-[3.25rem] xl:text-[3.75rem] font-bold tracking-tight text-white leading-[1.12] mb-5 sm:mb-6 min-h-[130px] sm:min-h-[175px] md:min-h-[200px] lg:min-h-[230px] xl:min-h-[255px] flex flex-col justify-start items-start max-w-full">
+            <span className="w-full">
+              <span className="block">Turning Complex Data</span>
+              <span className="block">into Clear Decisions with</span>
+              <span className="inline text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-400 to-cyan-300 break-words">
+                {displayedPhrase}
               </span>
+              {!shouldReduceMotion && (
+                <span
+                  className="inline-block w-[2px] sm:w-[3px] h-[0.82em] bg-cyan-400 ml-1.5 align-middle animate-pulse shrink-0"
+                  aria-hidden="true"
+                />
+              )}
             </span>
           </h1>
 
@@ -302,10 +300,9 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
 
             <motion.a
               href={`mailto:${personalInfo.contact.email}`}
-              data-cursor="view"
               whileHover={shouldReduceMotion ? {} : { y: -1 }}
               transition={{ type: "spring", stiffness: 450, damping: 20 }}
-              className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4 cursor-pointer"
+              className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4 cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-400/60 rounded-sm"
               aria-label={`Send email to ${personalInfo.contact.email}`}
             >
               {personalInfo.contact.email}
