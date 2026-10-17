@@ -18,7 +18,6 @@ import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { BackToTop } from "@/components/BackToTop";
 import { PointerProvider } from "@/context/PointerContext";
 import { CustomCursor } from "@/components/CustomCursor";
-import { InteractiveMascot } from "@/components/InteractiveMascot";
 
 interface PortfolioViewProps {
   targetSection?: string;
@@ -103,9 +102,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ targetSection }) =
 
         {/* Global Footer */}
         <Footer onRequestResume={handleOpenResumeModal} />
-
-        {/* Interactive 3D Mechanical Mascot (appears after hero, fixed at left vertical midpoint) */}
-        <InteractiveMascot />
 
         {/* Sticky Bottom-Right Quick Back to Top Bubble */}
         <BackToTop />

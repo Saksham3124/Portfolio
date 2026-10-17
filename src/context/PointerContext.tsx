@@ -5,7 +5,6 @@ import React, {
   useContext,
   useEffect,
   useState,
-  useCallback,
 } from "react";
 import { MotionValue, useMotionValue } from "framer-motion";
 
@@ -19,8 +18,6 @@ interface PointerContextType {
   isHoveringProject: boolean;
   hoveredProjectTitle: string | null;
   isTouchDevice: boolean;
-  isMascotDismissed: boolean;
-  dismissMascot: () => void;
 }
 
 const PointerContext = createContext<PointerContextType | null>(null);
@@ -44,32 +41,6 @@ export const PointerProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isHoveringProject, setIsHoveringProject] = useState(false);
   const [hoveredProjectTitle, setHoveredProjectTitle] = useState<string | null>(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
-  const [isMascotDismissed, setIsMascotDismissed] = useState(false);
-
-  // Check dismissal state from sessionStorage on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const dismissed = sessionStorage.getItem("portfolio_mascot_dismissed");
-        if (dismissed === "true") {
-          setIsMascotDismissed(true);
-        }
-      } catch {
-        // Ignore session storage errors
-      }
-    }
-  }, []);
-
-  const dismissMascot = useCallback(() => {
-    setIsMascotDismissed(true);
-    if (typeof window !== "undefined") {
-      try {
-        sessionStorage.setItem("portfolio_mascot_dismissed", "true");
-      } catch {
-        // Ignore session storage errors
-      }
-    }
-  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -161,8 +132,6 @@ export const PointerProvider: React.FC<{ children: React.ReactNode }> = ({
         isHoveringProject,
         hoveredProjectTitle,
         isTouchDevice,
-        isMascotDismissed,
-        dismissMascot,
       }}
     >
       {children}
