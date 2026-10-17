@@ -104,19 +104,20 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
 
     // -------------------------------------------------------------
     // Single Coherent, Randomly Distributed Particle Field
+    // Increased density (+35%) and slightly higher base opacity
     // -------------------------------------------------------------
     const particles: HeroParticle[] = [];
     const rng = createRng(1337);
-    const totalCount = isTouch ? 80 : 180;
-    const nexusTargetCount = Math.floor(totalCount * 0.35); // ~35% organically clustered around right domain nexus
+    const totalCount = isTouch ? 110 : 245; // Increased density by ~35%
+    const nexusTargetCount = Math.floor(totalCount * 0.36); // ~36% organically clustered around right domain nexus
 
     const nexusCenterX = 0.72;
-    const nexusCenterY = 0.48;
+    const nexusCenterY = 0.50; // Aligned with the vertically centered domain pins
 
     let generated = 0;
     let attempts = 0;
 
-    while (generated < totalCount && attempts < 3000) {
+    while (generated < totalCount && attempts < 4000) {
       attempts++;
       const isNexus = generated < nexusTargetCount;
       let baseX: number;
@@ -125,7 +126,7 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
       if (isNexus) {
         // Natural distribution clustered around the right-side domain constellation
         const angle = rng() * Math.PI * 2;
-        const dist = Math.pow(rng(), 0.72) * 0.32;
+        const dist = Math.pow(rng(), 0.72) * 0.34;
         baseX = nexusCenterX + Math.cos(angle) * dist * 0.85;
         baseY = nexusCenterY + Math.sin(angle) * dist;
 
@@ -134,12 +135,12 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
         }
       } else {
         // Naturally scattered across the entire hero background
-        baseX = 0.03 + rng() * 0.94;
-        baseY = 0.05 + rng() * 0.90;
+        baseX = 0.02 + rng() * 0.96;
+        baseY = 0.04 + rng() * 0.92;
 
         // Preserve comfortable negative space behind headline & supporting narrative
-        // Left column text area roughly: x from 0.06 to 0.44, y from 0.18 to 0.68
-        if (baseX > 0.06 && baseX < 0.44 && baseY > 0.18 && baseY < 0.68) {
+        // Left column text area roughly: x from 0.06 to 0.44, y from 0.16 to 0.70
+        if (baseX > 0.06 && baseX < 0.44 && baseY > 0.16 && baseY < 0.70) {
           if (rng() < 0.65) {
             // Keep background behind text sparse and unobtrusive
             continue;
@@ -164,26 +165,26 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
       let isAccent = false;
 
       if (sizeRoll < 0.72) {
-        radius = 0.65 + rng() * 0.45; // ~1.3 - 2.2px diameter
-      } else if (sizeRoll < 0.92) {
-        radius = 1.1 + rng() * 0.35;  // ~2.2 - 2.9px diameter
+        radius = 0.70 + rng() * 0.45; // ~1.4 - 2.3px diameter
+      } else if (sizeRoll < 0.90) {
+        radius = 1.15 + rng() * 0.35; // ~2.3 - 3.0px diameter
       } else {
-        radius = 1.45 + rng() * 0.45; // ~2.9 - 3.8px diameter (restrained accent)
+        radius = 1.50 + rng() * 0.45; // ~3.0 - 3.9px diameter (restrained accent)
         isAccent = true;
       }
 
-      // Opacity: most dim and restrained, few brighter accents
+      // Opacity: increased visibility while maintaining dark atmospheric elegance
       let baseAlpha: number;
       if (isNexus) {
-        baseAlpha = 0.35 + rng() * 0.35; // 0.35 - 0.70 near domain nexus
+        baseAlpha = 0.42 + rng() * 0.38; // 0.42 - 0.80 near domain nexus
       } else if (baseX < 0.44) {
-        baseAlpha = 0.16 + rng() * 0.22; // 0.16 - 0.38 behind headline for crisp contrast
+        baseAlpha = 0.20 + rng() * 0.24; // 0.20 - 0.44 behind headline for crisp text legibility
       } else {
-        baseAlpha = 0.22 + rng() * 0.32; // 0.22 - 0.54 general ambient field
+        baseAlpha = 0.28 + rng() * 0.34; // 0.28 - 0.62 general ambient field
       }
 
       if (isAccent) {
-        baseAlpha = Math.min(0.85, baseAlpha + 0.20);
+        baseAlpha = Math.min(0.92, baseAlpha + 0.24);
       }
 
       // Very slow, independent, multi-directional 2D drift
@@ -235,14 +236,14 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
       // Draw subtle ambient vignette gradient around domain nexus for atmospheric depth
       const bgGrad = ctx.createRadialGradient(
         width * 0.72,
-        height * 0.48,
+        height * 0.50,
         40,
         width * 0.72,
-        height * 0.48,
+        height * 0.50,
         width * 0.55
       );
-      bgGrad.addColorStop(0, "rgba(6, 182, 212, 0.05)");
-      bgGrad.addColorStop(0.5, "rgba(14, 30, 60, 0.025)");
+      bgGrad.addColorStop(0, "rgba(6, 182, 212, 0.055)");
+      bgGrad.addColorStop(0.5, "rgba(14, 30, 60, 0.028)");
       bgGrad.addColorStop(1, "rgba(3, 3, 4, 0)");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
@@ -293,8 +294,8 @@ export const HeroCanvas: React.FC<HeroCanvasProps> = ({ containerRef }) => {
           ctx.shadowBlur = 6;
           ctx.fillStyle = `rgba(224, 242, 254, ${alpha})`;
         } else if (p.isNexus && p.radius > 1.2) {
-          ctx.shadowColor = `rgba(${p.color}, 0.45)`;
-          ctx.shadowBlur = 3.5;
+          ctx.shadowColor = `rgba(${p.color}, 0.5)`;
+          ctx.shadowBlur = 4;
           ctx.fillStyle = `rgba(${p.color}, ${alpha})`;
         } else {
           ctx.fillStyle = `rgba(${p.color}, ${alpha})`;

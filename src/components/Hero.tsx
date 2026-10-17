@@ -35,11 +35,11 @@ const DOMAIN_PINS: DomainPin[] = [
     targetId: "about",
     nodeX: 50,
     nodeY: 50,
-    pinX: 66,
-    pinY: 18,
-    controlX: 62,
-    controlY: 34,
-    style: { top: "6%", left: "54%" },
+    pinX: 64,
+    pinY: 26,
+    controlX: 60,
+    controlY: 38,
+    style: { top: "14%", left: "52%" },
   },
   {
     id: "data",
@@ -50,10 +50,10 @@ const DOMAIN_PINS: DomainPin[] = [
     nodeX: 50,
     nodeY: 50,
     pinX: 24,
-    pinY: 42,
+    pinY: 48,
     controlX: 36,
-    controlY: 46,
-    style: { top: "34%", left: "12%" },
+    controlY: 50,
+    style: { top: "40%", left: "10%" },
   },
   {
     id: "risk",
@@ -63,11 +63,11 @@ const DOMAIN_PINS: DomainPin[] = [
     targetId: "experience",
     nodeX: 50,
     nodeY: 50,
-    pinX: 46,
-    pinY: 76,
-    controlX: 48,
-    controlY: 64,
-    style: { top: "68%", left: "30%" },
+    pinX: 48,
+    pinY: 82,
+    controlX: 49,
+    controlY: 68,
+    style: { top: "76%", left: "32%" },
   },
   {
     id: "product",
@@ -77,19 +77,32 @@ const DOMAIN_PINS: DomainPin[] = [
     targetId: "work",
     nodeX: 50,
     nodeY: 50,
-    pinX: 82,
+    pinX: 80,
     pinY: 58,
-    controlX: 70,
+    controlX: 68,
     controlY: 54,
-    style: { top: "48%", left: "67%" },
+    style: { top: "50%", left: "65%" },
   },
 ];
 
-const ROTATING_PHRASES = [
-  "Analytics",
-  "Risk Modelling",
-  "Data Systems",
-  "Product Thinking",
+interface TypingSentence {
+  text: string;
+  highlightStart: number;
+}
+
+const TYPING_SENTENCES: TypingSentence[] = [
+  {
+    text: "Turning Complex Data into Clear, Defensible Decisions.",
+    highlightStart: 27, // "Turning Complex Data into "
+  },
+  {
+    text: "Investigating Data. Validating Signals. Driving Action.",
+    highlightStart: 40, // "Investigating Data. Validating Signals. "
+  },
+  {
+    text: "Engineering Data Systems for Better Decisions.",
+    highlightStart: 29, // "Engineering Data Systems for "
+  },
 ];
 
 export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
@@ -100,7 +113,8 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
 
   const [hoveredPin, setHoveredPin] = useState<string | null>(null);
   const [videoError, setVideoError] = useState(false);
-  const [displayedPhrase, setDisplayedPhrase] = useState(ROTATING_PHRASES[0]);
+  const [sentenceIdx, setSentenceIdx] = useState(0);
+  const [charCount, setCharCount] = useState(TYPING_SENTENCES[0].text.length);
 
   const videoUrl =
     (personalInfo as { heroVideoUrl?: string }).heroVideoUrl ||
@@ -112,31 +126,33 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
     setVideoError(false);
   }, [videoUrl]);
 
-  // Character-by-character rotating typewriter animation for the key domain phrase
+  // Progressive full-sentence typewriter animation
   useEffect(() => {
     if (shouldReduceMotion) {
-      setDisplayedPhrase(ROTATING_PHRASES[0]);
+      setSentenceIdx(0);
+      setCharCount(TYPING_SENTENCES[0].text.length);
       return;
     }
 
     let currentIdx = 0;
-    let charIdx = 0;
+    let chars = 0;
     let isDeleting = false;
     let timerId: NodeJS.Timeout;
 
-    const typeSpeed = 50;        // 45-55ms per character
-    const holdCompleted = 2600;  // 2.6s hold on completed phrase
-    const backspaceSpeed = 28;   // 25-30ms per character backspacing
-    const pauseTransition = 350; // brief pause before typing next phrase
+    const typeSpeed = 44;        // 40-48ms per character
+    const holdCompleted = 2600;  // 2.6s hold on completed sentence
+    const backspaceSpeed = 22;   // 20-24ms per character backspacing
+    const pauseTransition = 350; // brief pause before typing next sentence
 
     const step = () => {
-      const targetPhrase = ROTATING_PHRASES[currentIdx];
+      const sentence = TYPING_SENTENCES[currentIdx];
 
       if (!isDeleting) {
-        charIdx++;
-        setDisplayedPhrase(targetPhrase.slice(0, charIdx));
+        chars++;
+        setCharCount(chars);
+        setSentenceIdx(currentIdx);
 
-        if (charIdx >= targetPhrase.length) {
+        if (chars >= sentence.text.length) {
           isDeleting = true;
           timerId = setTimeout(step, holdCompleted);
           return;
@@ -144,12 +160,14 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
 
         timerId = setTimeout(step, typeSpeed);
       } else {
-        charIdx--;
-        setDisplayedPhrase(targetPhrase.slice(0, charIdx));
+        chars--;
+        setCharCount(chars);
+        setSentenceIdx(currentIdx);
 
-        if (charIdx <= 0) {
+        if (chars <= 0) {
           isDeleting = false;
-          currentIdx = (currentIdx + 1) % ROTATING_PHRASES.length;
+          currentIdx = (currentIdx + 1) % TYPING_SENTENCES.length;
+          setSentenceIdx(currentIdx);
           timerId = setTimeout(step, pauseTransition);
           return;
         }
@@ -158,12 +176,23 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       }
     };
 
+    setCharCount(0);
     timerId = setTimeout(step, 400);
 
     return () => {
       clearTimeout(timerId);
     };
   }, [shouldReduceMotion]);
+
+  const currentSentence = TYPING_SENTENCES[sentenceIdx];
+  const whiteText = currentSentence.text.slice(
+    0,
+    Math.min(charCount, currentSentence.highlightStart)
+  );
+  const highlightText =
+    charCount > currentSentence.highlightStart
+      ? currentSentence.text.slice(currentSentence.highlightStart, charCount)
+      : "";
 
   const handlePinClick = (e: React.MouseEvent, targetId: string) => {
     e.preventDefault();
@@ -206,10 +235,10 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       <HeroCanvas containerRef={containerRef} />
 
       {/* 4. Main Two-Column Hero Composition */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex-1 flex flex-col lg:flex-row items-center justify-between pt-24 sm:pt-28 pb-4">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex-1 flex flex-col lg:flex-row items-center justify-between pt-20 sm:pt-24 lg:pt-0 pb-2 sm:pb-4">
         
         {/* LEFT COLUMN: Left-Aligned Headline, Positioning & Action CTAs */}
-        <div className="w-full lg:w-[44%] xl:w-[42%] flex flex-col items-start text-left shrink-0 z-20">
+        <div className="w-full lg:w-[46%] xl:w-[44%] flex flex-col items-start text-left shrink-0 z-20">
           
           {/* Eyebrow Positioning: DATA · RISK · ENGINEERING · PRODUCT */}
           <div className="inline-flex items-center gap-2 mb-4 sm:mb-5">
@@ -218,14 +247,24 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             </span>
           </div>
 
-          {/* Dominant Left-Aligned Headline with Stable Height and Natural Multi-line Wrapping */}
-          <h1 className="text-2xl sm:text-4xl md:text-[2.85rem] lg:text-[3.25rem] xl:text-[3.75rem] font-bold tracking-tight text-white leading-[1.12] mb-5 sm:mb-6 min-h-[130px] sm:min-h-[175px] md:min-h-[200px] lg:min-h-[230px] xl:min-h-[255px] flex flex-col justify-start items-start max-w-full">
-            <span className="w-full">
-              <span className="block">Turning Complex Data</span>
-              <span className="block">into Clear Decisions with</span>
-              <span className="inline text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-400 to-cyan-300 break-words">
-                {displayedPhrase}
-              </span>
+          {/* Dominant Left-Aligned Headline with Full-Sentence Typewriter Animation */}
+          <h1
+            className="text-2xl sm:text-4xl md:text-[2.65rem] lg:text-[2.9rem] xl:text-[3.25rem] font-bold tracking-tight text-white leading-[1.15] mb-5 sm:mb-6 min-h-[140px] sm:min-h-[175px] md:min-h-[195px] lg:min-h-[210px] xl:min-h-[225px] flex flex-col justify-start items-start max-w-full"
+            aria-label={TYPING_SENTENCES[sentenceIdx].text}
+          >
+            {/* Screen reader static announcement */}
+            <span className="sr-only">
+              {TYPING_SENTENCES[sentenceIdx].text}
+            </span>
+
+            {/* Visual animated typing text with graceful multi-line wrapping */}
+            <span className="w-full break-words" aria-hidden="true">
+              <span>{whiteText}</span>
+              {highlightText && (
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-400 to-cyan-300">
+                  {highlightText}
+                </span>
+              )}
               {!shouldReduceMotion && (
                 <span
                   className="inline-block w-[2px] sm:w-[3px] h-[0.82em] bg-cyan-400 ml-1.5 align-middle animate-pulse shrink-0"
@@ -312,10 +351,10 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
         </div>
 
         {/* RIGHT COLUMN: Integrated Domain Visualization (4 Domain Pins & Central Nexus) */}
-        <div className="w-full lg:w-[56%] xl:w-[58%] flex items-center justify-center relative mt-8 lg:mt-0 h-[380px] sm:h-[460px] lg:h-[520px] lg:pl-6 xl:pl-10">
+        <div className="w-full lg:w-[54%] xl:w-[56%] flex items-center justify-center relative mt-6 lg:mt-0 h-[400px] sm:h-[480px] lg:h-[540px] xl:h-[560px] lg:pl-6 xl:pl-10">
           
           {/* Desktop Floating Constellation Visualization */}
-          <div className="relative w-full h-full max-w-[540px] max-h-[480px] flex items-center justify-center">
+          <div className="relative w-full h-full max-w-[540px] max-h-[500px] flex items-center justify-center">
             
             {/* Curved Connecting SVG Lines Layer */}
             <svg
