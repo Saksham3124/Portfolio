@@ -26,8 +26,8 @@ export const SectionDots: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Hide rail when hero section is visible; reveal only once hero section is covered (>= 88% of viewport height)
-      const heroCoveredThreshold = window.innerHeight * 0.88;
+      // Hide rail when hero section is visible; reveal once hero section begins exiting (>= 70% of viewport height)
+      const heroCoveredThreshold = window.innerHeight * 0.70;
       if (window.scrollY < heroCoveredThreshold) {
         setIsVisible(false);
         setActiveSection("");

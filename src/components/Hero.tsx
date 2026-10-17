@@ -1,21 +1,100 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { ArrowRight, ArrowDown } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { ArrowUpRight, Mail, BarChart3, Database, ShieldCheck, Box } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { PERSONAL_INFO } from "@/data/portfolioData";
 import { usePortfolio } from "@/context/PortfolioContext";
+import { HeroCanvas } from "@/components/HeroCanvas";
 
 interface HeroProps {
   onRequestResume: () => void;
 }
 
+interface DomainPin {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: React.ComponentType<{ className?: string }>;
+  targetId: string;
+  // Percentage coordinates inside the right visualization container (viewBox 0-100)
+  nodeX: number;
+  nodeY: number;
+  pinX: number;
+  pinY: number;
+  controlX: number;
+  controlY: number;
+  // Positioning classes for the pin card container
+  style: React.CSSProperties;
+}
+
+const DOMAIN_PINS: DomainPin[] = [
+  {
+    id: "analytics",
+    title: "Analytics",
+    subtitle: "Customer insights, segmentation and statistical analysis.",
+    icon: BarChart3,
+    targetId: "about",
+    nodeX: 50,
+    nodeY: 50,
+    pinX: 66,
+    pinY: 18,
+    controlX: 62,
+    controlY: 34,
+    style: { top: "6%", left: "54%" },
+  },
+  {
+    id: "data",
+    title: "Data",
+    subtitle: "Reliable pipelines, SQL and data quality.",
+    icon: Database,
+    targetId: "work",
+    nodeX: 50,
+    nodeY: 50,
+    pinX: 20,
+    pinY: 42,
+    controlX: 34,
+    controlY: 46,
+    style: { top: "34%", left: "4%" },
+  },
+  {
+    id: "risk",
+    title: "Risk",
+    subtitle: "Anomaly detection, scoring and validation.",
+    icon: ShieldCheck,
+    targetId: "experience",
+    nodeX: 50,
+    nodeY: 50,
+    pinX: 44,
+    pinY: 76,
+    controlX: 47,
+    controlY: 64,
+    style: { top: "68%", left: "28%" },
+  },
+  {
+    id: "product",
+    title: "Product",
+    subtitle: "Problem framing, prioritization and decision support.",
+    icon: Box,
+    targetId: "work",
+    nodeX: 50,
+    nodeY: 50,
+    pinX: 80,
+    pinY: 58,
+    controlX: 68,
+    controlY: 54,
+    style: { top: "48%", left: "65%" },
+  },
+];
+
 export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
+  const containerRef = useRef<HTMLElement | null>(null);
   const { data } = usePortfolio();
   const personalInfo = data?.personalInfo || PERSONAL_INFO;
-
-  const [videoError, setVideoError] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+
+  const [hoveredPin, setHoveredPin] = useState<string | null>(null);
+  const [videoError, setVideoError] = useState(false);
 
   const videoUrl =
     (personalInfo as { heroVideoUrl?: string }).heroVideoUrl ||
@@ -27,96 +106,23 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
     setVideoError(false);
   }, [videoUrl]);
 
-  // Rotating Typewriter State
-  const [displayedText, setDisplayedText] = useState("");
-  const [isReducedMotion, setIsReducedMotion] = useState(false);
-
-  const rotatingHeadlines = useMemo(
-    () => {
-      if (
-        personalInfo.heroRotatingHeadlines &&
-        personalInfo.heroRotatingHeadlines.length > 0
-      ) {
-        return personalInfo.heroRotatingHeadlines;
-      }
-      return [
-        personalInfo.heroHeadline || "Turning Complex Data into Clear, Defensible Decisions.",
-        "Investigating Data. Validating the Signal. Driving Action.",
-        "Engineering Data Systems for Better Decisions.",
-      ];
-    },
-    [personalInfo.heroRotatingHeadlines, personalInfo.heroHeadline]
-  );
-
-  useEffect(() => {
-    // Respect prefers-reduced-motion: render Headline 1 immediately and keep static
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      setIsReducedMotion(true);
-      setDisplayedText(rotatingHeadlines[0]);
-      return;
+  const handlePinClick = (e: React.MouseEvent, targetId: string) => {
+    e.preventDefault();
+    const el = document.getElementById(targetId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+      const targetPath = targetId === "work" ? "/projects" : `/${targetId}`;
+      window.history.pushState(null, "", targetPath);
     }
-
-    let headlineIdx = 0;
-    let charIdx = 0;
-    let isDeleting = false;
-    let timerId: NodeJS.Timeout;
-
-    // Strict editorial timings as requested
-    const typeSpeed = 50;        // 45–60ms per character
-    const holdCompleted = 3500;  // 3–4 seconds pause on completed sentence
-    const backspaceSpeed = 28;   // 25–35ms per character
-    const pauseTransition = 500; // ~500ms pause before typing next headline
-
-    const step = () => {
-      const currentHeadline = rotatingHeadlines[headlineIdx];
-
-      if (!isDeleting) {
-        // Typing forward
-        charIdx++;
-        setDisplayedText(currentHeadline.slice(0, charIdx));
-
-        if (charIdx >= currentHeadline.length) {
-          // Finished typing: pause for 3.5s so user can read comfortably
-          isDeleting = true;
-          timerId = setTimeout(step, holdCompleted);
-          return;
-        }
-
-        timerId = setTimeout(step, typeSpeed);
-      } else {
-        // Backspacing
-        charIdx--;
-        setDisplayedText(currentHeadline.slice(0, charIdx));
-
-        if (charIdx <= 0) {
-          // Finished deleting: transition to next headline after 500ms pause
-          isDeleting = false;
-          headlineIdx = (headlineIdx + 1) % rotatingHeadlines.length;
-          timerId = setTimeout(step, pauseTransition);
-          return;
-        }
-
-        timerId = setTimeout(step, backspaceSpeed);
-      }
-    };
-
-    // Initiate first typing after brief mount delay
-    timerId = setTimeout(step, 120);
-
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [rotatingHeadlines]);
+  };
 
   return (
     <section
+      ref={containerRef}
       id="hero"
-      className="relative w-full h-full flex flex-col justify-between pt-20 sm:pt-28 pb-6 sm:pb-10 overflow-hidden bg-[#030304]"
+      className="relative w-full h-screen min-h-[680px] flex flex-col justify-between overflow-hidden bg-[#030304] select-none"
     >
-      {/* Background Video Layer */}
+      {/* 1. Ambient Background Video (Subtle Base Layer) */}
       {videoEnabled && !videoError && (
         <video
           key={videoUrl}
@@ -125,162 +131,254 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
           muted
           playsInline
           onError={() => setVideoError(true)}
-          className="absolute inset-0 w-full h-full object-cover opacity-45 pointer-events-none transition-opacity duration-1000"
+          className="absolute inset-0 w-full h-full object-cover opacity-25 pointer-events-none transition-opacity duration-1000 z-0"
         >
           <source src={videoUrl} type="video/mp4" />
         </video>
       )}
 
-      {/* Atmospheric Radial Depth & Soft Vignette Overlays - Softened for Video Clarity */}
-      <div className="absolute inset-0 pointer-events-none bg-ambient-radial opacity-45" />
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#030304] via-transparent to-[#030304]/60" />
-      <div className="absolute inset-0 pointer-events-none bg-[#030304]/25" />
+      {/* 2. Interactive Cursor-Reactive Particle Network & Data Wave Stream Canvas */}
+      <HeroCanvas containerRef={containerRef} />
 
-      {/* Central Content Container - Generous Spacing */}
-      <div className="max-w-4xl mx-auto px-6 text-center w-full relative z-10 flex-1 flex flex-col justify-center items-center">
+      {/* 3. Ambient Vignettes & Radial Soft Glow */}
+      <div className="absolute inset-0 pointer-events-none bg-ambient-radial opacity-35 z-0" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#030304] via-transparent to-[#030304]/60 z-0" />
+
+      {/* 4. Main Two-Column Hero Composition */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex-1 flex flex-col lg:flex-row items-center justify-between pt-24 sm:pt-28 pb-4">
         
-        {/* Eyebrow & Positioning: DATA · ANALYTICS · RISK · PRODUCT */}
-        <div className="flex flex-col items-center gap-2 mb-4 sm:mb-6">
-          <span className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-zinc-400">
-            {personalInfo.name}
-          </span>
-          <div className="flex flex-wrap items-center justify-center gap-2 text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.22em] text-zinc-400">
-            {personalInfo.roleTitle.split("·").map((part, i, arr) => (
-              <React.Fragment key={i}>
-                <span>{part.trim()}</span>
-                {i < arr.length - 1 && <span className="text-zinc-600">·</span>}
-              </React.Fragment>
-            ))}
+        {/* LEFT COLUMN: Left-Aligned Headline, Positioning & Action CTAs */}
+        <div className="w-full lg:w-[48%] xl:w-[46%] flex flex-col items-start text-left shrink-0 z-20">
+          
+          {/* Eyebrow Positioning: DATA · RISK · ENGINEERING · PRODUCT */}
+          <div className="inline-flex items-center gap-2 mb-4 sm:mb-5">
+            <span className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-zinc-400">
+              DATA · RISK · ENGINEERING · PRODUCT
+            </span>
+          </div>
+
+          {/* Dominant Left-Aligned Headline with Restrained Blue Emphasis */}
+          <h1 className="text-3xl sm:text-5xl md:text-[3.5rem] lg:text-[4.1rem] font-bold tracking-tight text-white leading-[1.08] mb-5 sm:mb-6">
+            <span>
+              Turning Complex Data
+              <br />
+              into Clear,
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-400 to-cyan-300">
+                Defensible Decisions.
+              </span>
+            </span>
+          </h1>
+
+          {/* Supporting Narrative Text */}
+          <p className="text-sm sm:text-base md:text-lg text-zinc-400 font-normal leading-relaxed max-w-lg mb-8 sm:mb-9">
+            I build data-driven solutions that combine analytics, risk modeling, and reliable systems to solve real-world problems.
+          </p>
+
+          {/* Action Control Buttons Matching Mockup */}
+          <div className="flex flex-wrap items-center gap-3.5 sm:gap-4">
+            <motion.a
+              href="#work"
+              onClick={(e) => handlePinClick(e, "work")}
+              whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 450, damping: 20 }}
+              className="inline-flex items-center gap-2 px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold bg-white text-[#030304] hover:bg-zinc-200 transition-all shadow-[0_0_25px_rgba(255,255,255,0.22)] cursor-pointer"
+            >
+              <span>View My Work</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </motion.a>
+
+            <motion.button
+              onClick={onRequestResume}
+              whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 450, damping: 20 }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-medium text-zinc-300 bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 hover:border-white/25 transition-all shadow-sm cursor-pointer"
+            >
+              <Mail className="w-4 h-4 text-zinc-400" />
+              <span>Get In Touch</span>
+            </motion.button>
           </div>
         </div>
 
-        {/* Dominant Headline with Stable Height to Eliminate Layout Shifts */}
-        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-white leading-[1.1] max-w-4xl mx-auto mb-4 sm:mb-6 min-h-[100px] sm:min-h-[140px] md:min-h-[170px] lg:min-h-[190px] flex items-center justify-center text-center">
-          <span>
-            {displayedText}
-            {!isReducedMotion && (
-              <span
-                className="inline-block w-[2px] sm:w-[3px] h-[0.82em] bg-zinc-300 ml-1.5 align-middle animate-pulse"
-                aria-hidden="true"
-              />
-            )}
-          </span>
-        </h1>
-
-        {/* Static Supporting Text (Completely Static) */}
-        <p className="text-sm sm:text-base md:text-lg text-zinc-400 font-normal leading-relaxed max-w-xl mx-auto mb-6 sm:mb-8">
-          {personalInfo.heroSupporting}
-        </p>
-
-        {/* Understated Action Controls with Bouncy Spring Physics */}
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-6">
-          <motion.a
-            href="#work"
-            whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
-            whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 450, damping: 20 }}
-            className="hero-btn hero-btn-primary"
-          >
-            <span>View Selected Work</span>
-            <motion.span
-              whileHover={shouldReduceMotion ? {} : { x: 3 }}
-              transition={{ type: "spring", stiffness: 400, damping: 15 }}
-              className="inline-flex"
+        {/* RIGHT COLUMN: Integrated Domain Visualization (4 Domain Pins & Central Nexus) */}
+        <div className="w-full lg:w-[52%] xl:w-[54%] flex items-center justify-center relative mt-8 lg:mt-0 h-[380px] sm:h-[460px] lg:h-[520px]">
+          
+          {/* Desktop Floating Constellation Visualization */}
+          <div className="relative w-full h-full max-w-[580px] max-h-[500px] flex items-center justify-center">
+            
+            {/* Curved Connecting SVG Lines Layer */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none z-10 hidden sm:block"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
             >
-              <ArrowRight className="w-3.5 h-3.5" />
-            </motion.span>
-          </motion.a>
+              <defs>
+                <filter id="lineGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="1.2" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
 
-          <motion.button
-            onClick={onRequestResume}
-            whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
-            whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 450, damping: 20 }}
-            className="hero-btn hero-btn-secondary"
-          >
-            <span>Download Resume</span>
-            <ArrowDown className="w-3.5 h-3.5 text-zinc-400" />
-          </motion.button>
-        </div>
+              {DOMAIN_PINS.map((pin) => {
+                const isHovered = hoveredPin === pin.id;
+                const pathD = `M ${pin.nodeX} ${pin.nodeY} Q ${pin.controlX} ${pin.controlY} ${pin.pinX} ${pin.pinY}`;
 
-        {/* Understated Social Links Strip with Bouncy Hover */}
-        <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 text-xs font-mono text-zinc-400 mb-4 sm:mb-6">
-          <motion.a
-            href={personalInfo.contact.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-cursor="view"
-            whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
-            whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 450, damping: 18 }}
-            className="hover:text-white transition-colors cursor-pointer"
-          >
-            GitHub
-          </motion.a>
-          <span className="text-zinc-600">·</span>
-          <motion.a
-            href={personalInfo.contact.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-cursor="view"
-            whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
-            whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 450, damping: 18 }}
-            className="hover:text-white transition-colors cursor-pointer"
-          >
-            LinkedIn
-          </motion.a>
-          <span className="text-zinc-600">·</span>
-          <motion.a
-            href={`mailto:${personalInfo.contact.email}`}
-            whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -1 }}
-            whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 450, damping: 18 }}
-            className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4 cursor-pointer"
-            title={`Send email to ${personalInfo.contact.email}`}
-          >
-            {personalInfo.contact.email}
-          </motion.a>
+                return (
+                  <g key={pin.id}>
+                    {/* Background faint path line */}
+                    <path
+                      d={pathD}
+                      fill="none"
+                      stroke={isHovered ? "#38bdf8" : "rgba(56, 189, 248, 0.28)"}
+                      strokeWidth={isHovered ? "0.6" : "0.32"}
+                      filter={isHovered ? "url(#lineGlow)" : undefined}
+                      className="transition-all duration-300"
+                    />
+
+                    {/* Luminous data pulse line on active hover */}
+                    {isHovered && (
+                      <path
+                        d={pathD}
+                        fill="none"
+                        stroke="#ffffff"
+                        strokeWidth="0.8"
+                        strokeDasharray="2, 5"
+                        className="animate-pulse"
+                      />
+                    )}
+
+                    {/* Pin junction node marker */}
+                    <circle
+                      cx={pin.pinX}
+                      cy={pin.pinY}
+                      r={isHovered ? "1.3" : "0.85"}
+                      fill={isHovered ? "#ffffff" : "#38bdf8"}
+                      filter={isHovered ? "url(#lineGlow)" : undefined}
+                      className="transition-all duration-300"
+                    />
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* Central Network Node Nexus Point */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20 hidden sm:flex items-center justify-center">
+              <div className="w-3.5 h-3.5 rounded-full bg-white shadow-[0_0_20px_#38bdf8,0_0_40px_#06b6d4] animate-pulse" />
+              <div className="absolute -inset-2.5 rounded-full border border-cyan-400/40 animate-ping opacity-60 pointer-events-none" />
+            </div>
+
+            {/* Desktop: 4 Floating Domain Pins positioned around nexus */}
+            <div className="relative w-full h-full hidden sm:block">
+              {DOMAIN_PINS.map((pin) => {
+                const isHovered = hoveredPin === pin.id;
+                const isOtherHovered = hoveredPin !== null && !isHovered;
+                const Icon = pin.icon;
+
+                return (
+                  <motion.a
+                    key={pin.id}
+                    href={`#${pin.targetId}`}
+                    onClick={(e) => handlePinClick(e, pin.targetId)}
+                    onMouseEnter={() => setHoveredPin(pin.id)}
+                    onMouseLeave={() => setHoveredPin(null)}
+                    style={pin.style}
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
+                    whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 22 }}
+                    className={`absolute z-20 flex items-center gap-3 p-2.5 lg:p-3 rounded-2xl bg-[#070b14]/85 backdrop-blur-md border transition-all duration-300 cursor-pointer max-w-[215px] sm:max-w-[235px] ${
+                      isHovered
+                        ? "border-cyan-400/70 shadow-[0_0_30px_rgba(6,182,212,0.4)] opacity-100 z-30"
+                        : isOtherHovered
+                        ? "border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.6)] opacity-60"
+                        : "border-white/[0.12] shadow-[0_8px_32px_rgba(0,0,0,0.6)] opacity-95 hover:border-cyan-500/40"
+                    }`}
+                  >
+                    {/* Circular Icon Accent Badge */}
+                    <div
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
+                        isHovered
+                          ? "bg-cyan-500/20 border border-cyan-400 text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.5)]"
+                          : "bg-[#0b1728]/90 border border-cyan-500/30 text-cyan-400"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                    </div>
+
+                    {/* Text Details */}
+                    <div className="flex flex-col text-left">
+                      <span className="text-xs sm:text-sm font-semibold text-white tracking-tight">
+                        {pin.title}
+                      </span>
+                      <span className="text-[10px] sm:text-[11px] text-zinc-400 leading-snug mt-0.5">
+                        {pin.subtitle}
+                      </span>
+                    </div>
+                  </motion.a>
+                );
+              })}
+            </div>
+
+            {/* Mobile / Small Screens: Clean 2x2 Grid Layout */}
+            <div className="grid grid-cols-2 gap-2.5 w-full sm:hidden z-20">
+              {DOMAIN_PINS.map((pin) => {
+                const Icon = pin.icon;
+                return (
+                  <motion.a
+                    key={pin.id}
+                    href={`#${pin.targetId}`}
+                    onClick={(e) => handlePinClick(e, pin.targetId)}
+                    whileTap={{ scale: 0.96 }}
+                    className="flex flex-col gap-1.5 p-3 rounded-xl bg-[#070b14]/90 backdrop-blur-md border border-white/10 active:border-cyan-400 cursor-pointer"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-[#0b1728] border border-cyan-500/40 text-cyan-300 flex items-center justify-center">
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <span className="text-xs font-semibold text-white">{pin.title}</span>
+                    <span className="text-[10px] text-zinc-400 leading-tight line-clamp-2">
+                      {pin.subtitle}
+                    </span>
+                  </motion.a>
+                );
+              })}
+            </div>
+
+          </div>
         </div>
 
       </div>
 
-      {/* Hero Scroll Indicator - Organic buoyant float */}
-      <div className="relative z-10 w-full flex flex-col items-center justify-center pt-4 pb-2">
+      {/* 5. Bottom-Left Scroll Indicator Matching Reference Mockup */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pb-4 sm:pb-6 flex items-center justify-start">
         <motion.a
           href="#about"
-          onClick={(e) => {
-            e.preventDefault();
-            const el = document.getElementById("about");
-            if (el) {
-              el.scrollIntoView({ behavior: "smooth" });
-              window.history.pushState(null, "", "/about");
-            }
-          }}
-          whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
-          transition={{ type: "spring", stiffness: 400, damping: 18 }}
-          className="flex flex-col items-center gap-1.5 text-zinc-400 hover:text-white transition-colors group cursor-pointer"
-          aria-label="Scroll to About section"
+          onClick={(e) => handlePinClick(e, "about")}
+          whileHover={{ opacity: 1 }}
+          className="flex items-center gap-3 text-zinc-500 hover:text-zinc-300 transition-colors group cursor-pointer"
         >
+          {/* Vertical Track Line with Animated Sliding Dot */}
+          <div className="relative w-[1px] h-9 bg-white/15 overflow-hidden flex flex-col justify-start items-center">
+            <motion.div
+              animate={shouldReduceMotion ? {} : { y: [0, 24, 0] }}
+              transition={
+                shouldReduceMotion
+                  ? {}
+                  : { repeat: Infinity, duration: 2.2, ease: "easeInOut" }
+              }
+              className="w-1.5 h-1.5 -ml-[2px] rounded-full bg-cyan-300 shadow-[0_0_8px_#38bdf8]"
+            />
+          </div>
+
           <span className="text-[9px] font-mono tracking-[0.25em] uppercase text-zinc-500 group-hover:text-zinc-300 transition-colors">
-            Scroll
+            SCROLL TO EXPLORE
           </span>
-          <motion.div
-            animate={shouldReduceMotion ? {} : { y: [0, 5, 0] }}
-            transition={
-              shouldReduceMotion
-                ? {}
-                : {
-                    repeat: Infinity,
-                    duration: 1.8,
-                    ease: "easeInOut",
-                  }
-            }
-          >
-            <ArrowDown className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white" />
-          </motion.div>
         </motion.a>
       </div>
+
     </section>
   );
 };
