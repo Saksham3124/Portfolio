@@ -65,7 +65,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ targetSection }) =
         {/* Dynamic Animated Ambient Background */}
         <AnimatedBackground />
 
-        {/* Animated Data Waveform along the Left Viewport Edge */}
+        {/* Sparse Interactive Particle Field along the Left Viewport Edge */}
         <DataWaveform />
 
         {/* Fixed Right-side Vertical Section Navigation Rail */}
