@@ -4,6 +4,7 @@ import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ShieldCheck, Database, LineChart, Cpu } from "lucide-react";
 import { usePortfolio } from "@/context/PortfolioContext";
+import { DOMAIN_PINS } from "@/components/Hero";
 
 export const About: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
@@ -44,6 +45,41 @@ export const About: React.FC = () => {
 
       <div className="max-w-4xl mx-auto px-6">
         
+        {/* Mobile Domain Focus Cards: Analytics, Data, Risk, Product (Visible only on mobile screens < sm, revealing naturally on vertical scroll) */}
+        <motion.div {...fadeUp(0)} className="block sm:hidden mb-12">
+          <div className="text-center mb-4">
+            <span className="text-[10px] font-mono uppercase tracking-[0.24em] text-cyan-400/90 inline-block px-3 py-1 rounded-full bg-cyan-950/40 border border-cyan-800/40">
+              CORE DOMAINS
+            </span>
+            <h2 className="text-xl font-bold text-white tracking-tight mt-2">
+              Analytics · Data · Risk · Product
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 gap-2.5">
+            {DOMAIN_PINS.map((pin) => {
+              const Icon = pin.icon;
+              return (
+                <div
+                  key={pin.id}
+                  className="clean-card flex flex-col gap-2 p-3.5 rounded-xl border border-white/[0.08] bg-[#070b14]/90 backdrop-blur-sm select-none"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#0b1728] border border-cyan-500/40 text-cyan-300 flex items-center justify-center shrink-0">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-semibold text-white tracking-tight block">
+                      {pin.title}
+                    </span>
+                    <span className="text-[10px] text-zinc-400 leading-snug mt-1 block">
+                      {pin.subtitle}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+
         {/* Section Pill & Heading */}
         <motion.div {...fadeUp(0)} className="text-center mb-12">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">

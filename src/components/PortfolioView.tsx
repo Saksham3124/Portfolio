@@ -81,8 +81,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = () => {
 
         {/* Main page content flow */}
         <main className="relative">
-          {/* 1. Fixed Hero Section Container: Stays pinned in the viewport while scrolling */}
-          <div className="sticky top-0 h-screen w-full z-0 overflow-hidden">
+          {/* 1. Fixed Hero Section Container: Pinned in viewport on desktop, natural full-screen flow on mobile */}
+          <div className="relative sm:sticky sm:top-0 min-h-[100svh] sm:h-screen w-full z-0 sm:overflow-hidden">
             <Hero onRequestResume={handleOpenResumeModal} />
           </div>
 

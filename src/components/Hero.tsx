@@ -11,7 +11,7 @@ interface HeroProps {
   onRequestResume: () => void;
 }
 
-interface DomainPin {
+export interface DomainPin {
   id: string;
   title: string;
   subtitle: string;
@@ -31,7 +31,7 @@ interface DomainPin {
  * Constrained dimensions to prevent right-edge clipping and header overlap.
  * Wide open Data corridor with clear, unobstructed branch connection.
  */
-const DOMAIN_PINS: DomainPin[] = [
+export const DOMAIN_PINS: DomainPin[] = [
   {
     id: "analytics",
     title: "Analytics",
@@ -378,7 +378,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
     <section
       ref={containerRef}
       id="hero"
-      className="relative w-full h-screen min-h-[700px] flex flex-col justify-between overflow-hidden bg-[#030304] select-none"
+      className="relative w-full min-h-[100svh] sm:h-screen sm:min-h-[700px] flex flex-col justify-between overflow-x-hidden sm:overflow-hidden bg-[#030304] select-none"
     >
       {/* 1. Ambient Background Video (Toned-down opacity so headline is primary) */}
       {videoEnabled && !videoError && (
@@ -405,22 +405,22 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       <HeroCanvas containerRef={containerRef} />
 
       {/* 4. Main Two-Column Hero Composition (Consistent Top Inset & Decoupled Grid) */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 flex-1 flex flex-col justify-center pt-24 sm:pt-28 lg:pt-32 xl:pt-36 pb-6 sm:pb-8">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center gap-8 lg:gap-10">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 flex-1 flex flex-col justify-center pt-[calc(env(safe-area-inset-top,0px)+4.5rem)] sm:pt-28 lg:pt-32 xl:pt-36 pb-3 sm:pb-8">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center gap-6 lg:gap-10">
           
           {/* LEFT COLUMN: Left-Aligned Headline, Positioning & Action CTAs */}
           <div className="w-full lg:col-span-6 xl:col-span-6 flex flex-col items-start text-left z-20 max-w-2xl">
             
             {/* Eyebrow Positioning: DATA · RISK · ENGINEERING · PRODUCT */}
-            <div className="inline-flex items-center gap-2 mb-4 sm:mb-5">
-              <span className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-zinc-400">
+            <div className="inline-flex items-center gap-2 mb-3 sm:mb-5">
+              <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.22em] sm:tracking-[0.28em] text-zinc-400">
                 DATA · RISK · ENGINEERING · PRODUCT
               </span>
             </div>
 
             {/* Dominant Left-Aligned Headline with Full-Sentence Typewriter Animation */}
             {/* Dedicated CSS Grid wrapper: All sentences occupy the same cell to establish natural max height and prevent layout shift */}
-            <div className="w-full mb-6 sm:mb-8">
+            <div className="w-full mb-3.5 sm:mb-8">
               <div className="grid grid-cols-1 grid-rows-1 items-start w-full">
                 {/* Phantom Invisible Sizers: All complete sentences rendered invisibly in the same cell */}
                 {typingSentences.map((s, idx) => (
@@ -429,7 +429,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
                     aria-hidden="true"
                     className="col-start-1 row-start-1 w-full invisible select-none pointer-events-none"
                   >
-                    <div className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-[3.75rem] font-bold tracking-tight text-transparent leading-[1.05] max-w-full">
+                    <div className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-[3.75rem] font-bold tracking-tight text-transparent leading-[1.08] max-w-full">
                       <span className="w-full break-words inline">
                         <span>{s.prefix}</span>
                         <span>{s.highlight}</span>
@@ -442,7 +442,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
 
                 {/* Visible Typing Headline in the same grid cell */}
                 <h1
-                  className="col-start-1 row-start-1 w-full text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-[3.75rem] font-bold tracking-tight text-white leading-[1.05] max-w-full"
+                  className="col-start-1 row-start-1 w-full text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] xl:text-[3.75rem] font-bold tracking-tight text-white leading-[1.08] max-w-full"
                   aria-label={currentSentence.text}
                 >
                   {/* Screen reader static announcement */}
@@ -471,19 +471,19 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             </div>
 
             {/* Supporting Narrative Text (Dynamically loaded from Admin CMS Studio) */}
-            <p className="text-base sm:text-lg md:text-xl text-zinc-400 font-normal leading-relaxed max-w-xl mb-7 sm:mb-9">
+            <p className="text-[13.5px] sm:text-lg md:text-xl text-zinc-400 font-normal leading-relaxed max-w-xl mb-4 sm:mb-9">
               {personalInfo.heroSupporting || "Engineering graduate focused on analytics, risk, customer insights, and AI-assisted decision systems."}
             </p>
 
             {/* Action Control Buttons Matching Mockup */}
-            <div className="flex flex-wrap items-center gap-4 mb-6 sm:mb-8">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 sm:mb-8">
               <motion.a
                 href="#projects"
                 onClick={handleScrollToWork}
                 whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
                 whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 450, damping: 20 }}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs sm:text-sm font-semibold bg-white text-[#030304] hover:bg-zinc-200 transition-all shadow-[0_0_25px_rgba(255,255,255,0.22)] cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full text-xs sm:text-sm font-semibold bg-white text-[#030304] hover:bg-zinc-200 transition-all shadow-[0_0_25px_rgba(255,255,255,0.22)] cursor-pointer"
               >
                 <span>View My Work</span>
                 <ArrowUpRight className="w-4 h-4" />
@@ -494,7 +494,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
                 whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
                 whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 450, damping: 20 }}
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-full text-xs sm:text-sm font-medium text-zinc-300 bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 hover:border-white/25 transition-all shadow-sm cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full text-xs sm:text-sm font-medium text-zinc-300 bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 hover:border-white/25 transition-all shadow-sm cursor-pointer"
               >
                 <Mail className="w-4 h-4 text-zinc-400" />
                 <span>Get In Touch</span>
@@ -502,7 +502,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             </div>
 
             {/* Compact Understated Social Links Row */}
-            <div className="flex flex-wrap items-center gap-3 text-xs sm:text-[13px] font-mono text-zinc-400">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-[13px] font-mono text-zinc-400">
               <motion.a
                 href={personalInfo.contact.github}
                 target="_blank"
@@ -537,7 +537,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
                 href={`mailto:${personalInfo.contact.email}`}
                 whileHover={shouldReduceMotion ? {} : { y: -1 }}
                 transition={{ type: "spring", stiffness: 450, damping: 20 }}
-                className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4 cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-400/60 rounded-sm"
+                className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4 cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-cyan-400/60 rounded-sm break-all sm:break-normal"
                 aria-label={`Send email to ${personalInfo.contact.email}`}
               >
                 {personalInfo.contact.email}
@@ -546,11 +546,11 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
 
           </div>
 
-          {/* RIGHT COLUMN: Dedicated Vertically-Centered Domain Visualization */}
-          <div className="w-full lg:col-span-6 xl:col-span-6 flex items-center justify-center relative pointer-events-auto h-auto sm:h-[460px] lg:h-[490px] xl:h-[530px]">
+          {/* RIGHT COLUMN: Dedicated Vertically-Centered Domain Visualization (Desktop & Tablet only) */}
+          <div className="hidden sm:flex w-full lg:col-span-6 xl:col-span-6 items-center justify-center relative pointer-events-auto sm:h-[460px] lg:h-[490px] xl:h-[530px]">
             
             {/* Desktop Floating Constellation Visualization Container */}
-            <div className="relative w-full max-w-[480px] sm:max-w-[500px] xl:max-w-[540px] h-auto sm:h-full flex items-center justify-center">
+            <div className="relative w-full max-w-[480px] sm:max-w-[500px] xl:max-w-[540px] h-full flex items-center justify-center">
               
               {/* Curved Connecting SVG Lines Layer */}
               <svg
@@ -664,27 +664,6 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
                 })}
               </div>
 
-              {/* Mobile / Small Screens: Clean 2x2 Grid Layout (Hover-only / visual cards) */}
-              <div className="grid grid-cols-2 gap-2.5 w-full sm:hidden z-20">
-                {DOMAIN_PINS.map((pin) => {
-                  const Icon = pin.icon;
-                  return (
-                    <div
-                      key={pin.id}
-                      className="flex flex-col gap-1.5 p-3 rounded-xl bg-[#070b14]/90 backdrop-blur-md border border-white/10 select-none cursor-default"
-                    >
-                      <div className="w-8 h-8 rounded-full bg-[#0b1728] border border-cyan-500/40 text-cyan-300 flex items-center justify-center">
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <span className="text-xs font-semibold text-white">{pin.title}</span>
-                      <span className="text-[10px] text-zinc-400 leading-tight line-clamp-2">
-                        {pin.subtitle}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
             </div>
           </div>
 
@@ -692,7 +671,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       </div>
 
       {/* 5. Bottom-Left Scroll Indicator Matching Reference Mockup */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pb-4 sm:pb-6 flex items-center justify-start shrink-0">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-1 sm:pt-0 pb-3 sm:pb-6 flex items-center justify-start shrink-0">
         <motion.a
           href="#about"
           onClick={handleScrollToAbout}
@@ -700,7 +679,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
           className="flex items-center gap-3 text-zinc-500 hover:text-zinc-300 transition-colors group cursor-pointer"
         >
           {/* Vertical Track Line with Animated Sliding Dot */}
-          <div className="relative w-[1px] h-9 bg-white/15 overflow-hidden flex flex-col justify-start items-center">
+          <div className="relative w-[1px] h-7 sm:h-9 bg-white/15 overflow-hidden flex flex-col justify-start items-center">
             <motion.div
               animate={shouldReduceMotion ? {} : { y: [0, 24, 0] }}
               transition={
@@ -712,7 +691,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             />
           </div>
 
-          <span className="text-[9px] font-mono tracking-[0.25em] uppercase text-zinc-500 group-hover:text-zinc-300 transition-colors">
+          <span className="text-[8.5px] sm:text-[9px] font-mono tracking-[0.2em] sm:tracking-[0.25em] uppercase text-zinc-500 group-hover:text-zinc-300 transition-colors">
             SCROLL TO EXPLORE
           </span>
         </motion.a>
