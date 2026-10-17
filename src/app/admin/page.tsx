@@ -33,6 +33,8 @@ import {
   LogOut,
   FolderKanban,
   CheckCircle2,
+  Mail,
+  Video,
 } from "lucide-react";
 import {
   PortfolioContentData,
@@ -60,6 +62,7 @@ export default function AdminPage() {
     | "education"
     | "skills"
     | "credentials"
+    | "contact"
     | "settings"
   >("profile");
 
@@ -417,6 +420,249 @@ export default function AdminPage() {
     setIsDirty(true);
   };
 
+  // Experience helpers
+  const addExperience = () => {
+    const newExp = {
+      id: `exp-${Date.now()}`,
+      role: "Research / Analytics Fellow",
+      organization: "Institution / Organization",
+      period: "2024 – Present",
+      location: "Location",
+      program: "Research Program / Fellowship",
+      type: "Research",
+      summary: "Executive summary of analytical problem, methodologies, and outcomes delivered.",
+      researchAreas: [
+        {
+          id: `ra-${Date.now()}-1`,
+          title: "DATA PROCESSING",
+          highlight: "Simulation outputs into structured analytical datasets",
+          description: "Processed quantitative datasets through modular workflows, converting outputs into structured data for analysis.",
+        },
+        {
+          id: `ra-${Date.now()}-2`,
+          title: "CONFIGURATION ANALYSIS",
+          highlight: "Configuration modeling and comparative evaluation",
+          description: "Compared multi-parameter configurations to identify patterns associated with improved performance.",
+        },
+        {
+          id: `ra-${Date.now()}-3`,
+          title: "VALIDATION",
+          highlight: "Verification against simulated benchmarks",
+          description: "Cross-checked experimental findings against analytical benchmarks and refined reproducible workflows.",
+        },
+      ],
+      outcomes: [
+        {
+          value: "20K+",
+          label: "Signatures Evaluated",
+          sub: "Automated Pipeline",
+        },
+        {
+          value: "66% → 80%",
+          label: "Performance Optimization",
+          sub: "Empirical Gain",
+        },
+        {
+          value: "4",
+          label: "Configurations Tested",
+          sub: "Comparative Study",
+        },
+      ],
+      highlights: [
+        "Formulated mathematical and computational framework for high-dimensional data evaluation.",
+        "Delivered reproducible workflows with verifiable performance metrics.",
+      ],
+      tags: ["Python", "MATLAB", "Simulation", "Algorithms"],
+    };
+    setData({ ...data, experience: [...data.experience, newExp] });
+    setIsDirty(true);
+  };
+
+  const moveExperience = (index: number, direction: "up" | "down") => {
+    const list = [...data.experience];
+    const targetIdx = direction === "up" ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+    const temp = list[index];
+    list[index] = list[targetIdx];
+    list[targetIdx] = temp;
+    setData({ ...data, experience: list });
+    setIsDirty(true);
+  };
+
+  const deleteExperience = (index: number) => {
+    if (data.experience.length <= 1) return;
+    const list = data.experience.filter((_, i) => i !== index);
+    setData({ ...data, experience: list });
+    setIsDirty(true);
+  };
+
+  // Education helpers
+  const getEducationList = () => {
+    if (data.educationList && data.educationList.length > 0) return data.educationList;
+    return [data.education];
+  };
+
+  const updateEducationList = (newList: typeof data.education[]) => {
+    setData({
+      ...data,
+      educationList: newList,
+      education: newList[0] || data.education,
+    });
+    setIsDirty(true);
+  };
+
+  const addEducationItem = () => {
+    const list = getEducationList();
+    const newItem = {
+      degree: "Bachelor of Technology / Master of Science",
+      institution: "University / Institute Name",
+      period: "2020 – 2024",
+      location: "City, Country",
+      framing: "Comprehensive academic foundation emphasizing quantitative analysis and engineering rigor.",
+      coursework: ["Systems & Modeling", "Algorithms", "Statistical Methods", "Linear Algebra"],
+    };
+    updateEducationList([...list, newItem]);
+  };
+
+  const moveEducationItem = (index: number, direction: "up" | "down") => {
+    const list = [...getEducationList()];
+    const targetIdx = direction === "up" ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+    const temp = list[index];
+    list[index] = list[targetIdx];
+    list[targetIdx] = temp;
+    updateEducationList(list);
+  };
+
+  const deleteEducationItem = (index: number) => {
+    const list = getEducationList();
+    if (list.length <= 1) return;
+    const filtered = list.filter((_, i) => i !== index);
+    updateEducationList(filtered);
+  };
+
+  // Skill Group helpers
+  const addSkillGroup = () => {
+    const newGroup = {
+      name: "New Technical Skill Domain",
+      description: "Functional scope and operational capabilities",
+      skills: ["Core Tool 1", "Framework 2", "Methodology 3"],
+    };
+    setData({ ...data, skillGroups: [...data.skillGroups, newGroup] });
+    setIsDirty(true);
+  };
+
+  const moveSkillGroup = (index: number, direction: "up" | "down") => {
+    const list = [...data.skillGroups];
+    const targetIdx = direction === "up" ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+    const temp = list[index];
+    list[index] = list[targetIdx];
+    list[targetIdx] = temp;
+    setData({ ...data, skillGroups: list });
+    setIsDirty(true);
+  };
+
+  const deleteSkillGroup = (index: number) => {
+    if (data.skillGroups.length <= 1) return;
+    const list = data.skillGroups.filter((_, i) => i !== index);
+    setData({ ...data, skillGroups: list });
+    setIsDirty(true);
+  };
+
+  // Certification Category helpers
+  const addCertCategory = () => {
+    const newCat = {
+      category: "New Credential Category",
+      items: [
+        {
+          name: "Certified Specialist / Practitioner",
+          issuer: "Issuing Body (e.g. AWS, Stanford, Google)",
+          year: new Date().getFullYear().toString(),
+          highlight: "Professional Credential",
+          verifyUrl: "https://",
+        },
+      ],
+    };
+    setData({ ...data, certifications: [...data.certifications, newCat] });
+    setIsDirty(true);
+  };
+
+  const moveCertCategory = (index: number, direction: "up" | "down") => {
+    const list = [...data.certifications];
+    const targetIdx = direction === "up" ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+    const temp = list[index];
+    list[index] = list[targetIdx];
+    list[targetIdx] = temp;
+    setData({ ...data, certifications: list });
+    setIsDirty(true);
+  };
+
+  const deleteCertCategory = (index: number) => {
+    if (data.certifications.length <= 1) return;
+    const list = data.certifications.filter((_, i) => i !== index);
+    setData({ ...data, certifications: list });
+    setIsDirty(true);
+  };
+
+  const addCertItem = (catIdx: number) => {
+    const updated = [...data.certifications];
+    updated[catIdx].items = [
+      ...updated[catIdx].items,
+      {
+        name: "New Certificate",
+        issuer: "Issuing Organization",
+        year: new Date().getFullYear().toString(),
+        highlight: "Verified",
+        verifyUrl: "https://",
+      },
+    ];
+    setData({ ...data, certifications: updated });
+    setIsDirty(true);
+  };
+
+  const deleteCertItem = (catIdx: number, itemIdx: number) => {
+    const updated = [...data.certifications];
+    if (updated[catIdx].items.length <= 1) return;
+    updated[catIdx].items = updated[catIdx].items.filter((_, i) => i !== itemIdx);
+    setData({ ...data, certifications: updated });
+    setIsDirty(true);
+  };
+
+  // Achievement helpers
+  const addAchievement = () => {
+    const newAch = {
+      id: `ach-${Date.now()}`,
+      title: "New Hackathon / Competition Distinction",
+      context: "Competitive Engineering / Analytics Hackathon",
+      badge: "Winner / Top Finalist",
+      year: new Date().getFullYear().toString(),
+      description: "Description of the challenge, engineering or analytical solution, and competitive outcome.",
+      impactMetrics: "Competitive Distinction",
+    };
+    setData({ ...data, achievements: [...data.achievements, newAch] });
+    setIsDirty(true);
+  };
+
+  const moveAchievement = (index: number, direction: "up" | "down") => {
+    const list = [...data.achievements];
+    const targetIdx = direction === "up" ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= list.length) return;
+    const temp = list[index];
+    list[index] = list[targetIdx];
+    list[targetIdx] = temp;
+    setData({ ...data, achievements: list });
+    setIsDirty(true);
+  };
+
+  const deleteAchievement = (index: number) => {
+    if (data.achievements.length <= 1) return;
+    const list = data.achievements.filter((_, i) => i !== index);
+    setData({ ...data, achievements: list });
+    setIsDirty(true);
+  };
+
   // LOADING SCREEN
   if (authChecking) {
     return (
@@ -639,9 +885,10 @@ export default function AdminPage() {
                 { id: "about", label: "About & Narrative", icon: Compass },
                 { id: "telemetry", label: "Telemetry & Scale", icon: Sliders },
                 { id: "experience", label: "Experience & LNMIIT", icon: Briefcase },
-                { id: "education", label: "Education (BIT Mesra)", icon: GraduationCap },
+                { id: "education", label: "Education & Degrees", icon: GraduationCap },
                 { id: "skills", label: "Skills & Interests", icon: Sparkles },
                 { id: "credentials", label: "Credentials & Honors", icon: Award },
+                { id: "contact", label: "Contact & Inquiries", icon: Mail },
                 { id: "settings", label: "Settings & Backups", icon: Shield },
               ].map((tab) => {
                 const IconComponent = tab.icon;
@@ -829,6 +1076,68 @@ export default function AdminPage() {
                     }}
                     className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none focus:border-white/30 leading-relaxed"
                   />
+                </div>
+
+                {/* Hero Background Video Settings */}
+                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                        <Video className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-mono uppercase text-zinc-300 tracking-wider font-semibold">
+                          Hero Background Ambient Video
+                        </label>
+                        <p className="text-xs text-zinc-400">
+                          Controls the looping ambient video layer in the background of the hero section.
+                        </p>
+                      </div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={data.personalInfo.heroVideoEnabled !== false}
+                        onChange={(e) => {
+                          setData({
+                            ...data,
+                            personalInfo: {
+                              ...data.personalInfo,
+                              heroVideoEnabled: e.target.checked,
+                            },
+                          });
+                          setIsDirty(true);
+                        }}
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                      Video File URL / Path
+                    </label>
+                    <input
+                      type="text"
+                      value={data.personalInfo.heroVideoUrl || "/videos/hero-background.mp4"}
+                      onChange={(e) => {
+                        setData({
+                          ...data,
+                          personalInfo: {
+                            ...data.personalInfo,
+                            heroVideoUrl: e.target.value,
+                          },
+                        });
+                        setIsDirty(true);
+                      }}
+                      placeholder="/videos/hero-background.mp4 or https://your-cdn.com/video.mp4"
+                      className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
+                    />
+                    <p className="text-[11px] text-zinc-500 mt-1 font-mono">
+                      Tip: Place any MP4 inside your project&apos;s <code className="text-zinc-300">/public/videos/</code> directory and reference it as <code className="text-zinc-300">/videos/filename.mp4</code>, or paste a direct public HTTPS URL.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="pt-4 border-t border-white/[0.06]">
@@ -1230,22 +1539,71 @@ export default function AdminPage() {
             {/* 3. SUPPORTING PROJECTS TAB */}
             {activeTab === "supporting" && (
               <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#08080c] border border-white/[0.06] rounded-2xl p-6">
-                  <div>
-                    <h2 className="text-lg font-semibold text-white tracking-tight">
-                      Supporting Analytical Projects
-                    </h2>
-                    <p className="text-xs text-zinc-400 mt-1">
-                      Secondary systems and analytical pipelines (e.g. Credit Risk Scorecard Engine).
-                    </p>
+                <div className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h2 className="text-lg font-semibold text-white tracking-tight">
+                        Supporting Analytical Projects
+                      </h2>
+                      <p className="text-xs text-zinc-400 mt-1">
+                        Configure the section heading, subtitle note, expandable button text, and project entries.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => addProject(false)}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 transition-all shrink-0"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Supporting Project</span>
+                    </button>
                   </div>
-                  <button
-                    onClick={() => addProject(false)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 transition-all shrink-0"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Add Supporting Project</span>
-                  </button>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-white/[0.06]">
+                    <div>
+                      <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                        Section Heading
+                      </label>
+                      <input
+                        type="text"
+                        value={data.supportingProjectsHeading ?? "Supporting Analytical Projects"}
+                        onChange={(e) => {
+                          setData({ ...data, supportingProjectsHeading: e.target.value });
+                          setIsDirty(true);
+                        }}
+                        className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                        Expandable Button / Pill Text
+                      </label>
+                      <input
+                        type="text"
+                        value={data.supportingProjectsButtonText ?? "Inspect Supporting Pipelines (Credit Risk, Rail Telemetry, Financial Modeling)"}
+                        onChange={(e) => {
+                          setData({ ...data, supportingProjectsButtonText: e.target.value });
+                          setIsDirty(true);
+                        }}
+                        className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                      Supporting Projects Subtitle / Context Note (e.g. Credit Risk Scorecard Engine note)
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={data.supportingProjectsSubtitle ?? "Secondary systems and analytical pipelines (e.g. Credit Risk Scorecard Engine)."}
+                      onChange={(e) => {
+                        setData({ ...data, supportingProjectsSubtitle: e.target.value });
+                        setIsDirty(true);
+                      }}
+                      className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none leading-relaxed"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-4">
@@ -1600,252 +1958,504 @@ export default function AdminPage() {
 
             {/* 6. EXPERIENCE TAB */}
             {activeTab === "experience" && (
-              <div className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 sm:p-8 space-y-6">
-                <div>
-                  <h2 className="text-lg font-semibold text-white tracking-tight">Work & Research Experience</h2>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    LNMIIT Research Fellowship details, technical highlights, and research areas.
-                  </p>
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#08080c] border border-white/[0.06] rounded-2xl p-6">
+                  <div>
+                    <h2 className="text-lg font-semibold text-white tracking-tight">Work & Research Experience</h2>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      Manage fellowship positions, roles, institutional research, summary, domains, and achievements.
+                    </p>
+                  </div>
+                  <button
+                    onClick={addExperience}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 transition-all shrink-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Experience Item</span>
+                  </button>
                 </div>
 
-                {data.experience.map((exp, eIdx) => (
-                  <div key={exp.id} className="space-y-4 pt-4 border-t border-white/[0.06] first:border-0 first:pt-0">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                          Role Title
-                        </label>
-                        <input
-                          type="text"
-                          value={exp.role}
-                          onChange={(e) => {
-                            const updated = [...data.experience];
-                            updated[eIdx].role = e.target.value;
-                            setData({ ...data, experience: updated });
-                            setIsDirty(true);
-                          }}
-                          className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none font-semibold"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                          Organization / Institution
-                        </label>
-                        <input
-                          type="text"
-                          value={exp.organization}
-                          onChange={(e) => {
-                            const updated = [...data.experience];
-                            updated[eIdx].organization = e.target.value;
-                            setData({ ...data, experience: updated });
-                            setIsDirty(true);
-                          }}
-                          className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none"
-                        />
-                      </div>
-                    </div>
+                <div className="space-y-4">
+                  {data.experience.map((exp, eIdx) => (
+                    <div
+                      key={exp.id}
+                      className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 space-y-4"
+                    >
+                      <div className="flex items-start justify-between gap-4 pb-3 border-b border-white/[0.06]">
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-6 h-6 rounded-full bg-white/[0.05] border border-white/10 text-zinc-400 font-mono text-xs flex items-center justify-center shrink-0">
+                            {eIdx + 1}
+                          </span>
+                          <div>
+                            <h3 className="text-sm font-semibold text-white">{exp.role || "Untitled Role"}</h3>
+                            <span className="text-[11px] font-mono text-zinc-400">{exp.organization}</span>
+                          </div>
+                        </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => moveExperience(eIdx, "up")}
+                            disabled={eIdx === 0}
+                            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30"
+                            title="Move Up"
+                          >
+                            <ArrowUp className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveExperience(eIdx, "down")}
+                            disabled={eIdx === data.experience.length - 1}
+                            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30"
+                            title="Move Down"
+                          >
+                            <ArrowDown className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteExperience(eIdx)}
+                            disabled={data.experience.length <= 1}
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-20"
+                            title="Delete Experience"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                            Role Title
+                          </label>
+                          <input
+                            type="text"
+                            value={exp.role}
+                            onChange={(e) => {
+                              const updated = [...data.experience];
+                              updated[eIdx].role = e.target.value;
+                              setData({ ...data, experience: updated });
+                              setIsDirty(true);
+                            }}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none font-semibold"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                            Organization / Institution
+                          </label>
+                          <input
+                            type="text"
+                            value={exp.organization}
+                            onChange={(e) => {
+                              const updated = [...data.experience];
+                              updated[eIdx].organization = e.target.value;
+                              setData({ ...data, experience: updated });
+                              setIsDirty(true);
+                            }}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                          <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
+                            Period
+                          </label>
+                          <input
+                            type="text"
+                            value={exp.period}
+                            onChange={(e) => {
+                              const updated = [...data.experience];
+                              updated[eIdx].period = e.target.value;
+                              setData({ ...data, experience: updated });
+                              setIsDirty(true);
+                            }}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
+                            Location
+                          </label>
+                          <input
+                            type="text"
+                            value={exp.location}
+                            onChange={(e) => {
+                              const updated = [...data.experience];
+                              updated[eIdx].location = e.target.value;
+                              setData({ ...data, experience: updated });
+                              setIsDirty(true);
+                            }}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
+                            Program / Track
+                          </label>
+                          <input
+                            type="text"
+                            value={exp.program}
+                            onChange={(e) => {
+                              const updated = [...data.experience];
+                              updated[eIdx].program = e.target.value;
+                              setData({ ...data, experience: updated });
+                              setIsDirty(true);
+                            }}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
                       <div>
-                        <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
-                          Period
+                        <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                          Executive Summary
                         </label>
-                        <input
-                          type="text"
-                          value={exp.period}
+                        <textarea
+                          rows={3}
+                          value={exp.summary}
                           onChange={(e) => {
                             const updated = [...data.experience];
-                            updated[eIdx].period = e.target.value;
+                            updated[eIdx].summary = e.target.value;
                             setData({ ...data, experience: updated });
                             setIsDirty(true);
                           }}
+                          className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none leading-relaxed"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                          Technologies & Tools (Comma-separated)
+                        </label>
+                        <input
+                          type="text"
+                          value={(exp.tags || []).join(", ")}
+                          onChange={(e) => {
+                            const updated = [...data.experience];
+                            updated[eIdx].tags = e.target.value
+                              .split(",")
+                              .map((s) => s.trim())
+                              .filter(Boolean);
+                            setData({ ...data, experience: updated });
+                            setIsDirty(true);
+                          }}
+                          placeholder="e.g. MATLAB, CST Studio Suite, Signal Processing"
                           className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
                         />
                       </div>
-                      <div>
-                        <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
-                          Location
-                        </label>
-                        <input
-                          type="text"
-                          value={exp.location}
-                          onChange={(e) => {
-                            const updated = [...data.experience];
-                            updated[eIdx].location = e.target.value;
-                            setData({ ...data, experience: updated });
-                            setIsDirty(true);
-                          }}
-                          className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
-                          Program
-                        </label>
-                        <input
-                          type="text"
-                          value={exp.program}
-                          onChange={(e) => {
-                            const updated = [...data.experience];
-                            updated[eIdx].program = e.target.value;
-                            setData({ ...data, experience: updated });
-                            setIsDirty(true);
-                          }}
-                          className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
-                        />
-                      </div>
-                    </div>
 
-                    <div>
-                      <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                        Executive Summary
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={exp.summary}
-                        onChange={(e) => {
-                          const updated = [...data.experience];
-                          updated[eIdx].summary = e.target.value;
-                          setData({ ...data, experience: updated });
-                          setIsDirty(true);
-                        }}
-                        className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none leading-relaxed"
-                      />
-                    </div>
+                      {/* Research Areas / Focus Blocks */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="text-[11px] font-mono text-zinc-400 uppercase">
+                            Research Areas & Focus Blocks (Cards)
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = [...data.experience];
+                              updated[eIdx].researchAreas = [
+                                ...(updated[eIdx].researchAreas || []),
+                                {
+                                  id: `ra-${Date.now()}`,
+                                  title: "NEW RESEARCH FOCUS",
+                                  highlight: "Key Focus Area",
+                                  description: "Detailed description of research methods and deliverables.",
+                                },
+                              ];
+                              setData({ ...data, experience: updated });
+                              setIsDirty(true);
+                            }}
+                            className="text-[10px] font-mono text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                          >
+                            <Plus className="w-3 h-3" /> Add Research Area
+                          </button>
+                        </div>
+                        <div className="space-y-3">
+                          {(exp.researchAreas || []).map((area, raIdx) => (
+                            <div
+                              key={area.id || raIdx}
+                              className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-2 relative"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-[10px] font-mono text-zinc-500">Area 0{raIdx + 1}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = [...data.experience];
+                                    updated[eIdx].researchAreas = updated[eIdx].researchAreas.filter((_, i) => i !== raIdx);
+                                    setData({ ...data, experience: updated });
+                                    setIsDirty(true);
+                                  }}
+                                  disabled={exp.researchAreas.length <= 1}
+                                  className="p-1 text-zinc-500 hover:text-red-400 disabled:opacity-20"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                              <input
+                                type="text"
+                                value={area.title}
+                                placeholder="Area Title"
+                                onChange={(e) => {
+                                  const updated = [...data.experience];
+                                  updated[eIdx].researchAreas[raIdx].title = e.target.value;
+                                  setData({ ...data, experience: updated });
+                                  setIsDirty(true);
+                                }}
+                                className="w-full px-2.5 py-1 rounded bg-white/[0.03] border border-white/10 text-xs font-semibold text-white focus:outline-none uppercase font-mono"
+                              />
+                              <textarea
+                                rows={2}
+                                value={area.description}
+                                placeholder="Detailed description of research methodology and outcomes"
+                                onChange={(e) => {
+                                  const updated = [...data.experience];
+                                  updated[eIdx].researchAreas[raIdx].description = e.target.value;
+                                  setData({ ...data, experience: updated });
+                                  setIsDirty(true);
+                                }}
+                                className="w-full px-2.5 py-1 rounded bg-white/[0.03] border border-white/10 text-xs text-zinc-300 focus:outline-none"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
 
-                    <div>
-                      <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                        Core Highlights (One per line)
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={exp.highlights.join("\n")}
-                        onChange={(e) => {
-                          const updated = [...data.experience];
-                          updated[eIdx].highlights = e.target.value.split("\n").filter(Boolean);
-                          setData({ ...data, experience: updated });
-                          setIsDirty(true);
-                        }}
-                        className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none leading-relaxed"
-                      />
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="text-[11px] font-mono text-zinc-400 uppercase">
+                            Key Highlights & Achievements (Bullets)
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = [...data.experience];
+                              updated[eIdx].highlights = [
+                                ...(updated[eIdx].highlights || []),
+                                "New research or technical milestone",
+                              ];
+                              setData({ ...data, experience: updated });
+                              setIsDirty(true);
+                            }}
+                            className="text-[10px] font-mono text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                          >
+                            <Plus className="w-3 h-3" /> Add Highlight Bullet
+                          </button>
+                        </div>
+                        <div className="space-y-2">
+                          {(exp.highlights || []).map((hl, hlIdx) => (
+                            <div key={hlIdx} className="flex items-center gap-2">
+                              <span className="text-zinc-600 text-xs">•</span>
+                              <input
+                                type="text"
+                                value={hl}
+                                onChange={(e) => {
+                                  const updated = [...data.experience];
+                                  updated[eIdx].highlights[hlIdx] = e.target.value;
+                                  setData({ ...data, experience: updated });
+                                  setIsDirty(true);
+                                }}
+                                className="flex-1 px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = [...data.experience];
+                                  updated[eIdx].highlights = updated[eIdx].highlights.filter(
+                                    (_, i) => i !== hlIdx
+                                  );
+                                  setData({ ...data, experience: updated });
+                                  setIsDirty(true);
+                                }}
+                                className="p-1 text-zinc-500 hover:text-red-400"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
 
             {/* 7. EDUCATION TAB */}
             {activeTab === "education" && (
-              <div className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 sm:p-8 space-y-6">
-                <div>
-                  <h2 className="text-lg font-semibold text-white tracking-tight">Academic Education</h2>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    Formal degree training at Birla Institute of Technology, Mesra.
-                  </p>
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#08080c] border border-white/[0.06] rounded-2xl p-6">
+                  <div>
+                    <h2 className="text-lg font-semibold text-white tracking-tight">Academic Education & Degrees</h2>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      Manage university degree credentials, graduation periods, locations, and academic context narratives.
+                    </p>
+                  </div>
+                  <button
+                    onClick={addEducationItem}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 transition-all shrink-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Degree / Program</span>
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                      Degree
-                    </label>
-                    <input
-                      type="text"
-                      value={data.education.degree}
-                      onChange={(e) => {
-                        setData({
-                          ...data,
-                          education: { ...data.education, degree: e.target.value },
-                        });
-                        setIsDirty(true);
-                      }}
-                      className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none font-semibold"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                      Institution
-                    </label>
-                    <input
-                      type="text"
-                      value={data.education.institution}
-                      onChange={(e) => {
-                        setData({
-                          ...data,
-                          education: { ...data.education, institution: e.target.value },
-                        });
-                        setIsDirty(true);
-                      }}
-                      className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none"
-                    />
-                  </div>
-                </div>
+                <div className="space-y-4">
+                  {getEducationList().map((edu, edIdx) => (
+                    <div
+                      key={edIdx}
+                      className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 space-y-4"
+                    >
+                      <div className="flex items-start justify-between gap-4 pb-3 border-b border-white/[0.06]">
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-6 h-6 rounded-full bg-white/[0.05] border border-white/10 text-zinc-400 font-mono text-xs flex items-center justify-center shrink-0">
+                            {edIdx + 1}
+                          </span>
+                          <div>
+                            <h3 className="text-sm font-semibold text-white">{edu.degree || "Untitled Degree"}</h3>
+                            <span className="text-[11px] font-mono text-zinc-400">{edu.institution}</span>
+                          </div>
+                        </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
-                      Graduation Period
-                    </label>
-                    <input
-                      type="text"
-                      value={data.education.period}
-                      onChange={(e) => {
-                        setData({
-                          ...data,
-                          education: { ...data.education, period: e.target.value },
-                        });
-                        setIsDirty(true);
-                      }}
-                      className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
-                      Campus Location
-                    </label>
-                    <input
-                      type="text"
-                      value={data.education.location}
-                      onChange={(e) => {
-                        setData({
-                          ...data,
-                          education: { ...data.education, location: e.target.value },
-                        });
-                        setIsDirty(true);
-                      }}
-                      className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
-                    />
-                  </div>
-                </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => moveEducationItem(edIdx, "up")}
+                            disabled={edIdx === 0}
+                            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30"
+                            title="Move Up"
+                          >
+                            <ArrowUp className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveEducationItem(edIdx, "down")}
+                            disabled={edIdx === getEducationList().length - 1}
+                            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30"
+                            title="Move Down"
+                          >
+                            <ArrowDown className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteEducationItem(edIdx)}
+                            disabled={getEducationList().length <= 1}
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-20"
+                            title="Delete Degree"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
 
-                <div>
-                  <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                    Academic Framing & Context
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={data.education.framing}
-                    onChange={(e) => {
-                      setData({
-                        ...data,
-                        education: { ...data.education, framing: e.target.value },
-                      });
-                      setIsDirty(true);
-                    }}
-                    className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none leading-relaxed"
-                  />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                            Degree Title
+                          </label>
+                          <input
+                            type="text"
+                            value={edu.degree}
+                            onChange={(e) => {
+                              const updated = [...getEducationList()];
+                              updated[edIdx] = { ...updated[edIdx], degree: e.target.value };
+                              updateEducationList(updated);
+                            }}
+                            className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none font-semibold"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                            Institution / University
+                          </label>
+                          <input
+                            type="text"
+                            value={edu.institution}
+                            onChange={(e) => {
+                              const updated = [...getEducationList()];
+                              updated[edIdx] = { ...updated[edIdx], institution: e.target.value };
+                              updateEducationList(updated);
+                            }}
+                            className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
+                            Graduation Period
+                          </label>
+                          <input
+                            type="text"
+                            value={edu.period}
+                            onChange={(e) => {
+                              const updated = [...getEducationList()];
+                              updated[edIdx] = { ...updated[edIdx], period: e.target.value };
+                              updateEducationList(updated);
+                            }}
+                            className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
+                            Campus Location
+                          </label>
+                          <input
+                            type="text"
+                            value={edu.location}
+                            onChange={(e) => {
+                              const updated = [...getEducationList()];
+                              updated[edIdx] = { ...updated[edIdx], location: e.target.value };
+                              updateEducationList(updated);
+                            }}
+                            className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                          Academic Framing & Technical Context
+                        </label>
+                        <textarea
+                          rows={3}
+                          value={edu.framing}
+                          onChange={(e) => {
+                            const updated = [...getEducationList()];
+                            updated[edIdx] = { ...updated[edIdx], framing: e.target.value };
+                            updateEducationList(updated);
+                          }}
+                          className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none leading-relaxed"
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
 
             {/* 8. SKILLS & INTERESTS TAB */}
             {activeTab === "skills" && (
-              <div className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 sm:p-8 space-y-6">
-                <div>
-                  <h2 className="text-lg font-semibold text-white tracking-tight">Skills & Domains of Interest</h2>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    Manage the 4 categorized technical skill groups and areas of interest chips.
-                  </p>
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#08080c] border border-white/[0.06] rounded-2xl p-6">
+                  <div>
+                    <h2 className="text-lg font-semibold text-white tracking-tight">Skills & Domains of Interest</h2>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      Manage technical skill categories, specialized tooling, and areas of interest chips.
+                    </p>
+                  </div>
+                  <button
+                    onClick={addSkillGroup}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 transition-all shrink-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Skill Category</span>
+                  </button>
                 </div>
 
                 <div className="space-y-4">
@@ -1856,11 +2466,46 @@ export default function AdminPage() {
                     {data.skillGroups.map((grp, gIdx) => (
                       <div
                         key={gIdx}
-                        className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.08] space-y-2.5"
+                        className="p-5 rounded-2xl bg-[#08080c] border border-white/[0.08] space-y-3"
                       >
+                        <div className="flex items-center justify-between gap-3 pb-2 border-b border-white/[0.06]">
+                          <span className="text-xs font-mono font-semibold text-blue-400 uppercase">
+                            Category #{gIdx + 1}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => moveSkillGroup(gIdx, "up")}
+                              disabled={gIdx === 0}
+                              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30"
+                              title="Move Up"
+                            >
+                              <ArrowUp className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => moveSkillGroup(gIdx, "down")}
+                              disabled={gIdx === data.skillGroups.length - 1}
+                              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30"
+                              title="Move Down"
+                            >
+                              <ArrowDown className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => deleteSkillGroup(gIdx)}
+                              disabled={data.skillGroups.length <= 1}
+                              className="p-1 rounded text-zinc-500 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-20"
+                              title="Delete Category"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
                         <div>
                           <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
-                            Group Name
+                            Category Name
                           </label>
                           <input
                             type="text"
@@ -1914,7 +2559,7 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/[0.06]">
+                <div className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6">
                   <label className="text-xs font-mono uppercase text-zinc-400 tracking-wider block mb-2">
                     Areas of Interest & Domain Focus (Comma-separated)
                   </label>
@@ -1931,7 +2576,7 @@ export default function AdminPage() {
                       });
                       setIsDirty(true);
                     }}
-                    className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none leading-relaxed"
+                    className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none leading-relaxed font-mono text-xs"
                   />
                 </div>
               </div>
@@ -1939,32 +2584,121 @@ export default function AdminPage() {
 
             {/* 9. CREDENTIALS & ACHIEVEMENTS TAB */}
             {activeTab === "credentials" && (
-              <div className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 sm:p-8 space-y-6">
-                <div>
-                  <h2 className="text-lg font-semibold text-white tracking-tight">Credentials & Honors</h2>
-                  <p className="text-xs text-zinc-400 mt-1">
-                    Industry certifications and competitive hackathon milestones.
-                  </p>
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#08080c] border border-white/[0.06] rounded-2xl p-6">
+                  <div>
+                    <h2 className="text-lg font-semibold text-white tracking-tight">Credentials & Honors</h2>
+                    <p className="text-xs text-zinc-400 mt-1">
+                      Manage industry certifications, tracks, credentials, and competitive hackathon milestones.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={addCertCategory}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 transition-all shrink-0"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Cert Category</span>
+                    </button>
+                    <button
+                      onClick={addAchievement}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs font-semibold text-white transition-all shrink-0"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Add Achievement</span>
+                    </button>
+                  </div>
                 </div>
 
+                {/* Certifications Section */}
                 <div className="space-y-4">
-                  <h3 className="text-xs font-mono uppercase text-zinc-400 tracking-wider">
-                    Certifications & Professional Credentials
-                  </h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-mono uppercase text-zinc-400 tracking-wider">
+                      Certifications & Professional Credentials
+                    </h3>
+                  </div>
+
                   {data.certifications.map((cat, cIdx) => (
                     <div
                       key={cIdx}
-                      className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.08] space-y-3"
+                      className="p-5 rounded-2xl bg-[#08080c] border border-white/[0.08] space-y-4"
                     >
-                      <div className="text-xs font-mono font-semibold text-blue-400 uppercase">
-                        {cat.category}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/[0.06]">
+                        <div className="flex-1 max-w-md">
+                          <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
+                            Track Category Title
+                          </label>
+                          <input
+                            type="text"
+                            value={cat.category}
+                            onChange={(e) => {
+                              const updated = [...data.certifications];
+                              updated[cIdx].category = e.target.value;
+                              setData({ ...data, certifications: updated });
+                              setIsDirty(true);
+                            }}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/10 text-xs font-semibold text-blue-400 focus:outline-none font-mono"
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => addCertItem(cIdx)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-500/20 text-xs font-medium transition-all"
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span>Add Cert</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveCertCategory(cIdx, "up")}
+                            disabled={cIdx === 0}
+                            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30"
+                            title="Move Category Up"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveCertCategory(cIdx, "down")}
+                            disabled={cIdx === data.certifications.length - 1}
+                            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30"
+                            title="Move Category Down"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteCertCategory(cIdx)}
+                            disabled={data.certifications.length <= 1}
+                            className="p-1.5 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-20"
+                            title="Delete Category"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
+
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {cat.items.map((it, itIdx) => (
                           <div
                             key={itIdx}
-                            className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.06] space-y-2"
+                            className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-2.5 relative group"
                           >
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-[10px] font-mono text-zinc-500">#{itIdx + 1}</span>
+                              <button
+                                type="button"
+                                onClick={() => deleteCertItem(cIdx, itIdx)}
+                                disabled={cat.items.length <= 1}
+                                className="p-1 text-zinc-500 hover:text-red-400 disabled:opacity-20"
+                                title="Delete Certificate"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+
                             <input
                               type="text"
                               value={it.name}
@@ -1975,7 +2709,7 @@ export default function AdminPage() {
                                 setData({ ...data, certifications: updated });
                                 setIsDirty(true);
                               }}
-                              className="w-full px-2.5 py-1 rounded bg-white/[0.03] border border-white/10 text-xs font-semibold text-white focus:outline-none"
+                              className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.03] border border-white/10 text-xs font-semibold text-white focus:outline-none"
                             />
                             <div className="grid grid-cols-2 gap-2">
                               <input
@@ -1988,7 +2722,7 @@ export default function AdminPage() {
                                   setData({ ...data, certifications: updated });
                                   setIsDirty(true);
                                 }}
-                                className="w-full px-2 py-1 rounded bg-white/[0.03] border border-white/10 text-[11px] text-zinc-300 focus:outline-none"
+                                className="w-full px-2.5 py-1 rounded-lg bg-white/[0.03] border border-white/10 text-[11px] text-zinc-300 focus:outline-none"
                               />
                               <input
                                 type="text"
@@ -2000,20 +2734,32 @@ export default function AdminPage() {
                                   setData({ ...data, certifications: updated });
                                   setIsDirty(true);
                                 }}
-                                className="w-full px-2 py-1 rounded bg-white/[0.03] border border-white/10 text-[11px] text-zinc-300 focus:outline-none font-mono"
+                                className="w-full px-2.5 py-1 rounded-lg bg-white/[0.03] border border-white/10 text-[11px] text-zinc-300 focus:outline-none font-mono"
                               />
                             </div>
                             <input
                               type="text"
                               value={it.highlight || ""}
-                              placeholder="Highlight note"
+                              placeholder="Highlight note (e.g. Top Percentile)"
                               onChange={(e) => {
                                 const updated = [...data.certifications];
                                 updated[cIdx].items[itIdx].highlight = e.target.value;
                                 setData({ ...data, certifications: updated });
                                 setIsDirty(true);
                               }}
-                              className="w-full px-2 py-1 rounded bg-white/[0.03] border border-white/10 text-[10px] text-zinc-400 focus:outline-none"
+                              className="w-full px-2.5 py-1 rounded-lg bg-white/[0.03] border border-white/10 text-[10px] text-zinc-400 focus:outline-none"
+                            />
+                            <input
+                              type="url"
+                              value={it.verifyUrl || ""}
+                              placeholder="Verification URL (optional)"
+                              onChange={(e) => {
+                                const updated = [...data.certifications];
+                                updated[cIdx].items[itIdx].verifyUrl = e.target.value;
+                                setData({ ...data, certifications: updated });
+                                setIsDirty(true);
+                              }}
+                              className="w-full px-2.5 py-1 rounded-lg bg-white/[0.03] border border-white/10 text-[10px] text-zinc-500 focus:outline-none font-mono"
                             />
                           </div>
                         ))}
@@ -2022,16 +2768,55 @@ export default function AdminPage() {
                   ))}
                 </div>
 
-                <div className="pt-4 border-t border-white/[0.06] space-y-4">
-                  <h3 className="text-xs font-mono uppercase text-zinc-400 tracking-wider">
-                    Competitive Achievements & Hackathons
-                  </h3>
+                {/* Achievements Section */}
+                <div className="space-y-4 pt-4 border-t border-white/[0.06]">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-mono uppercase text-zinc-400 tracking-wider">
+                      Competitive Achievements & Hackathons
+                    </h3>
+                  </div>
+
                   <div className="space-y-4">
                     {data.achievements.map((ach, aIdx) => (
                       <div
                         key={ach.id}
-                        className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.08] space-y-3"
+                        className="p-5 rounded-2xl bg-[#08080c] border border-white/[0.08] space-y-3"
                       >
+                        <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
+                          <span className="text-xs font-mono font-semibold text-amber-400">
+                            Milestone #{aIdx + 1}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => moveAchievement(aIdx, "up")}
+                              disabled={aIdx === 0}
+                              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30"
+                              title="Move Up"
+                            >
+                              <ArrowUp className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => moveAchievement(aIdx, "down")}
+                              disabled={aIdx === data.achievements.length - 1}
+                              className="p-1 rounded text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30"
+                              title="Move Down"
+                            >
+                              <ArrowDown className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => deleteAchievement(aIdx)}
+                              disabled={data.achievements.length <= 1}
+                              className="p-1 rounded text-zinc-500 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-20"
+                              title="Delete Achievement"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                           <input
                             type="text"
@@ -2043,7 +2828,7 @@ export default function AdminPage() {
                               setData({ ...data, achievements: updated });
                               setIsDirty(true);
                             }}
-                            className="w-full px-2.5 py-1.5 rounded bg-white/[0.03] border border-white/10 text-xs font-semibold text-white focus:outline-none"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.03] border border-white/10 text-xs font-semibold text-white focus:outline-none"
                           />
                           <input
                             type="text"
@@ -2055,7 +2840,7 @@ export default function AdminPage() {
                               setData({ ...data, achievements: updated });
                               setIsDirty(true);
                             }}
-                            className="w-full px-2.5 py-1.5 rounded bg-white/[0.03] border border-white/10 text-xs text-amber-300 focus:outline-none font-mono"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-amber-300 focus:outline-none font-mono"
                           />
                           <input
                             type="text"
@@ -2067,7 +2852,7 @@ export default function AdminPage() {
                               setData({ ...data, achievements: updated });
                               setIsDirty(true);
                             }}
-                            className="w-full px-2.5 py-1.5 rounded bg-white/[0.03] border border-white/10 text-xs text-zinc-400 focus:outline-none font-mono"
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-zinc-400 focus:outline-none font-mono"
                           />
                         </div>
 
@@ -2081,7 +2866,7 @@ export default function AdminPage() {
                             setData({ ...data, achievements: updated });
                             setIsDirty(true);
                           }}
-                          className="w-full px-2.5 py-1.5 rounded bg-white/[0.03] border border-white/10 text-xs text-zinc-300 focus:outline-none"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-zinc-300 focus:outline-none"
                         />
 
                         <input
@@ -2094,10 +2879,283 @@ export default function AdminPage() {
                             setData({ ...data, achievements: updated });
                             setIsDirty(true);
                           }}
-                          className="w-full px-2.5 py-1.5 rounded bg-white/[0.03] border border-white/10 text-xs text-zinc-400 focus:outline-none font-mono"
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white/[0.03] border border-white/10 text-xs text-zinc-400 focus:outline-none font-mono"
                         />
                       </div>
                     ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 10. CONTACT & INQUIRIES TAB */}
+            {activeTab === "contact" && (
+              <div className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 sm:p-8 space-y-6">
+                <div>
+                  <h2 className="text-lg font-semibold text-white tracking-tight">Contact & Inquiries Section</h2>
+                  <p className="text-xs text-zinc-400 mt-1">
+                    Configure the public contact call-to-action, section heading, supporting copy, and resume request card.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-mono text-zinc-400 uppercase tracking-wider block mb-1.5">
+                      Section Pill Label
+                    </label>
+                    <input
+                      type="text"
+                      value={data.contactSection?.pill ?? "Get in Touch"}
+                      onChange={(e) => {
+                        setData({
+                          ...data,
+                          contactSection: {
+                            pill: e.target.value,
+                            heading: data.contactSection?.heading ?? "Start a Conversation",
+                            subheading: data.contactSection?.subheading ?? "",
+                            resumeCardTitle: data.contactSection?.resumeCardTitle ?? "",
+                            resumeCardDescription: data.contactSection?.resumeCardDescription ?? "",
+                            resumeButtonText: data.contactSection?.resumeButtonText ?? "",
+                          },
+                        });
+                        setIsDirty(true);
+                      }}
+                      className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none font-mono text-xs"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-mono text-zinc-400 uppercase tracking-wider block mb-1.5">
+                      Section Main Heading
+                    </label>
+                    <input
+                      type="text"
+                      value={data.contactSection?.heading ?? "Start a Conversation"}
+                      onChange={(e) => {
+                        setData({
+                          ...data,
+                          contactSection: {
+                            pill: data.contactSection?.pill ?? "Get in Touch",
+                            heading: e.target.value,
+                            subheading: data.contactSection?.subheading ?? "",
+                            resumeCardTitle: data.contactSection?.resumeCardTitle ?? "",
+                            resumeCardDescription: data.contactSection?.resumeCardDescription ?? "",
+                            resumeButtonText: data.contactSection?.resumeButtonText ?? "",
+                          },
+                        });
+                        setIsDirty(true);
+                      }}
+                      className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-mono text-zinc-400 uppercase tracking-wider block mb-1.5">
+                    Supporting Subheading / Callout Narrative
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={
+                      data.contactSection?.subheading ??
+                      "Open to analytics, risk, product, operations, and data-focused opportunities. Reach out directly or send a message."
+                    }
+                    onChange={(e) => {
+                      setData({
+                        ...data,
+                        contactSection: {
+                          pill: data.contactSection?.pill ?? "Get in Touch",
+                          heading: data.contactSection?.heading ?? "Start a Conversation",
+                          subheading: e.target.value,
+                          resumeCardTitle: data.contactSection?.resumeCardTitle ?? "",
+                          resumeCardDescription: data.contactSection?.resumeCardDescription ?? "",
+                          resumeButtonText: data.contactSection?.resumeButtonText ?? "",
+                        },
+                      });
+                      setIsDirty(true);
+                    }}
+                    className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none leading-relaxed"
+                  />
+                </div>
+
+                {/* Resume Request Card Configuration */}
+                <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.08] space-y-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono uppercase text-zinc-300 tracking-wider font-semibold">
+                      Official Résumé Request Card
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                        Card Title
+                      </label>
+                      <input
+                        type="text"
+                        value={data.contactSection?.resumeCardTitle ?? "Need an Official Résumé?"}
+                        onChange={(e) => {
+                          setData({
+                            ...data,
+                            contactSection: {
+                              pill: data.contactSection?.pill ?? "Get in Touch",
+                              heading: data.contactSection?.heading ?? "Start a Conversation",
+                              subheading: data.contactSection?.subheading ?? "",
+                              resumeCardTitle: e.target.value,
+                              resumeCardDescription: data.contactSection?.resumeCardDescription ?? "",
+                              resumeButtonText: data.contactSection?.resumeButtonText ?? "",
+                            },
+                          });
+                          setIsDirty(true);
+                        }}
+                        className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-semibold"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                        Button Action Label
+                      </label>
+                      <input
+                        type="text"
+                        value={data.contactSection?.resumeButtonText ?? "Request Résumé Form"}
+                        onChange={(e) => {
+                          setData({
+                            ...data,
+                            contactSection: {
+                              pill: data.contactSection?.pill ?? "Get in Touch",
+                              heading: data.contactSection?.heading ?? "Start a Conversation",
+                              subheading: data.contactSection?.subheading ?? "",
+                              resumeCardTitle: data.contactSection?.resumeCardTitle ?? "",
+                              resumeCardDescription: data.contactSection?.resumeCardDescription ?? "",
+                              resumeButtonText: e.target.value,
+                            },
+                          });
+                          setIsDirty(true);
+                        }}
+                        className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                      Card Explanatory Description
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={
+                        data.contactSection?.resumeCardDescription ??
+                        "To provide tailored versions aligned with specific role requirements, resumes are shared directly upon verified request."
+                      }
+                      onChange={(e) => {
+                        setData({
+                          ...data,
+                          contactSection: {
+                            pill: data.contactSection?.pill ?? "Get in Touch",
+                            heading: data.contactSection?.heading ?? "Start a Conversation",
+                            subheading: data.contactSection?.subheading ?? "",
+                            resumeCardTitle: data.contactSection?.resumeCardTitle ?? "",
+                            resumeCardDescription: e.target.value,
+                            resumeButtonText: data.contactSection?.resumeButtonText ?? "",
+                          },
+                        });
+                        setIsDirty(true);
+                      }}
+                      className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none leading-relaxed"
+                    />
+                  </div>
+                </div>
+
+                {/* Direct Contact Coordinates */}
+                <div className="pt-4 border-t border-white/[0.06]">
+                  <h3 className="text-xs font-mono uppercase text-zinc-400 tracking-wider mb-4">
+                    Direct Contact Coordinates (Syncs with Global Profile)
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[11px] font-mono text-zinc-500 uppercase block mb-1">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        value={data.personalInfo.contact.email}
+                        onChange={(e) => {
+                          setData({
+                            ...data,
+                            personalInfo: {
+                              ...data.personalInfo,
+                              contact: { ...data.personalInfo.contact, email: e.target.value },
+                            },
+                          });
+                          setIsDirty(true);
+                        }}
+                        className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none font-mono text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-mono text-zinc-500 uppercase block mb-1">
+                        Phone / WhatsApp
+                      </label>
+                      <input
+                        type="text"
+                        value={data.personalInfo.contact.phone}
+                        onChange={(e) => {
+                          setData({
+                            ...data,
+                            personalInfo: {
+                              ...data.personalInfo,
+                              contact: { ...data.personalInfo.contact, phone: e.target.value },
+                            },
+                          });
+                          setIsDirty(true);
+                        }}
+                        className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none font-mono text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-mono text-zinc-500 uppercase block mb-1">
+                        Location / Timezone
+                      </label>
+                      <input
+                        type="text"
+                        value={data.personalInfo.contact.location}
+                        onChange={(e) => {
+                          setData({
+                            ...data,
+                            personalInfo: {
+                              ...data.personalInfo,
+                              contact: { ...data.personalInfo.contact, location: e.target.value },
+                            },
+                          });
+                          setIsDirty(true);
+                        }}
+                        className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none font-mono text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-mono text-zinc-500 uppercase block mb-1">
+                        LinkedIn Profile
+                      </label>
+                      <input
+                        type="url"
+                        value={data.personalInfo.contact.linkedin}
+                        onChange={(e) => {
+                          setData({
+                            ...data,
+                            personalInfo: {
+                              ...data.personalInfo,
+                              contact: { ...data.personalInfo.contact, linkedin: e.target.value },
+                            },
+                          });
+                          setIsDirty(true);
+                        }}
+                        className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none font-mono text-xs"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

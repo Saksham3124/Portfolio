@@ -15,6 +15,16 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
 
   const [videoError, setVideoError] = useState(false);
 
+  const videoUrl =
+    (personalInfo as { heroVideoUrl?: string }).heroVideoUrl ||
+    "/videos/hero-background.mp4";
+  const videoEnabled =
+    (personalInfo as { heroVideoEnabled?: boolean }).heroVideoEnabled !== false;
+
+  useEffect(() => {
+    setVideoError(false);
+  }, [videoUrl]);
+
   // Rotating Typewriter State
   const [displayedText, setDisplayedText] = useState("");
   const [isReducedMotion, setIsReducedMotion] = useState(false);
@@ -105,8 +115,9 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       className="relative min-h-[92vh] sm:min-h-screen flex flex-col justify-between pt-32 sm:pt-40 pb-12 overflow-hidden bg-[#030304]"
     >
       {/* Background Video Layer */}
-      {!videoError && (
+      {videoEnabled && !videoError && (
         <video
+          key={videoUrl}
           autoPlay
           loop
           muted
@@ -114,7 +125,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
           onError={() => setVideoError(true)}
           className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none transition-opacity duration-1000"
         >
-          <source src="/videos/hero-background.mp4" type="video/mp4" />
+          <source src={videoUrl} type="video/mp4" />
         </video>
       )}
 

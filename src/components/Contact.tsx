@@ -21,6 +21,16 @@ interface ContactProps {
 export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
   const { data } = usePortfolio();
   const personalInfo = data.personalInfo;
+  const contactSection = data.contactSection || {
+    pill: "Get in Touch",
+    heading: "Start a Conversation",
+    subheading:
+      "Open to analytics, risk, product, operations, and data-focused opportunities. Reach out directly or send a message.",
+    resumeCardTitle: "Need an Official Résumé?",
+    resumeCardDescription:
+      "To provide tailored versions aligned with specific role requirements, resumes are shared directly upon verified request.",
+    resumeButtonText: "Request Résumé Form",
+  };
   const shouldReduceMotion = useReducedMotion();
 
   const fadeUp = (delay = 0) => ({
@@ -80,15 +90,15 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
         {/* Section Pill */}
         <motion.div {...fadeUp(0)} className="text-center mb-14">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
-            Get in Touch
+            {contactSection.pill}
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4">
-            Start a Conversation
+            {contactSection.heading}
           </h2>
 
           <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
-            Open to analytics, risk, product, operations, and data-focused opportunities. Reach out directly or send a message.
+            {contactSection.subheading}
           </p>
         </motion.div>
 
@@ -102,16 +112,16 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                 <div className="p-2 rounded-lg bg-white/[0.05] border border-white/10 text-zinc-200">
                   <FileText className="w-4 h-4" />
                 </div>
-                <h3 className="text-sm font-semibold text-white">Need an Official Résumé?</h3>
+                <h3 className="text-sm font-semibold text-white">{contactSection.resumeCardTitle}</h3>
               </div>
               <p className="text-xs text-zinc-400 mb-4 leading-relaxed">
-                To provide tailored versions aligned with specific role requirements, resumes are shared directly upon verified request.
+                {contactSection.resumeCardDescription}
               </p>
               <button
                 onClick={onRequestResume}
                 className="pill-button pill-button-primary w-full text-xs py-2"
               >
-                <span>Request Résumé Form</span>
+                <span>{contactSection.resumeButtonText}</span>
               </button>
             </div>
 

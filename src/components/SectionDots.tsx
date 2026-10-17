@@ -62,6 +62,8 @@ export const SectionDots: React.FC = () => {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
+      const targetPath = id === "highlights" ? "/about" : `/${id}`;
+      window.history.pushState(null, "", targetPath);
     }
   };
 

@@ -200,7 +200,9 @@ export const Experience: React.FC = () => {
                           </span>
                         </div>
                         <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                          {area.id === "data-processing" ? (
+                          {area.description ? (
+                            area.description
+                          ) : area.id === "data-processing" ? (
                             <>
                               Processed{" "}
                               <strong className="text-white font-semibold">

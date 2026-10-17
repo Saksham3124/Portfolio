@@ -48,7 +48,7 @@ export interface EducationItem {
 }
 
 export interface CredentialCategory {
-  category: "Data & Cloud" | "Analytics" | "Engineering & Electronics" | "Engineering & AI";
+  category: string;
   items: {
     name: string;
     issuer: string;

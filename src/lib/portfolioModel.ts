@@ -39,23 +39,46 @@ export interface TelemetryMetric {
   sub: string;
 }
 
+export interface ContactSectionContent {
+  pill: string;
+  heading: string;
+  subheading: string;
+  resumeCardTitle: string;
+  resumeCardDescription: string;
+  resumeButtonText: string;
+}
+
 export interface PortfolioContentData {
-  personalInfo: typeof PERSONAL_INFO;
+  personalInfo: typeof PERSONAL_INFO & {
+    heroVideoUrl?: string;
+    heroVideoEnabled?: boolean;
+  };
   about: AboutContent;
   telemetry: TelemetryMetric[];
   experience: ExperienceItem[];
   education: EducationItem;
+  educationList?: EducationItem[];
   featuredProjects: Project[];
   supportingProjects: Project[];
+  featuredProjectsHeading?: string;
+  featuredProjectsSubtitle?: string;
+  supportingProjectsHeading?: string;
+  supportingProjectsSubtitle?: string;
+  supportingProjectsButtonText?: string;
   skillGroups: typeof SKILL_GROUPS;
   areasOfInterest: string[];
   certifications: CredentialCategory[];
   achievements: AchievementItem[];
+  contactSection?: ContactSectionContent;
   updatedAt?: string;
 }
 
 export const DEFAULT_PORTFOLIO_CONTENT: PortfolioContentData = {
-  personalInfo: PERSONAL_INFO,
+  personalInfo: {
+    ...PERSONAL_INFO,
+    heroVideoUrl: "/videos/hero-background.mp4",
+    heroVideoEnabled: true,
+  },
   about: {
     pill: "Analytical Foundation · Decision Focus",
     heading: "Analytics in Service of Better Decisions",
@@ -125,10 +148,29 @@ export const DEFAULT_PORTFOLIO_CONTENT: PortfolioContentData = {
   ],
   experience: EXPERIENCE,
   education: EDUCATION,
+  educationList: [EDUCATION],
   featuredProjects: FEATURED_PROJECTS,
   supportingProjects: SUPPORTING_PROJECTS,
+  featuredProjectsHeading: "Work & Flagship Projects",
+  featuredProjectsSubtitle:
+    "Evidence-based projects supporting customer opportunity modeling, forensic anomaly detection, regulatory data reliability, and payment uncertainty recovery.",
+  supportingProjectsHeading: "Supporting Analytical Projects",
+  supportingProjectsSubtitle:
+    "Secondary systems and analytical pipelines (e.g. Credit Risk Scorecard Engine).",
+  supportingProjectsButtonText:
+    "Inspect Supporting Pipelines (Credit Risk, Rail Telemetry, Financial Modeling)",
   skillGroups: SKILL_GROUPS,
   areasOfInterest: AREAS_OF_INTEREST,
   certifications: CERTIFICATIONS,
   achievements: ACHIEVEMENTS,
+  contactSection: {
+    pill: "Get in Touch",
+    heading: "Start a Conversation",
+    subheading:
+      "Open to analytics, risk, product, operations, and data-focused opportunities. Reach out directly or send a message.",
+    resumeCardTitle: "Need an Official Résumé?",
+    resumeCardDescription:
+      "To provide tailored versions aligned with specific role requirements, resumes are shared directly upon verified request.",
+    resumeButtonText: "Request Résumé Form",
+  },
 };

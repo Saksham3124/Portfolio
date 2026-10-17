@@ -7,7 +7,10 @@ import { usePortfolio } from "@/context/PortfolioContext";
 
 export const Education: React.FC = () => {
   const { data } = usePortfolio();
-  const education = data.education;
+  const educationList =
+    data.educationList && data.educationList.length > 0
+      ? data.educationList
+      : [data.education];
   const shouldReduceMotion = useReducedMotion();
 
   const fadeUp = (delay = 0) => ({
@@ -36,39 +39,47 @@ export const Education: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Education Card */}
-        <motion.div {...fadeUp(0.08)} className="clean-card p-8 sm:p-10 rounded-2xl">
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6 pb-6 border-b border-white/[0.08]">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl bg-white/[0.05] border border-white/10 text-zinc-200 shrink-0">
-                <GraduationCap className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
-                  {education.degree}
-                </h3>
-                <div className="text-sm font-medium text-zinc-300 mt-1">
-                  {education.institution}
+        {/* Education Cards List */}
+        <div className="space-y-6">
+          {educationList.map((education, idx) => (
+            <motion.div
+              key={idx}
+              {...fadeUp(0.08 + idx * 0.06)}
+              className="clean-card p-8 sm:p-10 rounded-2xl"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6 pb-6 border-b border-white/[0.08]">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-xl bg-white/[0.05] border border-white/10 text-zinc-200 shrink-0">
+                    <GraduationCap className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
+                      {education.degree}
+                    </h3>
+                    <div className="text-sm font-medium text-zinc-300 mt-1">
+                      {education.institution}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:items-end text-xs text-zinc-400 font-mono gap-1.5 shrink-0">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-zinc-500" />
+                    {education.period}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-zinc-500" />
+                    {education.location}
+                  </span>
                 </div>
               </div>
-            </div>
 
-            <div className="flex flex-col sm:items-end text-xs text-zinc-400 font-mono gap-1.5 shrink-0">
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-zinc-500" />
-                {education.period}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-zinc-500" />
-                {education.location}
-              </span>
-            </div>
-          </div>
-
-          <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
-            {education.framing}
-          </p>
-        </motion.div>
+              <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
+                {education.framing}
+              </p>
+            </motion.div>
+          ))}
+        </div>
 
       </div>
     </section>

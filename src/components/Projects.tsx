@@ -87,6 +87,18 @@ export const Projects: React.FC = () => {
   const featuredProjects = data?.featuredProjects || FEATURED_PROJECTS;
   const supportingProjects = data?.supportingProjects || SUPPORTING_PROJECTS;
 
+  const featuredHeading = data?.featuredProjectsHeading || "Work & Flagship Projects";
+  const featuredSubtitle =
+    data?.featuredProjectsSubtitle ||
+    "Evidence-based projects supporting customer opportunity modeling, forensic anomaly detection, regulatory data reliability, and payment uncertainty recovery.";
+  const supportingHeading = data?.supportingProjectsHeading || "Supporting Analytical Projects";
+  const supportingSubtitle =
+    data?.supportingProjectsSubtitle ||
+    "Secondary systems and analytical pipelines (e.g. Credit Risk Scorecard Engine).";
+  const supportingBtnText =
+    data?.supportingProjectsButtonText ||
+    "Inspect Supporting Pipelines (Credit Risk, Rail Telemetry, Financial Modeling)";
+
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
     whileInView: { opacity: 1, y: 0 },
@@ -105,11 +117,11 @@ export const Projects: React.FC = () => {
           </div>
 
           <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight text-white mb-4">
-            Work & Flagship Projects
+            {featuredHeading}
           </h2>
 
           <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
-            Evidence-based projects supporting customer opportunity modeling, forensic anomaly detection, regulatory data reliability, and payment uncertainty recovery.
+            {featuredSubtitle}
           </p>
         </motion.div>
 
@@ -233,12 +245,16 @@ export const Projects: React.FC = () => {
             aria-expanded={showSupporting}
             className="group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-mono font-medium text-zinc-300 bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 hover:border-white/20 hover:text-white focus:outline-none focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-white/30 active:bg-white/[0.05] transition-all duration-200 cursor-pointer backdrop-blur-md"
           >
-            <span>{showSupporting ? "Hide Supporting Pipelines" : "Inspect Supporting Pipelines (Credit Risk, Rail Telemetry, Financial Modeling)"}</span>
+            <span>{showSupporting ? "Hide Supporting Pipelines" : supportingBtnText}</span>
             <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-200 transition-transform duration-200 ${showSupporting ? "rotate-180" : ""}`} />
           </button>
 
           {showSupporting && (
             <div className="overflow-hidden mt-8 text-left space-y-4">
+              <div className="mb-4 pb-3 border-b border-white/[0.06]">
+                <h4 className="text-sm font-semibold text-white tracking-tight">{supportingHeading}</h4>
+                <p className="text-xs text-zinc-400 mt-0.5">{supportingSubtitle}</p>
+              </div>
               {supportingProjects.map((sp) => (
                 <div key={sp.id} className="clean-card p-6 rounded-xl border border-white/[0.06]">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">

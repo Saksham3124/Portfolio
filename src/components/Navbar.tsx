@@ -18,14 +18,25 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
   const [activeSection, setActiveSection] = useState<string>("hero");
 
   const navLinks = [
-    { name: "About", href: "#about", id: "about" },
-    { name: "Experience", href: "#experience", id: "experience" },
-    { name: "Work", href: "#work", id: "work" },
-    { name: "Education", href: "#education", id: "education" },
-    { name: "Skills", href: "#skills", id: "skills" },
-    { name: "Credentials", href: "#credentials", id: "credentials" },
-    { name: "Contact", href: "#contact", id: "contact" },
+    { name: "About", href: "/about", id: "about" },
+    { name: "Experience", href: "/experience", id: "experience" },
+    { name: "Work", href: "/work", id: "work" },
+    { name: "Education", href: "/education", id: "education" },
+    { name: "Skills", href: "/skills", id: "skills" },
+    { name: "Credentials", href: "/credentials", id: "credentials" },
+    { name: "Contact", href: "/contact", id: "contact" },
   ];
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, id: string) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+      window.history.pushState(null, "", href);
+    } else {
+      window.location.href = href;
+    }
+  };
 
   // Active section scroll spy
   useEffect(() => {
@@ -84,7 +95,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
         <div className="flex items-center justify-between">
           {/* Brand */}
           <a
-            href="#"
+            href="/"
+            onClick={(e) => {
+              if (window.location.pathname === "/" || window.location.pathname === "") {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.history.pushState(null, "", "/");
+              }
+            }}
             className="flex items-center gap-2 text-zinc-100 hover:text-white transition-colors group"
           >
             <span className="font-semibold tracking-tight text-base sm:text-lg">
@@ -100,6 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
                 <a
                   key={link.name}
                   href={link.href}
+                  onClick={(e) => handleNavClick(e, link.href, link.id)}
                   className={`text-xs font-medium px-3 py-1.5 rounded-full transition-all duration-200 relative ${
                     isActive
                       ? "text-white bg-white/10 shadow-sm border border-white/15"
@@ -186,7 +205,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
                   <a
                     key={link.name}
                     href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={(e) => {
+                      setMobileMenuOpen(false);
+                      handleNavClick(e, link.href, link.id);
+                    }}
                     className={`text-sm font-medium py-1.5 px-3 rounded-lg transition-colors flex items-center justify-between ${
                       isActive
                         ? "text-white bg-white/10 font-semibold"
