@@ -15,7 +15,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import confetti from "canvas-confetti";
-import { PERSONAL_INFO } from "@/data/portfolioData";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 interface RequestResumeModalProps {
   isOpen: boolean;
@@ -26,6 +26,8 @@ export const RequestResumeModal: React.FC<RequestResumeModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { data } = usePortfolio();
+  const personalInfo = data.personalInfo;
   const [name, setName] = useState("");
   const [organization, setOrganization] = useState("");
   const [email, setEmail] = useState("");
@@ -67,12 +69,12 @@ export const RequestResumeModal: React.FC<RequestResumeModalProps> = ({
         `Best regards,\n${cleanName}`
     );
 
-    window.location.href = `mailto:${PERSONAL_INFO.contact.email}?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${personalInfo.contact.email}?subject=${subject}&body=${body}`;
     setSubmitted(true);
   };
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText(PERSONAL_INFO.contact.email);
+    navigator.clipboard.writeText(personalInfo.contact.email);
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2500);
   };
@@ -247,7 +249,7 @@ export const RequestResumeModal: React.FC<RequestResumeModalProps> = ({
                 className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-zinc-200 hover:bg-white/[0.08] transition-colors"
               >
                 {copiedEmail ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                <span>{copiedEmail ? "Copied!" : PERSONAL_INFO.contact.email}</span>
+                <span>{copiedEmail ? "Copied!" : personalInfo.contact.email}</span>
               </button>
 
               <div>
@@ -271,7 +273,7 @@ export const RequestResumeModal: React.FC<RequestResumeModalProps> = ({
               onClick={handleCopyEmail}
               className="text-zinc-300 hover:text-white font-mono flex items-center gap-1"
             >
-              <span>{PERSONAL_INFO.contact.email}</span>
+              <span>{personalInfo.contact.email}</span>
               {copiedEmail && <span className="text-emerald-400 text-[10px]">✓</span>}
             </button>
           </div>

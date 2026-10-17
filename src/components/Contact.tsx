@@ -12,13 +12,15 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/BrandIcons";
-import { PERSONAL_INFO } from "@/data/portfolioData";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 interface ContactProps {
   onRequestResume: () => void;
 }
 
 export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
+  const { data } = usePortfolio();
+  const personalInfo = data.personalInfo;
   const shouldReduceMotion = useReducedMotion();
 
   const fadeUp = (delay = 0) => ({
@@ -67,7 +69,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
     const mailtoBody = encodeURIComponent(
       `Hello Kumar,\n\n${cleanMessage}\n\nFrom: ${cleanName}\nContact Email: ${cleanEmail}`
     );
-    window.location.href = `mailto:${PERSONAL_INFO.contact.email}?subject=${mailtoSubject}&body=${mailtoBody}`;
+    window.location.href = `mailto:${personalInfo.contact.email}?subject=${mailtoSubject}&body=${mailtoBody}`;
     setSentSuccess(true);
   };
 
@@ -122,15 +124,15 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                 <div className="truncate">
                   <div className="text-[11px] text-zinc-500 font-mono">Email Address</div>
                   <a
-                    href={`mailto:${PERSONAL_INFO.contact.email}`}
+                    href={`mailto:${personalInfo.contact.email}`}
                     className="text-xs sm:text-sm font-medium text-zinc-200 hover:text-white transition-colors truncate block"
                   >
-                    {PERSONAL_INFO.contact.email}
+                    {personalInfo.contact.email}
                   </a>
                 </div>
               </div>
               <button
-                onClick={() => copyToClipboard(PERSONAL_INFO.contact.email, "email")}
+                onClick={() => copyToClipboard(personalInfo.contact.email, "email")}
                 className="p-2 rounded-lg hover:bg-white/[0.05] text-zinc-400 hover:text-white transition-colors shrink-0"
                 title="Copy email"
               >
@@ -147,15 +149,15 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                 <div>
                   <div className="text-[11px] text-zinc-500 font-mono">Phone / WhatsApp</div>
                   <a
-                    href={`tel:${PERSONAL_INFO.contact.phone}`}
+                    href={`tel:${personalInfo.contact.phone}`}
                     className="text-xs sm:text-sm font-medium text-zinc-200 hover:text-white transition-colors block font-mono"
                   >
-                    {PERSONAL_INFO.contact.phone}
+                    {personalInfo.contact.phone}
                   </a>
                 </div>
               </div>
               <button
-                onClick={() => copyToClipboard(PERSONAL_INFO.contact.phone, "phone")}
+                onClick={() => copyToClipboard(personalInfo.contact.phone, "phone")}
                 className="p-2 rounded-lg hover:bg-white/[0.05] text-zinc-400 hover:text-white transition-colors shrink-0"
                 title="Copy phone number"
               >
@@ -166,7 +168,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
             {/* Social Links */}
             <div className="grid grid-cols-2 gap-3 pt-2">
               <a
-                href={PERSONAL_INFO.contact.github}
+                href={personalInfo.contact.github}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="clean-card p-3 rounded-xl flex items-center justify-between text-xs font-medium text-zinc-300 hover:text-white group"
@@ -179,7 +181,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
               </a>
 
               <a
-                href={PERSONAL_INFO.contact.linkedin}
+                href={personalInfo.contact.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="clean-card p-3 rounded-xl flex items-center justify-between text-xs font-medium text-zinc-300 hover:text-white group"
@@ -206,7 +208,7 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                 <h4 className="text-sm font-semibold text-white">Opening Email Client...</h4>
                 <p className="text-xs text-zinc-400">
                   Your mail app has been launched. Alternatively, email directly at{" "}
-                  <strong className="text-zinc-200 font-mono">{PERSONAL_INFO.contact.email}</strong>.
+                  <strong className="text-zinc-200 font-mono">{personalInfo.contact.email}</strong>.
                 </p>
                 <button
                   onClick={() => setSentSuccess(false)}

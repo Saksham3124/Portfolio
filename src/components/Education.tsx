@@ -3,9 +3,11 @@
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { GraduationCap, Calendar, MapPin } from "lucide-react";
-import { EDUCATION } from "@/data/portfolioData";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 export const Education: React.FC = () => {
+  const { data } = usePortfolio();
+  const education = data.education;
   const shouldReduceMotion = useReducedMotion();
 
   const fadeUp = (delay = 0) => ({
@@ -43,10 +45,10 @@ export const Education: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
-                  {EDUCATION.degree}
+                  {education.degree}
                 </h3>
                 <div className="text-sm font-medium text-zinc-300 mt-1">
-                  {EDUCATION.institution}
+                  {education.institution}
                 </div>
               </div>
             </div>
@@ -54,17 +56,17 @@ export const Education: React.FC = () => {
             <div className="flex flex-col sm:items-end text-xs text-zinc-400 font-mono gap-1.5 shrink-0">
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-zinc-500" />
-                {EDUCATION.period}
+                {education.period}
               </span>
               <span className="flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-zinc-500" />
-                {EDUCATION.location}
+                {education.location}
               </span>
             </div>
           </div>
 
           <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
-            {EDUCATION.framing}
+            {education.framing}
           </p>
         </motion.div>
 

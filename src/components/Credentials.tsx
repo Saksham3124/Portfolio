@@ -3,9 +3,12 @@
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CheckCircle2, ShieldCheck, Cloud, LineChart, Cpu, Trophy, Calendar, Sparkles } from "lucide-react";
-import { CERTIFICATIONS, ACHIEVEMENTS } from "@/data/portfolioData";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 export const Credentials: React.FC = () => {
+  const { data } = usePortfolio();
+  const certifications = data.certifications;
+  const achievements = data.achievements;
   const shouldReduceMotion = useReducedMotion();
 
   const fadeUp = (delay = 0) => ({
@@ -50,7 +53,7 @@ export const Credentials: React.FC = () => {
           </motion.div>
 
           <div className="space-y-6">
-            {CERTIFICATIONS.map((cat, catIdx) => (
+            {(certifications || []).map((cat, catIdx) => (
               <motion.div
                 key={cat.category}
                 {...fadeUp(0.08 + catIdx * 0.06)}
@@ -114,7 +117,7 @@ export const Credentials: React.FC = () => {
           </motion.div>
 
           <div className="space-y-4">
-            {ACHIEVEMENTS.map((item, aIdx) => (
+            {(achievements || []).map((item, aIdx) => (
               <motion.div
                 key={item.id}
                 {...fadeUp(0.22 + aIdx * 0.06)}

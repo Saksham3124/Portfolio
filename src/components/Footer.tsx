@@ -3,13 +3,15 @@
 import React from "react";
 import { ArrowUp, FileText } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/BrandIcons";
-import { PERSONAL_INFO } from "@/data/portfolioData";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 interface FooterProps {
   onRequestResume: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onRequestResume }) => {
+  const { data } = usePortfolio();
+  const personalInfo = data.personalInfo;
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -30,7 +32,7 @@ export const Footer: React.FC<FooterProps> = ({ onRequestResume }) => {
 
           <div className="flex flex-wrap items-center gap-4">
             <a
-              href={PERSONAL_INFO.contact.github}
+              href={personalInfo.contact.github}
               target="_blank"
               rel="noopener noreferrer"
               className="pill-button text-xs py-1.5 px-3.5 bg-white/[0.02]"
@@ -41,7 +43,7 @@ export const Footer: React.FC<FooterProps> = ({ onRequestResume }) => {
             </a>
 
             <a
-              href={PERSONAL_INFO.contact.linkedin}
+              href={personalInfo.contact.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               className="pill-button text-xs py-1.5 px-3.5 bg-white/[0.02]"

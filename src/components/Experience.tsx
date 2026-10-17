@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { Calendar, MapPin, TrendingUp } from "lucide-react";
 import { EXPERIENCE } from "@/data/portfolioData";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 interface OutcomeItem {
   value: string;
@@ -111,6 +112,8 @@ const ResearchOutcomeMetrics: React.FC<{ outcomes: OutcomeItem[] }> = ({ outcome
 
 export const Experience: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
+  const { data } = usePortfolio();
+  const experienceList = data?.experience || EXPERIENCE;
 
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
@@ -140,7 +143,7 @@ export const Experience: React.FC = () => {
 
         {/* Experience Cards */}
         <div className="space-y-8">
-          {EXPERIENCE.map((exp, idx) => (
+          {experienceList.map((exp, idx) => (
             <motion.div
               key={exp.id}
               {...fadeUp(0.08 + idx * 0.05)}

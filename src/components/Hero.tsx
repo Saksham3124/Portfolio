@@ -1,25 +1,32 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { ArrowRight, ArrowDown } from "lucide-react";
 import { PERSONAL_INFO } from "@/data/portfolioData";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 interface HeroProps {
   onRequestResume: () => void;
 }
 
-const ROTATING_HEADLINES = [
-  "Turning Complex Data into Clear, Defensible Decisions.",
-  "Investigating Data. Validating the Signal. Driving Action.",
-  "Engineering Data Systems for Better Decisions.",
-];
-
 export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
+  const { data } = usePortfolio();
+  const personalInfo = data?.personalInfo || PERSONAL_INFO;
+
   const [videoError, setVideoError] = useState(false);
 
   // Rotating Typewriter State
   const [displayedText, setDisplayedText] = useState("");
   const [isReducedMotion, setIsReducedMotion] = useState(false);
+
+  const rotatingHeadlines = useMemo(
+    () => [
+      personalInfo.heroHeadline || "Turning Complex Data into Clear, Defensible Decisions.",
+      "Investigating Data. Validating the Signal. Driving Action.",
+      "Engineering Data Systems for Better Decisions.",
+    ],
+    [personalInfo.heroHeadline]
+  );
 
   useEffect(() => {
     // Respect prefers-reduced-motion: render Headline 1 immediately and keep static
@@ -28,7 +35,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
       setIsReducedMotion(true);
-      setDisplayedText(ROTATING_HEADLINES[0]);
+      setDisplayedText(rotatingHeadlines[0]);
       return;
     }
 
@@ -44,7 +51,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
     const pauseTransition = 500; // ~500ms pause before typing next headline
 
     const step = () => {
-      const currentHeadline = ROTATING_HEADLINES[headlineIdx];
+      const currentHeadline = rotatingHeadlines[headlineIdx];
 
       if (!isDeleting) {
         // Typing forward
@@ -67,7 +74,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
         if (charIdx <= 0) {
           // Finished deleting: transition to next headline after 500ms pause
           isDeleting = false;
-          headlineIdx = (headlineIdx + 1) % ROTATING_HEADLINES.length;
+          headlineIdx = (headlineIdx + 1) % rotatingHeadlines.length;
           timerId = setTimeout(step, pauseTransition);
           return;
         }
@@ -82,7 +89,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
     return () => {
       clearTimeout(timerId);
     };
-  }, []);
+  }, [rotatingHeadlines]);
 
   return (
     <section
@@ -111,19 +118,18 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       {/* Central Content Container - Generous Spacing */}
       <div className="max-w-4xl mx-auto px-6 text-center w-full relative z-10 flex-1 flex flex-col justify-center items-center">
         
-        {/* Eyebrow & Positioning: DATA · ANALYTICS · RISK · PRODUCT (Completely Static) */}
+        {/* Eyebrow & Positioning: DATA · ANALYTICS · RISK · PRODUCT */}
         <div className="flex flex-col items-center gap-2 mb-6 sm:mb-8">
           <span className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-zinc-400">
-            {PERSONAL_INFO.name}
+            {personalInfo.name}
           </span>
           <div className="flex flex-wrap items-center justify-center gap-2 text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.22em] text-zinc-400">
-            <span>Data</span>
-            <span className="text-zinc-600">·</span>
-            <span>Analytics</span>
-            <span className="text-zinc-600">·</span>
-            <span>Risk</span>
-            <span className="text-zinc-600">·</span>
-            <span>Product</span>
+            {personalInfo.roleTitle.split("·").map((part, i, arr) => (
+              <React.Fragment key={i}>
+                <span>{part.trim()}</span>
+                {i < arr.length - 1 && <span className="text-zinc-600">·</span>}
+              </React.Fragment>
+            ))}
           </div>
         </div>
 
@@ -142,7 +148,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
 
         {/* Static Supporting Text (Completely Static) */}
         <p className="text-sm sm:text-base md:text-lg text-zinc-400 font-normal leading-relaxed max-w-xl mx-auto mb-8 sm:mb-10">
-          {PERSONAL_INFO.heroSupporting}
+          {personalInfo.heroSupporting}
         </p>
 
         {/* Understated Action Controls */}
@@ -167,7 +173,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
         {/* Understated Social Links Strip with Full Actual Email */}
         <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 text-xs font-mono text-zinc-400 mb-4 sm:mb-6">
           <a
-            href={PERSONAL_INFO.contact.github}
+            href={personalInfo.contact.github}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white transition-colors"
@@ -176,7 +182,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
           </a>
           <span className="text-zinc-600">·</span>
           <a
-            href={PERSONAL_INFO.contact.linkedin}
+            href={personalInfo.contact.linkedin}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white transition-colors"
@@ -185,11 +191,11 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
           </a>
           <span className="text-zinc-600">·</span>
           <a
-            href={`mailto:${PERSONAL_INFO.contact.email}`}
+            href={`mailto:${personalInfo.contact.email}`}
             className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4"
-            title={`Send email to ${PERSONAL_INFO.contact.email}`}
+            title={`Send email to ${personalInfo.contact.email}`}
           >
-            {PERSONAL_INFO.contact.email}
+            {personalInfo.contact.email}
           </a>
         </div>
 

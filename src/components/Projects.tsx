@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { GithubIcon, TableauIcon } from "@/components/BrandIcons";
 import { FEATURED_PROJECTS, SUPPORTING_PROJECTS } from "@/data/portfolioData";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 interface MetricItem {
   label: string;
@@ -82,6 +83,9 @@ const ProjectMetrics: React.FC<{ metrics: MetricItem[] }> = ({ metrics }) => {
 export const Projects: React.FC = () => {
   const [showSupporting, setShowSupporting] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+  const { data } = usePortfolio();
+  const featuredProjects = data?.featuredProjects || FEATURED_PROJECTS;
+  const supportingProjects = data?.supportingProjects || SUPPORTING_PROJECTS;
 
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
@@ -111,7 +115,7 @@ export const Projects: React.FC = () => {
 
         {/* Flagship Projects Grid (Balanced 2x2 on Desktop, Clean Stacking on Mobile) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-          {FEATURED_PROJECTS.map((project, idx) => (
+          {featuredProjects.map((project, idx) => (
             <motion.article
               key={project.id}
               {...fadeUp(0.08 + idx * 0.08)}
@@ -235,7 +239,7 @@ export const Projects: React.FC = () => {
 
           {showSupporting && (
             <div className="overflow-hidden mt-8 text-left space-y-4">
-              {SUPPORTING_PROJECTS.map((sp) => (
+              {supportingProjects.map((sp) => (
                 <div key={sp.id} className="clean-card p-6 rounded-xl border border-white/[0.06]">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                     <h4 className="text-base font-semibold text-white">{sp.title}</h4>

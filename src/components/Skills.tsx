@@ -3,9 +3,13 @@
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { SKILL_GROUPS, AREAS_OF_INTEREST } from "@/data/portfolioData";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 export const Skills: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
+  const { data } = usePortfolio();
+  const skillGroups = data?.skillGroups || SKILL_GROUPS;
+  const areasOfInterest = data?.areasOfInterest || AREAS_OF_INTEREST;
 
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
@@ -35,7 +39,7 @@ export const Skills: React.FC = () => {
 
         {/* 4 Skill Categories Grid with Staggered Subtle Reveal */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {SKILL_GROUPS.map((group, idx) => (
+          {skillGroups.map((group, idx) => (
             <motion.div
               key={group.name}
               {...fadeUp(0.08 + idx * 0.04)}
@@ -78,7 +82,7 @@ export const Skills: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap gap-2.5">
-            {AREAS_OF_INTEREST.map((interest) => (
+            {areasOfInterest.map((interest) => (
               <span
                 key={interest}
                 className="px-3.5 py-1.5 rounded-full text-xs font-medium text-zinc-200 bg-white/[0.04] border border-white/10 hover:border-white/20 transition-colors"

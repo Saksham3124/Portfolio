@@ -88,8 +88,12 @@ const MetricCounter: React.FC<MetricCounterProps> = ({
   );
 };
 
+import { usePortfolio } from "@/context/PortfolioContext";
+
 export const Highlights: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
+  const { data } = usePortfolio();
+  const telemetry = data.telemetry;
 
   return (
     <section id="highlights" className="py-20 relative border-t border-white/[0.06] bg-[#030304]">
@@ -122,41 +126,19 @@ export const Highlights: React.FC = () => {
           transition={{ duration: 0.45, delay: 0.08 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-white/[0.08] py-8 border-y border-white/[0.08]"
         >
-          <MetricCounter
-            end={50}
-            decimals={0}
-            suffix="K+"
-            label="Invoice Records"
-            sub="GST Forensic Audit"
-            borderRight
-          />
-          <MetricCounter
-            end={2.6}
-            decimals={1}
-            suffix="M+"
-            label="Transactions"
-            sub="Customer Segmentation"
-            borderLeft
-            borderRight
-          />
-          <MetricCounter
-            end={8.06}
-            decimals={2}
-            prefix="$"
-            suffix="M"
-            label="Sales Analyzed"
-            sub="Promotional Uplift"
-            borderLeft
-            borderRight
-          />
-          <MetricCounter
-            end={10}
-            decimals={0}
-            suffix="K+"
-            label="E-Way Bill Records"
-            sub="Data Reliability Pipeline"
-            borderLeft
-          />
+          {telemetry.map((m, idx) => (
+            <MetricCounter
+              key={idx}
+              end={m.end}
+              decimals={m.decimals}
+              prefix={m.prefix || ""}
+              suffix={m.suffix || ""}
+              label={m.label}
+              sub={m.sub}
+              borderLeft={idx > 0}
+              borderRight={idx < telemetry.length - 1}
+            />
+          ))}
         </motion.div>
 
       </div>

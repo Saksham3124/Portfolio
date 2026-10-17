@@ -4,13 +4,15 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, FileText, ArrowUpRight } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/BrandIcons";
-import { PERSONAL_INFO } from "@/data/portfolioData";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 interface NavbarProps {
   onRequestResume: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
+  const { data } = usePortfolio();
+  const personalInfo = data.personalInfo;
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("hero");
@@ -114,11 +116,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
           <div className="hidden sm:flex items-center gap-2.5">
             {/* Prominent GitHub Button in Sticky Top Bar */}
             <a
-              href={PERSONAL_INFO.contact.github}
+              href={personalInfo.contact.github}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-zinc-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 transition-all"
-              title="Visit GitHub (@Saksham3124)"
+              title="Visit GitHub"
             >
               <GithubIcon className="w-3.5 h-3.5 text-zinc-200" />
               <span>GitHub</span>
@@ -127,7 +129,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
 
             {/* LinkedIn Icon Button */}
             <a
-              href={PERSONAL_INFO.contact.linkedin}
+              href={personalInfo.contact.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               className="p-1.5 rounded-full text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 transition-all"
@@ -199,20 +201,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
 
               <div className="pt-4 border-t border-zinc-800 flex flex-col gap-2.5">
                 <a
-                  href={PERSONAL_INFO.contact.github}
+                  href={personalInfo.contact.github}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between px-3.5 py-2 rounded-lg bg-zinc-900 text-zinc-200 text-xs font-medium border border-zinc-800"
                 >
                   <div className="flex items-center gap-2">
                     <GithubIcon className="w-4 h-4 text-zinc-300" />
-                    <span>GitHub (@Saksham3124)</span>
+                    <span>GitHub</span>
                   </div>
                   <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500" />
                 </a>
 
                 <a
-                  href={PERSONAL_INFO.contact.linkedin}
+                  href={personalInfo.contact.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between px-3.5 py-2 rounded-lg bg-zinc-900 text-zinc-200 text-xs font-medium border border-zinc-800"
