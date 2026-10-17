@@ -26,8 +26,9 @@ export const SectionDots: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Hide rail when in the hero section (< 240px from top)
-      if (window.scrollY < 240) {
+      // Hide rail when hero section is visible; reveal only once hero section is covered (>= 88% of viewport height)
+      const heroCoveredThreshold = window.innerHeight * 0.88;
+      if (window.scrollY < heroCoveredThreshold) {
         setIsVisible(false);
         setActiveSection("");
         return;
@@ -45,6 +46,7 @@ export const SectionDots: React.FC = () => {
       }
 
       // Check section bounding rects for highest active accuracy
+      let currentActive = "about";
       for (const sec of SECTIONS) {
         const el = document.getElementById(sec.id);
         if (el) {
@@ -53,11 +55,12 @@ export const SectionDots: React.FC = () => {
             rect.top <= window.innerHeight * 0.42 &&
             rect.bottom >= window.innerHeight * 0.18
           ) {
-            setActiveSection(sec.id);
-            return;
+            currentActive = sec.id;
+            break;
           }
         }
       }
+      setActiveSection(currentActive);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -76,11 +79,25 @@ export const SectionDots: React.FC = () => {
   };
 
   return (
-    <nav
+    <motion.nav
       aria-label="Section navigation rail"
-      className={`fixed right-6 sm:right-8 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-end transition-opacity duration-300 pointer-events-auto select-none ${
-        isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      initial={false}
+      animate={
+        isVisible
+          ? { opacity: 1, x: 0, pointerEvents: "auto" }
+          : { opacity: 0, x: 44, pointerEvents: "none" }
+      }
+      transition={
+        shouldReduceMotion
+          ? { duration: 0.2 }
+          : {
+              type: "spring",
+              stiffness: 340,
+              damping: 24,
+              mass: 0.8,
+            }
+      }
+      className="fixed right-6 sm:right-8 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-end select-none"
     >
       {/* 
         Open Vertical Rail:
@@ -144,6 +161,6 @@ export const SectionDots: React.FC = () => {
           );
         })}
       </div>
-    </nav>
+    </motion.nav>
   );
 };
