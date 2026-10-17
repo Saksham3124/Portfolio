@@ -405,7 +405,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       <HeroCanvas containerRef={containerRef} />
 
       {/* 4. Main Two-Column Hero Composition (Consistent Top Inset & Decoupled Grid) */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 flex-1 flex flex-col justify-center pt-[calc(env(safe-area-inset-top,0px)+4.5rem)] sm:pt-28 lg:pt-32 xl:pt-36 pb-3 sm:pb-4">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 flex-1 flex flex-col justify-center pt-[calc(env(safe-area-inset-top,0px)+4.5rem)] sm:pt-20 lg:pt-24 xl:pt-24 pb-3 sm:pb-2">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center gap-6 lg:gap-10">
           
           {/* LEFT COLUMN: Left-Aligned Headline, Positioning & Action CTAs */}
@@ -671,27 +671,27 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       </div>
 
       {/* 5. Bottom-Left Scroll Indicator Matching Reference Mockup */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-1 sm:pt-0 pb-3 sm:pb-3.5 flex items-center justify-start shrink-0">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-1 sm:pt-0 pb-3 sm:pb-6 lg:pb-7 flex items-center justify-start shrink-0">
         <motion.a
           href="#about"
           onClick={handleScrollToAbout}
           whileHover={{ opacity: 1 }}
-          className="flex items-center gap-3 text-zinc-500 hover:text-zinc-300 transition-colors group cursor-pointer"
+          className="flex items-center gap-3 text-zinc-400 hover:text-zinc-200 transition-colors group cursor-pointer"
         >
           {/* Vertical Track Line with Animated Sliding Dot */}
-          <div className="relative w-[1px] h-7 sm:h-9 bg-white/15 overflow-hidden flex flex-col justify-start items-center">
+          <div className="relative w-[1px] h-7 sm:h-8 bg-white/20 sm:bg-white/30 overflow-hidden flex flex-col justify-start items-center">
             <motion.div
-              animate={shouldReduceMotion ? {} : { y: [0, 24, 0] }}
+              animate={shouldReduceMotion ? {} : { y: [0, 22, 0] }}
               transition={
                 shouldReduceMotion
                   ? {}
                   : { repeat: Infinity, duration: 2.2, ease: "easeInOut" }
               }
-              className="w-1.5 h-1.5 -ml-[2px] rounded-full bg-cyan-300 shadow-[0_0_8px_#38bdf8]"
+              className="w-1.5 h-1.5 -ml-[2px] rounded-full bg-cyan-300 shadow-[0_0_10px_#38bdf8]"
             />
           </div>
 
-          <span className="text-[8.5px] sm:text-[9px] font-mono tracking-[0.2em] sm:tracking-[0.25em] uppercase text-zinc-500 group-hover:text-zinc-300 transition-colors">
+          <span className="text-[8.5px] sm:text-[9.5px] font-mono tracking-[0.2em] sm:tracking-[0.26em] uppercase text-zinc-400 group-hover:text-cyan-300 transition-colors font-medium">
             SCROLL TO EXPLORE
           </span>
         </motion.a>
