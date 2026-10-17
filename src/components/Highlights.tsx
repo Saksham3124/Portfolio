@@ -68,9 +68,11 @@ const MetricCounter: React.FC<MetricCounterProps> = ({
     : `${prefix}${currentVal.toFixed(decimals)}${suffix}`;
 
   return (
-    <div
+    <motion.div
       ref={ref}
-      className={`pt-6 md:pt-0 ${borderLeft ? "md:pl-8" : ""} ${borderRight ? "md:pr-8" : ""}`}
+      whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      className={`pt-6 md:pt-0 ${borderLeft ? "md:pl-8" : ""} ${borderRight ? "md:pr-8" : ""} cursor-default`}
     >
       {/* Animated Number */}
       <div className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-2 font-mono tabular-nums">
@@ -84,7 +86,7 @@ const MetricCounter: React.FC<MetricCounterProps> = ({
       <div className="text-xs font-mono text-zinc-400 mt-1">
         {sub}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

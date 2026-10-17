@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Menu, X, FileText, ArrowUpRight } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/BrandIcons";
 import { usePortfolio } from "@/context/PortfolioContext";
@@ -13,6 +13,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
   const { data } = usePortfolio();
   const personalInfo = data.personalInfo;
+  const shouldReduceMotion = useReducedMotion();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("hero");
@@ -115,18 +116,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
             {navLinks.map((link) => {
               const isActive = activeSection === link.id;
               return (
-                <a
+                <motion.a
                   key={link.name}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href, link.id)}
-                  className={`text-xs font-medium px-3 py-1.5 rounded-full transition-all duration-200 relative ${
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
+                  whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 18 }}
+                  className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors duration-200 relative cursor-pointer ${
                     isActive
                       ? "text-white bg-white/10 shadow-sm border border-white/15"
                       : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]"
                   }`}
                 >
                   {link.name}
-                </a>
+                </motion.a>
               );
             })}
           </nav>
@@ -134,56 +138,68 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
           {/* Prominent External Links & CTA */}
           <div className="hidden sm:flex items-center gap-2.5">
             {/* Prominent GitHub Button in Sticky Top Bar */}
-            <a
+            <motion.a
               href={personalInfo.contact.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-zinc-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 transition-all"
+              whileHover={shouldReduceMotion ? {} : { scale: 1.05, y: -1 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 450, damping: 18 }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-zinc-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 transition-colors cursor-pointer"
               title="Visit GitHub"
             >
               <GithubIcon className="w-3.5 h-3.5 text-zinc-200" />
               <span>GitHub</span>
               <ArrowUpRight className="w-3 h-3 text-zinc-500" />
-            </a>
+            </motion.a>
 
             {/* LinkedIn Icon Button */}
-            <a
+            <motion.a
               href={personalInfo.contact.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 rounded-full text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 transition-all"
+              whileHover={shouldReduceMotion ? {} : { scale: 1.12, rotate: -4 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 500, damping: 16 }}
+              className="p-1.5 rounded-full text-zinc-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 transition-colors cursor-pointer"
               title="LinkedIn Profile"
               aria-label="LinkedIn Profile"
             >
               <LinkedinIcon className="w-3.5 h-3.5" />
-            </a>
+            </motion.a>
 
             {/* Request Resume Button */}
-            <button
+            <motion.button
               onClick={onRequestResume}
-              className="pill-button text-xs py-1.5 px-4 bg-white text-zinc-950 font-medium hover:bg-zinc-200 border-white"
+              whileHover={shouldReduceMotion ? {} : { scale: 1.05, y: -1 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 450, damping: 20 }}
+              className="pill-button text-xs py-1.5 px-4 bg-white text-zinc-950 font-medium hover:bg-zinc-200 border-white cursor-pointer"
             >
               <FileText className="w-3.5 h-3.5" />
               <span>Request Résumé</span>
-            </button>
+            </motion.button>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="flex lg:hidden items-center gap-2">
-            <button
+            <motion.button
               onClick={onRequestResume}
-              className="px-3 py-1.5 rounded-full text-xs font-medium text-zinc-950 bg-white hover:bg-zinc-200 flex items-center gap-1"
+              whileHover={shouldReduceMotion ? {} : { scale: 1.04 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+              className="px-3 py-1.5 rounded-full text-xs font-medium text-zinc-950 bg-white hover:bg-zinc-200 flex items-center gap-1 cursor-pointer"
             >
               <FileText className="w-3 h-3" />
               <span>Résumé</span>
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-zinc-300 hover:text-white bg-zinc-900 border border-zinc-800"
+              whileTap={shouldReduceMotion ? {} : { scale: 0.92 }}
+              className="p-2 rounded-lg text-zinc-300 hover:text-white bg-zinc-900 border border-zinc-800 cursor-pointer"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>

@@ -20,6 +20,7 @@ interface MetricItem {
 
 const ProjectMetrics: React.FC<{ metrics: MetricItem[] }> = ({ metrics }) => {
   const isFourMetrics = metrics.length === 4;
+  const shouldReduceMotion = useReducedMotion();
 
   const renderLabel = (label: string) => {
     if (label === "Corrupted Rows Promoted") {
@@ -51,9 +52,11 @@ const ProjectMetrics: React.FC<{ metrics: MetricItem[] }> = ({ metrics }) => {
       } gap-y-3 gap-x-1.5 sm:gap-x-2 px-2.5 py-3 sm:px-3 rounded-xl bg-white/[0.02] border border-white/[0.06] mb-6`}
     >
       {metrics.map((m, mIdx) => (
-        <div
+        <motion.div
           key={mIdx}
-          className="flex flex-col items-center justify-between text-center min-w-0"
+          whileHover={shouldReduceMotion ? {} : { scale: 1.05, y: -1.5 }}
+          transition={{ type: "spring", stiffness: 450, damping: 18 }}
+          className="flex flex-col items-center justify-between text-center min-w-0 p-1 rounded-lg hover:bg-white/[0.03] transition-colors cursor-default"
         >
           {/* Label Container: consistent min-height for uniform baseline alignment */}
           <div className="w-full min-h-[28px] sm:min-h-[30px] flex items-center justify-center text-center">
@@ -74,7 +77,7 @@ const ProjectMetrics: React.FC<{ metrics: MetricItem[] }> = ({ metrics }) => {
               {m.value}
             </div>
           </div>
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -131,14 +134,20 @@ export const Projects: React.FC = () => {
             <motion.article
               key={project.id}
               {...fadeUp(0.08 + idx * 0.08)}
+              whileHover={shouldReduceMotion ? {} : { y: -6, scale: 1.008 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
               className="clean-card rounded-2xl p-6 sm:p-7 border border-white/[0.08] flex flex-col justify-between"
             >
               <div>
                 {/* Category & Badge */}
                 <div className="flex items-center justify-between gap-2 mb-4">
-                  <span className="text-[11px] font-mono font-medium px-2.5 py-1 rounded-full bg-white/[0.05] text-zinc-300 border border-white/10">
+                  <motion.span
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.05, y: -1 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 18 }}
+                    className="text-[11px] font-mono font-medium px-2.5 py-1 rounded-full bg-white/[0.05] text-zinc-300 border border-white/10 inline-block cursor-default"
+                  >
                     {project.category}
-                  </span>
+                  </motion.span>
                   <span className="text-[10px] font-mono text-zinc-400">
                     {project.targetRoleRelevance[0]}
                   </span>
@@ -176,15 +185,17 @@ export const Projects: React.FC = () => {
                   </ul>
                 </div>
 
-                {/* Technology Tags */}
+                {/* Technology Tags with Bouncy Hover Pop */}
                 <div className="flex flex-wrap gap-1.5 mb-6">
                   {project.tags.map((tag) => (
-                    <span
+                    <motion.span
                       key={tag}
-                      className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.03] text-zinc-400 border border-white/10"
+                      whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1.5 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 16 }}
+                      className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.03] text-zinc-400 border border-white/10 hover:border-white/30 hover:text-zinc-200 transition-colors inline-block cursor-default"
                     >
                       {tag}
-                    </span>
+                    </motion.span>
                   ))}
                 </div>
               </div>
@@ -192,45 +203,54 @@ export const Projects: React.FC = () => {
               {/* Action Buttons: Only show links that actually exist */}
               <div className="pt-4 border-t border-white/[0.07] flex flex-wrap items-center gap-2 mt-auto">
                 {project.liveUrl && (
-                  <a
+                  <motion.a
                     href={project.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -1.5 }}
+                    whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 20 }}
                     className="pill-button pill-button-primary text-xs py-1.5 px-3"
                     title="View Live Demo"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span>Live Demo</span>
                     <ArrowUpRight className="w-3 h-3" />
-                  </a>
+                  </motion.a>
                 )}
 
                 {project.tableauUrl && (
-                  <a
+                  <motion.a
                     href={project.tableauUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -1.5 }}
+                    whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 20 }}
                     className="pill-button pill-button-primary text-xs py-1.5 px-3"
                     title="View live Tableau Dashboard"
                   >
                     <TableauIcon className="w-3.5 h-3.5" />
                     <span>Tableau Dashboard</span>
                     <ArrowUpRight className="w-3 h-3" />
-                  </a>
+                  </motion.a>
                 )}
 
                 {project.githubUrl && (
-                  <a
+                  <motion.a
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -1.5 }}
+                    whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 20 }}
                     className="pill-button text-xs py-1.5 px-3"
                     title="View GitHub Codebase"
                   >
                     <GithubIcon className="w-3.5 h-3.5 text-zinc-300" />
                     <span>GitHub Codebase</span>
                     <ArrowUpRight className="w-3 h-3 text-zinc-400" />
-                  </a>
+                  </motion.a>
                 )}
               </div>
             </motion.article>
@@ -239,24 +259,37 @@ export const Projects: React.FC = () => {
 
         {/* Collapsible Secondary Technical Pipelines */}
         <motion.div {...fadeUp(0.24)} className="mt-14 text-center">
-          <button
+          <motion.button
             type="button"
             onClick={() => setShowSupporting(!showSupporting)}
             aria-expanded={showSupporting}
+            whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -1.5 }}
+            whileTap={shouldReduceMotion ? {} : { scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 450, damping: 20 }}
             className="group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-mono font-medium text-zinc-300 bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 hover:border-white/20 hover:text-white focus:outline-none focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-white/30 active:bg-white/[0.05] transition-all duration-200 cursor-pointer backdrop-blur-md"
           >
             <span>{showSupporting ? "Hide Supporting Pipelines" : supportingBtnText}</span>
             <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-200 transition-transform duration-200 ${showSupporting ? "rotate-180" : ""}`} />
-          </button>
+          </motion.button>
 
           {showSupporting && (
-            <div className="overflow-hidden mt-8 text-left space-y-4">
+            <motion.div
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+              className="overflow-hidden mt-8 text-left space-y-4"
+            >
               <div className="mb-4 pb-3 border-b border-white/[0.06]">
                 <h4 className="text-sm font-semibold text-white tracking-tight">{supportingHeading}</h4>
                 <p className="text-xs text-zinc-400 mt-0.5">{supportingSubtitle}</p>
               </div>
               {supportingProjects.map((sp) => (
-                <div key={sp.id} className="clean-card p-6 rounded-xl border border-white/[0.06]">
+                <motion.div
+                  key={sp.id}
+                  whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.008 }}
+                  transition={{ type: "spring", stiffness: 350, damping: 22 }}
+                  className="clean-card p-6 rounded-xl border border-white/[0.06]"
+                >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                     <h4 className="text-base font-semibold text-white">{sp.title}</h4>
                     <div className="flex flex-wrap gap-1">
@@ -270,31 +303,37 @@ export const Projects: React.FC = () => {
                   <p className="text-xs text-zinc-400 mb-3">{sp.description}</p>
                   <div className="flex items-center gap-4">
                     {sp.tableauUrl && (
-                      <a
+                      <motion.a
                         href={sp.tableauUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                        whileHover={shouldReduceMotion ? {} : { scale: 1.05, x: 2 }}
+                        whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+                        transition={{ type: "spring", stiffness: 450, damping: 18 }}
+                        className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
                       >
                         <TableauIcon className="w-3.5 h-3.5" />
                         <span>View Dashboard ↗</span>
-                      </a>
+                      </motion.a>
                     )}
                     {sp.githubUrl && (
-                      <a
+                      <motion.a
                         href={sp.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white transition-colors"
+                        whileHover={shouldReduceMotion ? {} : { scale: 1.05, x: 2 }}
+                        whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+                        transition={{ type: "spring", stiffness: 450, damping: 18 }}
+                        className="inline-flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white transition-colors cursor-pointer"
                       >
                         <GithubIcon className="w-3.5 h-3.5" />
                         <span>View Codebase ↗</span>
-                      </a>
+                      </motion.a>
                     )}
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         </motion.div>
 

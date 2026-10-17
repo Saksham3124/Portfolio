@@ -45,13 +45,19 @@ export const Education: React.FC = () => {
             <motion.div
               key={idx}
               {...fadeUp(0.08 + idx * 0.06)}
-              className="clean-card p-8 sm:p-10 rounded-2xl"
+              whileHover={shouldReduceMotion ? {} : { y: -4, scale: 1.008 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+              className="clean-card p-8 sm:p-10 rounded-2xl cursor-default"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6 pb-6 border-b border-white/[0.08]">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-xl bg-white/[0.05] border border-white/10 text-zinc-200 shrink-0">
+                  <motion.div
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.12, rotate: -4 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                    className="p-3 rounded-xl bg-white/[0.05] border border-white/10 text-zinc-200 shrink-0"
+                  >
                     <GraduationCap className="w-6 h-6" />
-                  </div>
+                  </motion.div>
                   <div>
                     <h3 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
                       {education.degree}

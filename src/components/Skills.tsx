@@ -43,6 +43,8 @@ export const Skills: React.FC = () => {
             <motion.div
               key={group.name}
               {...fadeUp(0.08 + idx * 0.04)}
+              whileHover={shouldReduceMotion ? {} : { y: -5, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
               className="clean-card p-7 sm:p-8 rounded-2xl flex flex-col justify-between"
             >
               <div>
@@ -51,12 +53,15 @@ export const Skills: React.FC = () => {
                 
                 <div className="flex flex-wrap gap-2">
                   {group.skills.map((skill) => (
-                    <span
+                    <motion.span
                       key={skill}
-                      className="px-3 py-1.5 rounded-full text-xs font-medium text-zinc-200 bg-white/[0.04] border border-white/10 hover:border-white/20 transition-colors font-mono"
+                      whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1.5 }}
+                      whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 16 }}
+                      className="px-3 py-1.5 rounded-full text-xs font-medium text-zinc-200 bg-white/[0.04] border border-white/10 hover:border-white/30 hover:text-white transition-colors font-mono cursor-default inline-block"
                     >
                       {skill}
-                    </span>
+                    </motion.span>
                   ))}
                 </div>
               </div>
@@ -67,6 +72,8 @@ export const Skills: React.FC = () => {
         {/* Areas of Interest Card */}
         <motion.div
           {...fadeUp(0.38)}
+          whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.006 }}
+          transition={{ type: "spring", stiffness: 350, damping: 25 }}
           className="mt-6 clean-card p-7 sm:p-8 rounded-2xl border border-white/[0.08]"
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6">
@@ -83,12 +90,15 @@ export const Skills: React.FC = () => {
 
           <div className="flex flex-wrap gap-2.5">
             {areasOfInterest.map((interest) => (
-              <span
+              <motion.span
                 key={interest}
-                className="px-3.5 py-1.5 rounded-full text-xs font-medium text-zinc-200 bg-white/[0.04] border border-white/10 hover:border-white/20 transition-colors"
+                whileHover={shouldReduceMotion ? {} : { scale: 1.07, y: -1.5 }}
+                whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 450, damping: 16 }}
+                className="px-3.5 py-1.5 rounded-full text-xs font-medium text-zinc-200 bg-white/[0.04] border border-white/10 hover:border-white/30 hover:text-white transition-colors cursor-default inline-block"
               >
                 {interest}
-              </span>
+              </motion.span>
             ))}
           </div>
         </motion.div>

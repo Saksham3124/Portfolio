@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { ArrowRight, ArrowDown } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { PERSONAL_INFO } from "@/data/portfolioData";
 import { usePortfolio } from "@/context/PortfolioContext";
 
@@ -14,6 +15,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
   const personalInfo = data?.personalInfo || PERSONAL_INFO;
 
   const [videoError, setVideoError] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const videoUrl =
     (personalInfo as { heroVideoUrl?: string }).heroVideoUrl ||
@@ -170,68 +172,104 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
           {personalInfo.heroSupporting}
         </p>
 
-        {/* Understated Action Controls */}
+        {/* Understated Action Controls with Bouncy Spring Physics */}
         <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-6">
-          <a
+          <motion.a
             href="#work"
+            whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
+            whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 450, damping: 20 }}
             className="hero-btn hero-btn-primary"
           >
             <span>View Selected Work</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </a>
+            <motion.span
+              whileHover={shouldReduceMotion ? {} : { x: 3 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              className="inline-flex"
+            >
+              <ArrowRight className="w-3.5 h-3.5" />
+            </motion.span>
+          </motion.a>
 
-          <button
+          <motion.button
             onClick={onRequestResume}
+            whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
+            whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 450, damping: 20 }}
             className="hero-btn hero-btn-secondary"
           >
             <span>Download Resume</span>
             <ArrowDown className="w-3.5 h-3.5 text-zinc-400" />
-          </button>
+          </motion.button>
         </div>
 
-        {/* Understated Social Links Strip with Full Actual Email */}
+        {/* Understated Social Links Strip with Bouncy Hover */}
         <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 text-xs font-mono text-zinc-400 mb-4 sm:mb-6">
-          <a
+          <motion.a
             href={personalInfo.contact.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-white transition-colors"
+            whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
+            whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 450, damping: 18 }}
+            className="hover:text-white transition-colors cursor-pointer"
           >
             GitHub
-          </a>
+          </motion.a>
           <span className="text-zinc-600">·</span>
-          <a
+          <motion.a
             href={personalInfo.contact.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-white transition-colors"
+            whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
+            whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 450, damping: 18 }}
+            className="hover:text-white transition-colors cursor-pointer"
           >
             LinkedIn
-          </a>
+          </motion.a>
           <span className="text-zinc-600">·</span>
-          <a
+          <motion.a
             href={`mailto:${personalInfo.contact.email}`}
-            className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4"
+            whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -1 }}
+            whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 450, damping: 18 }}
+            className="hover:text-white transition-colors underline decoration-white/20 underline-offset-4 cursor-pointer"
             title={`Send email to ${personalInfo.contact.email}`}
           >
             {personalInfo.contact.email}
-          </a>
+          </motion.a>
         </div>
 
       </div>
 
-      {/* Hero Scroll Indicator - Only moving element in the Hero */}
+      {/* Hero Scroll Indicator - Organic buoyant float */}
       <div className="relative z-10 w-full flex flex-col items-center justify-center pt-4 pb-2">
-        <a
+        <motion.a
           href="#about"
-          className="flex flex-col items-center gap-1.5 text-zinc-400 hover:text-white transition-colors group"
+          whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
+          transition={{ type: "spring", stiffness: 400, damping: 18 }}
+          className="flex flex-col items-center gap-1.5 text-zinc-400 hover:text-white transition-colors group cursor-pointer"
           aria-label="Scroll to About section"
         >
           <span className="text-[9px] font-mono tracking-[0.25em] uppercase text-zinc-500 group-hover:text-zinc-300 transition-colors">
             Scroll
           </span>
-          <ArrowDown className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white animate-gentle-bob" />
-        </a>
+          <motion.div
+            animate={shouldReduceMotion ? {} : { y: [0, 5, 0] }}
+            transition={
+              shouldReduceMotion
+                ? {}
+                : {
+                    repeat: Infinity,
+                    duration: 1.8,
+                    ease: "easeInOut",
+                  }
+            }
+          >
+            <ArrowDown className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white" />
+          </motion.div>
+        </motion.a>
       </div>
     </section>
   );

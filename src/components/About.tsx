@@ -51,7 +51,12 @@ export const About: React.FC = () => {
         </motion.div>
 
         {/* Narrative Card */}
-        <motion.div {...fadeUp(0.08)} className="clean-card p-7 sm:p-9 rounded-2xl mb-8 border border-white/[0.08]">
+        <motion.div
+          {...fadeUp(0.08)}
+          whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.006 }}
+          transition={{ type: "spring", stiffness: 350, damping: 25 }}
+          className="clean-card p-7 sm:p-9 rounded-2xl mb-8 border border-white/[0.08]"
+        >
           <div className="space-y-4 text-zinc-300 text-sm sm:text-base leading-relaxed">
             <p>{about.narrativeParagraph1}</p>
             {about.narrativeParagraph2 && <p>{about.narrativeParagraph2}</p>}
@@ -64,12 +69,18 @@ export const About: React.FC = () => {
             <motion.div
               key={i}
               {...fadeUp(0.12 + i * 0.05)}
-              className="clean-card p-5 rounded-xl flex flex-col justify-between"
+              whileHover={shouldReduceMotion ? {} : { y: -5, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 380, damping: 20 }}
+              className="clean-card p-5 rounded-xl flex flex-col justify-between cursor-default"
             >
               <div>
-                <div className="p-2 rounded-lg bg-white/[0.05] border border-white/10 w-fit mb-3">
+                <motion.div
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.12, rotate: -4 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                  className="p-2 rounded-lg bg-white/[0.05] border border-white/10 w-fit mb-3 inline-block"
+                >
                   {getPillarIcon(pillar.iconName)}
-                </div>
+                </motion.div>
                 <h3 className="text-xs font-semibold text-white mb-1.5">{pillar.title}</h3>
                 <p className="text-[11px] text-zinc-400 leading-relaxed">{pillar.description}</p>
               </div>

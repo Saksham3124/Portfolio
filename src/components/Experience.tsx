@@ -91,9 +91,11 @@ const ResearchOutcomeMetrics: React.FC<{ outcomes: OutcomeItem[] }> = ({ outcome
   return (
     <div ref={containerRef} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {outcomes.map((outcome, oIdx) => (
-        <div
+        <motion.div
           key={oIdx}
-          className="p-4 sm:p-5 rounded-xl bg-white/[0.02] border border-white/[0.06]"
+          whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          className="p-4 sm:p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] transition-colors cursor-default"
         >
           <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-1.5 font-mono tabular-nums min-h-[36px] sm:min-h-[40px] flex items-center">
             {displayValues[oIdx] ?? outcome.value}
@@ -104,7 +106,7 @@ const ResearchOutcomeMetrics: React.FC<{ outcomes: OutcomeItem[] }> = ({ outcome
           <div className="text-[11px] text-zinc-500 leading-snug">
             {outcome.sub}
           </div>
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -147,15 +149,21 @@ export const Experience: React.FC = () => {
             <motion.div
               key={exp.id}
               {...fadeUp(0.08 + idx * 0.05)}
+              whileHover={shouldReduceMotion ? {} : { y: -4, scale: 1.006 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
               className="clean-card p-6 sm:p-9 rounded-2xl border border-white/[0.08]"
             >
               {/* Header: Role, Organization, Program, Dates & Location */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6 pb-6 border-b border-white/[0.08]">
                 <div>
                   <div className="inline-flex items-center gap-2 mb-2">
-                    <span className="text-xs font-mono text-zinc-300 px-2.5 py-0.5 rounded bg-white/[0.06] border border-white/10 font-medium">
+                    <motion.span
+                      whileHover={shouldReduceMotion ? {} : { scale: 1.06, y: -1 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 18 }}
+                      className="text-xs font-mono text-zinc-300 px-2.5 py-0.5 rounded bg-white/[0.06] border border-white/10 font-medium inline-block cursor-default"
+                    >
                       {exp.program}
-                    </span>
+                    </motion.span>
                   </div>
                   <h3 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
                     {exp.role}
@@ -186,9 +194,11 @@ export const Experience: React.FC = () => {
               <div className="mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {exp.researchAreas.map((area, aIdx) => (
-                    <div
+                    <motion.div
                       key={area.id || aIdx}
-                      className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] flex flex-col justify-between"
+                      whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.015 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                      className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/20 hover:bg-white/[0.035] transition-colors flex flex-col justify-between cursor-default"
                     >
                       <div>
                         <div className="flex items-center justify-between gap-2 mb-3">
@@ -229,7 +239,7 @@ export const Experience: React.FC = () => {
                           )}
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
@@ -258,16 +268,19 @@ export const Experience: React.FC = () => {
                   Technologies:
                 </span>
                 {exp.tags.map((tag) => (
-                  <span
+                  <motion.span
                     key={tag}
-                    className={`text-xs font-mono px-3 py-1 rounded-md border ${
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
+                    whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 16 }}
+                    className={`text-xs font-mono px-3 py-1 rounded-md border cursor-default inline-block ${
                       tag === "CST Studio Suite" || tag === "MATLAB"
-                        ? "bg-white/[0.06] text-zinc-200 border-white/20 font-medium"
-                        : "bg-white/[0.03] text-zinc-400 border-white/10"
+                        ? "bg-white/[0.06] text-zinc-200 border-white/20 font-medium hover:border-white/40"
+                        : "bg-white/[0.03] text-zinc-400 border-white/10 hover:border-white/25 hover:text-zinc-200"
                     }`}
                   >
                     {tag}
-                  </span>
+                  </motion.span>
                 ))}
               </div>
             </motion.div>

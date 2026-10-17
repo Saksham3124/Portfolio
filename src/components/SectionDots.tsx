@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 
 interface SectionItem {
   id: string;
@@ -21,6 +22,7 @@ const SECTIONS: SectionItem[] = [
 export const SectionDots: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>("");
   const [isVisible, setIsVisible] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -78,11 +80,14 @@ export const SectionDots: React.FC = () => {
         {SECTIONS.map((sec) => {
           const isActive = activeSection === sec.id;
           return (
-            <a
+            <motion.a
               key={sec.id}
               href={`#${sec.id}`}
               onClick={(e) => scrollToSection(sec.id, e)}
-              className="group relative flex items-center justify-center p-1"
+              whileHover={shouldReduceMotion ? {} : { scale: 1.3 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 450, damping: 18 }}
+              className="group relative flex items-center justify-center p-1 cursor-pointer"
               aria-label={`Jump to ${sec.name}`}
             >
               {/* Tooltip Label */}
@@ -95,10 +100,10 @@ export const SectionDots: React.FC = () => {
                 className={`transition-all duration-200 rounded-full ${
                   isActive
                     ? "w-2 h-2 bg-white ring-2 ring-white/30 scale-110"
-                    : "w-1.5 h-1.5 bg-zinc-600 group-hover:bg-zinc-300 group-hover:scale-125"
+                    : "w-1.5 h-1.5 bg-zinc-600 group-hover:bg-zinc-300"
                 }`}
               />
-            </a>
+            </motion.a>
           );
         })}
       </div>

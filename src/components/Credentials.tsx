@@ -57,12 +57,18 @@ export const Credentials: React.FC = () => {
               <motion.div
                 key={cat.category}
                 {...fadeUp(0.08 + catIdx * 0.06)}
+                whileHover={shouldReduceMotion ? {} : { y: -4, scale: 1.006 }}
+                transition={{ type: "spring", stiffness: 350, damping: 25 }}
                 className="clean-card p-6 sm:p-8 rounded-2xl"
               >
                 <div className="flex items-center gap-2.5 pb-4 mb-5 border-b border-white/[0.06]">
-                  <div className="p-2 rounded-lg bg-white/[0.05] border border-white/10">
+                  <motion.div
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.12, rotate: -4 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                    className="p-2 rounded-lg bg-white/[0.05] border border-white/10 cursor-default"
+                  >
                     {categoryIcons[cat.category] || <ShieldCheck className="w-4 h-4 text-zinc-300" />}
-                  </div>
+                  </motion.div>
                   <h4 className="text-sm font-semibold text-white tracking-tight uppercase font-mono">
                     {cat.category}
                   </h4>
@@ -70,9 +76,11 @@ export const Credentials: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {cat.items.map((item, itemIdx) => (
-                    <div
+                    <motion.div
                       key={itemIdx}
-                      className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] flex flex-col justify-between"
+                      whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.015 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                      className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/20 hover:bg-white/[0.035] transition-colors flex flex-col justify-between cursor-default"
                     >
                       <div>
                         <div className="flex items-start justify-between gap-2 mb-1.5">
@@ -99,7 +107,7 @@ export const Credentials: React.FC = () => {
                           Verified Qualification
                         </span>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </motion.div>
@@ -121,13 +129,19 @@ export const Credentials: React.FC = () => {
               <motion.div
                 key={item.id}
                 {...fadeUp(0.22 + aIdx * 0.06)}
-                className="clean-card p-6 sm:p-8 rounded-2xl flex flex-col justify-between"
+                whileHover={shouldReduceMotion ? {} : { y: -4, scale: 1.01 }}
+                transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                className="clean-card p-6 sm:p-8 rounded-2xl flex flex-col justify-between cursor-default"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-2.5 rounded-lg bg-white/[0.05] border border-white/10 text-zinc-200">
+                    <motion.div
+                      whileHover={shouldReduceMotion ? {} : { scale: 1.15, rotate: 6 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                      className="p-2.5 rounded-lg bg-white/[0.05] border border-white/10 text-zinc-200"
+                    >
                       <Trophy className="w-5 h-5 text-amber-400" />
-                    </div>
+                    </motion.div>
                     <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-400">
                       <Calendar className="w-3.5 h-3.5" />
                       <span>{item.year}</span>

@@ -107,7 +107,11 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
           {/* Left Column: Direct Contact & Resume Request Trigger */}
           <motion.div {...fadeUp(0.08)} className="md:col-span-5 space-y-4">
             {/* Request Resume Banner Card */}
-            <div className="clean-card p-6 rounded-2xl border border-white/10">
+            <motion.div
+              whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+              className="clean-card p-6 rounded-2xl border border-white/10"
+            >
               <div className="flex items-center gap-3 mb-2.5">
                 <div className="p-2 rounded-lg bg-white/[0.05] border border-white/10 text-zinc-200">
                   <FileText className="w-4 h-4" />
@@ -117,16 +121,23 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
               <p className="text-xs text-zinc-400 mb-4 leading-relaxed">
                 {contactSection.resumeCardDescription}
               </p>
-              <button
+              <motion.button
                 onClick={onRequestResume}
-                className="pill-button pill-button-primary w-full text-xs py-2"
+                whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -1 }}
+                whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 450, damping: 20 }}
+                className="pill-button pill-button-primary w-full text-xs py-2 cursor-pointer"
               >
                 <span>{contactSection.resumeButtonText}</span>
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
 
             {/* Direct Email Card */}
-            <div className="clean-card p-4 rounded-xl flex items-center justify-between">
+            <motion.div
+              whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              className="clean-card p-4 rounded-xl flex items-center justify-between"
+            >
               <div className="flex items-center gap-3 overflow-hidden">
                 <div className="p-2 rounded-lg bg-white/[0.04] text-zinc-300">
                   <Mail className="w-4 h-4" />
@@ -141,17 +152,24 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                   </a>
                 </div>
               </div>
-              <button
+              <motion.button
+                whileHover={shouldReduceMotion ? {} : { scale: 1.15 }}
+                whileTap={shouldReduceMotion ? {} : { scale: 0.88 }}
+                transition={{ type: "spring", stiffness: 500, damping: 18 }}
                 onClick={() => copyToClipboard(personalInfo.contact.email, "email")}
-                className="p-2 rounded-lg hover:bg-white/[0.05] text-zinc-400 hover:text-white transition-colors shrink-0"
+                className="p-2 rounded-lg hover:bg-white/[0.05] text-zinc-400 hover:text-white transition-colors shrink-0 cursor-pointer"
                 title="Copy email"
               >
                 {copiedEmail ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
 
             {/* Direct Phone Card */}
-            <div className="clean-card p-4 rounded-xl flex items-center justify-between">
+            <motion.div
+              whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              className="clean-card p-4 rounded-xl flex items-center justify-between"
+            >
               <div className="flex items-center gap-3 overflow-hidden">
                 <div className="p-2 rounded-lg bg-white/[0.04] text-zinc-300">
                   <Phone className="w-4 h-4" />
@@ -166,47 +184,61 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                   </a>
                 </div>
               </div>
-              <button
+              <motion.button
+                whileHover={shouldReduceMotion ? {} : { scale: 1.15 }}
+                whileTap={shouldReduceMotion ? {} : { scale: 0.88 }}
+                transition={{ type: "spring", stiffness: 500, damping: 18 }}
                 onClick={() => copyToClipboard(personalInfo.contact.phone, "phone")}
-                className="p-2 rounded-lg hover:bg-white/[0.05] text-zinc-400 hover:text-white transition-colors shrink-0"
+                className="p-2 rounded-lg hover:bg-white/[0.05] text-zinc-400 hover:text-white transition-colors shrink-0 cursor-pointer"
                 title="Copy phone number"
               >
                 {copiedPhone ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
 
             {/* Social Links */}
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <a
+              <motion.a
                 href={personalInfo.contact.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="clean-card p-3 rounded-xl flex items-center justify-between text-xs font-medium text-zinc-300 hover:text-white group"
+                whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -1.5 }}
+                whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 450, damping: 20 }}
+                className="clean-card p-3 rounded-xl flex items-center justify-between text-xs font-medium text-zinc-300 hover:text-white group cursor-pointer"
               >
                 <div className="flex items-center gap-2">
                   <GithubIcon className="w-4 h-4" />
                   <span>GitHub</span>
                 </div>
                 <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-              </a>
+              </motion.a>
 
-              <a
+              <motion.a
                 href={personalInfo.contact.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="clean-card p-3 rounded-xl flex items-center justify-between text-xs font-medium text-zinc-300 hover:text-white group"
+                whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -1.5 }}
+                whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 450, damping: 20 }}
+                className="clean-card p-3 rounded-xl flex items-center justify-between text-xs font-medium text-zinc-300 hover:text-white group cursor-pointer"
               >
                 <div className="flex items-center gap-2">
                   <LinkedinIcon className="w-4 h-4" />
                   <span>LinkedIn</span>
                 </div>
                 <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-white" />
-              </a>
+              </motion.a>
             </div>
           </motion.div>
 
           {/* Right Column: Clean Message Form */}
-          <motion.div {...fadeUp(0.14)} className="md:col-span-7 clean-card p-7 sm:p-8 rounded-2xl">
+          <motion.div
+            {...fadeUp(0.14)}
+            whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.006 }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className="md:col-span-7 clean-card p-7 sm:p-8 rounded-2xl"
+          >
             <h3 className="text-lg font-semibold text-white mb-1.5">Direct Message</h3>
             <p className="text-xs text-zinc-400 mb-6">
               Send a note directly to my email regarding an opportunity or technical discussion.
@@ -287,13 +319,16 @@ export const Contact: React.FC<ContactProps> = ({ onRequestResume }) => {
                   />
                 </div>
 
-                <button
+                <motion.button
                   type="submit"
-                  className="pill-button pill-button-primary w-full text-xs py-2.5"
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.02, y: -1 }}
+                  whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 20 }}
+                  className="pill-button pill-button-primary w-full text-xs py-2.5 cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Send Message</span>
-                </button>
+                </motion.button>
               </form>
             )}
           </motion.div>

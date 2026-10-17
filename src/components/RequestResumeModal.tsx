@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   X,
   FileText,
@@ -28,6 +28,7 @@ export const RequestResumeModal: React.FC<RequestResumeModalProps> = ({
 }) => {
   const { data } = usePortfolio();
   const personalInfo = data.personalInfo;
+  const shouldReduceMotion = useReducedMotion();
   const [name, setName] = useState("");
   const [organization, setOrganization] = useState("");
   const [email, setEmail] = useState("");
@@ -95,19 +96,27 @@ export const RequestResumeModal: React.FC<RequestResumeModalProps> = ({
 
         {/* Modal Window */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.96, y: 16 }}
+          initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.96, y: 16 }}
+          exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: 20 }}
+          transition={
+            shouldReduceMotion
+              ? { duration: 0.15 }
+              : { type: "spring", stiffness: 380, damping: 26 }
+          }
           className="relative w-full max-w-lg rounded-2xl clean-card bg-[#0e0e12] border border-white/10 shadow-2xl p-6 sm:p-8 z-10 my-8 overflow-hidden"
         >
           {/* Close button */}
-          <button
+          <motion.button
             onClick={onClose}
-            className="absolute top-5 right-5 p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-colors"
+            whileHover={shouldReduceMotion ? {} : { scale: 1.1, rotate: 90 }}
+            whileTap={shouldReduceMotion ? {} : { scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 450, damping: 18 }}
+            className="absolute top-5 right-5 p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-colors cursor-pointer"
             aria-label="Close modal"
           >
             <X className="w-4 h-4" />
-          </button>
+          </motion.button>
 
           {/* Modal Header */}
           <div className="flex items-start gap-3.5 mb-6">
@@ -220,48 +229,63 @@ export const RequestResumeModal: React.FC<RequestResumeModalProps> = ({
               </div>
 
               <div className="pt-2">
-                <button
+                <motion.button
                   type="submit"
-                  className="pill-button pill-button-primary w-full text-xs py-2.5"
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.02, y: -1 }}
+                  whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 20 }}
+                  className="pill-button pill-button-primary w-full text-xs py-2.5 cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Send Résumé Request (Pre-filled Mailto)</span>
-                </button>
+                </motion.button>
               </div>
             </form>
           ) : (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 380, damping: 22 }}
               className="text-center py-6 space-y-4"
             >
-              <div className="w-12 h-12 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center text-emerald-400 mx-auto">
+              <motion.div
+                initial={{ scale: 0.5, rotate: -15 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 18 }}
+                className="w-12 h-12 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center text-emerald-400 mx-auto"
+              >
                 <CheckCircle className="w-6 h-6" />
-              </div>
+              </motion.div>
               <h4 className="text-base font-semibold text-white">Request Initialized</h4>
               <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
                 Your email client should have opened with the formatted request. You can also write 
                 directly at any time:
               </p>
 
-              <button
+              <motion.button
                 onClick={handleCopyEmail}
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-zinc-200 hover:bg-white/[0.08] transition-colors"
+                whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
+                whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 450, damping: 18 }}
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-zinc-200 hover:bg-white/[0.08] transition-colors cursor-pointer"
               >
                 {copiedEmail ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                 <span>{copiedEmail ? "Copied!" : personalInfo.contact.email}</span>
-              </button>
+              </motion.button>
 
               <div>
-                <button
+                <motion.button
                   onClick={() => {
                     setSubmitted(false);
                     onClose();
                   }}
-                  className="pill-button text-xs py-1 px-4 mt-2"
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.05 }}
+                  whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 18 }}
+                  className="pill-button text-xs py-1 px-4 mt-2 cursor-pointer"
                 >
                   Close
-                </button>
+                </motion.button>
               </div>
             </motion.div>
           )}
