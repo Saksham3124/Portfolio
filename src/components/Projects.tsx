@@ -136,7 +136,8 @@ export const Projects: React.FC = () => {
               {...fadeUp(0.08 + idx * 0.08)}
               whileHover={shouldReduceMotion ? {} : { y: -6, scale: 1.008 }}
               transition={{ type: "spring", stiffness: 350, damping: 25 }}
-              className="clean-card rounded-2xl p-6 sm:p-7 border border-white/[0.08] flex flex-col justify-between"
+              data-cursor="project"
+              className="clean-card project-card rounded-2xl p-6 sm:p-7 border border-white/[0.08] flex flex-col justify-between"
             >
               <div>
                 {/* Category & Badge */}
@@ -288,7 +289,8 @@ export const Projects: React.FC = () => {
                   key={sp.id}
                   whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.008 }}
                   transition={{ type: "spring", stiffness: 350, damping: 22 }}
-                  className="clean-card p-6 rounded-xl border border-white/[0.06]"
+                  data-cursor="project"
+                  className="clean-card project-card p-6 rounded-xl border border-white/[0.06]"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                     <h4 className="text-base font-semibold text-white">{sp.title}</h4>

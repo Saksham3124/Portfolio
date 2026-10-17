@@ -125,16 +125,16 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
           muted
           playsInline
           onError={() => setVideoError(true)}
-          className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none transition-opacity duration-1000"
+          className="absolute inset-0 w-full h-full object-cover opacity-45 pointer-events-none transition-opacity duration-1000"
         >
           <source src={videoUrl} type="video/mp4" />
         </video>
       )}
 
-      {/* Atmospheric Radial Depth & Soft Vignette Overlays */}
-      <div className="absolute inset-0 pointer-events-none bg-ambient-radial opacity-70" />
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#030304] via-transparent to-[#030304]/80" />
-      <div className="absolute inset-0 pointer-events-none bg-[#030304]/50" />
+      {/* Atmospheric Radial Depth & Soft Vignette Overlays - Softened for Video Clarity */}
+      <div className="absolute inset-0 pointer-events-none bg-ambient-radial opacity-45" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#030304] via-transparent to-[#030304]/60" />
+      <div className="absolute inset-0 pointer-events-none bg-[#030304]/25" />
 
       {/* Central Content Container - Generous Spacing */}
       <div className="max-w-4xl mx-auto px-6 text-center w-full relative z-10 flex-1 flex flex-col justify-center items-center">

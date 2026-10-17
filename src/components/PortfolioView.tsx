@@ -16,6 +16,9 @@ import { RequestResumeModal } from "@/components/RequestResumeModal";
 import { SectionDots } from "@/components/SectionDots";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { BackToTop } from "@/components/BackToTop";
+import { PointerProvider } from "@/context/PointerContext";
+import { CustomCursor } from "@/components/CustomCursor";
+import { InteractiveMascot } from "@/components/InteractiveMascot";
 
 interface PortfolioViewProps {
   targetSection?: string;
@@ -54,57 +57,65 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ targetSection }) =
   };
 
   return (
-    <div className="relative min-h-screen bg-[#030304] text-[#fafafa] selection:bg-white/20 selection:text-white">
-      {/* Dynamic Animated Ambient Background */}
-      <AnimatedBackground />
+    <PointerProvider>
+      <div className="relative min-h-screen bg-[#030304] text-[#fafafa] selection:bg-white/20 selection:text-white">
+        {/* Custom Interactive Desktop Cursor */}
+        <CustomCursor />
 
-      {/* Fixed Right-side Vertical Section Dots for Desktop */}
-      <SectionDots />
+        {/* Dynamic Animated Ambient Background */}
+        <AnimatedBackground />
 
-      {/* Top sticky navigation bar */}
-      <Navbar onRequestResume={handleOpenResumeModal} />
+        {/* Fixed Right-side Vertical Section Dots for Desktop */}
+        <SectionDots />
 
-      {/* Main page content flow */}
-      <main className="relative z-10">
-        {/* 1. Hero Section */}
-        <Hero onRequestResume={handleOpenResumeModal} />
+        {/* Top sticky navigation bar */}
+        <Navbar onRequestResume={handleOpenResumeModal} />
 
-        {/* 2. About Me Section */}
-        <About />
+        {/* Main page content flow */}
+        <main className="relative z-10">
+          {/* 1. Hero Section */}
+          <Hero onRequestResume={handleOpenResumeModal} />
 
-        {/* 3. Evidence & Scale Counter Telemetry Section */}
-        <Highlights />
+          {/* 2. About Me Section */}
+          <About />
 
-        {/* 4. Experience & Research Section */}
-        <Experience />
+          {/* 3. Evidence & Scale Counter Telemetry Section */}
+          <Highlights />
 
-        {/* 5. Selected Flagship & Supporting Engineering Projects */}
-        <Projects />
+          {/* 4. Experience & Research Section */}
+          <Experience />
 
-        {/* 6. Academic Background Section */}
-        <Education />
+          {/* 5. Selected Flagship & Supporting Engineering Projects */}
+          <Projects />
 
-        {/* 7. Technical Skills & Tools Matrix */}
-        <Skills />
+          {/* 6. Academic Background Section */}
+          <Education />
 
-        {/* 8. Verified Credentials & Honors */}
-        <Credentials />
+          {/* 7. Technical Skills & Tools Matrix */}
+          <Skills />
 
-        {/* 9. Direct Contact & Communication Form */}
-        <Contact onRequestResume={handleOpenResumeModal} />
-      </main>
+          {/* 8. Verified Credentials & Honors */}
+          <Credentials />
 
-      {/* Global Footer */}
-      <Footer onRequestResume={handleOpenResumeModal} />
+          {/* 9. Direct Contact & Communication Form */}
+          <Contact onRequestResume={handleOpenResumeModal} />
+        </main>
 
-      {/* Sticky Bottom-Right Quick Back to Top Bubble */}
-      <BackToTop />
+        {/* Global Footer */}
+        <Footer onRequestResume={handleOpenResumeModal} />
 
-      {/* Global Tailored Resume Request Form Modal */}
-      <RequestResumeModal
-        isOpen={isResumeModalOpen}
-        onClose={handleCloseResumeModal}
-      />
-    </div>
+        {/* Interactive 3D Robot Companion Mascot (appears after hero, fixed bottom-20 right-6) */}
+        <InteractiveMascot />
+
+        {/* Sticky Bottom-Right Quick Back to Top Bubble */}
+        <BackToTop />
+
+        {/* Global Tailored Resume Request Form Modal */}
+        <RequestResumeModal
+          isOpen={isResumeModalOpen}
+          onClose={handleCloseResumeModal}
+        />
+      </div>
+    </PointerProvider>
   );
 };
