@@ -25,21 +25,38 @@ export const PortfolioProvider: React.FC<{
   initialData?: PortfolioContentData;
 }> = ({ children, initialData }) => {
   const [data, setData] = useState<PortfolioContentData>(() => {
-    if (initialData) return initialData;
+    let base = initialData || DEFAULT_PORTFOLIO_CONTENT;
     if (typeof window !== "undefined") {
       try {
         const cached = localStorage.getItem("portfolio_cached_data");
         if (cached) {
           const parsed = JSON.parse(cached);
           if (parsed && parsed.personalInfo) {
-            return parsed;
+            base = {
+              ...base,
+              ...parsed,
+              personalInfo: {
+                ...base.personalInfo,
+                ...parsed.personalInfo,
+              },
+            };
           }
+        }
+        const savedVideo = localStorage.getItem("portfolio_hero_video");
+        if (savedVideo && (savedVideo.startsWith("/") || savedVideo.startsWith("http"))) {
+          base = {
+            ...base,
+            personalInfo: {
+              ...base.personalInfo,
+              heroVideoUrl: savedVideo,
+            },
+          };
         }
       } catch {
         // Ignore JSON parse errors
       }
     }
-    return DEFAULT_PORTFOLIO_CONTENT;
+    return base;
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(!initialData);
@@ -53,6 +70,12 @@ export const PortfolioProvider: React.FC<{
         if (typeof window !== "undefined") {
           try {
             localStorage.setItem("portfolio_cached_data", JSON.stringify(json));
+            if (json.personalInfo?.heroVideoUrl) {
+              localStorage.setItem("portfolio_hero_video", json.personalInfo.heroVideoUrl);
+              document.cookie = `portfolio_hero_video=${encodeURIComponent(
+                json.personalInfo.heroVideoUrl
+              )}; path=/; max-age=31536000; SameSite=Lax`;
+            }
           } catch {
             // Ignore storage errors
           }

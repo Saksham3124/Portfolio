@@ -187,6 +187,12 @@ export default function AdminPage() {
         if (typeof window !== "undefined") {
           try {
             localStorage.setItem("portfolio_cached_data", JSON.stringify(data));
+            if (data.personalInfo.heroVideoUrl) {
+              localStorage.setItem("portfolio_hero_video", data.personalInfo.heroVideoUrl);
+              document.cookie = `portfolio_hero_video=${encodeURIComponent(
+                data.personalInfo.heroVideoUrl
+              )}; path=/; max-age=31536000; SameSite=Lax`;
+            }
           } catch {
             // Ignore
           }

@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/next'
+import { cookies } from "next/headers";
 import { Providers } from "@/components/Providers";
 import { getPortfolioData } from "@/lib/portfolioStorage";
+
+export const dynamic = "force-dynamic";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -65,7 +68,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = cookies();
+  const cookieVideo = cookieStore.get("portfolio_hero_video")?.value;
   const initialData = getPortfolioData();
+
+  if (cookieVideo) {
+    try {
+      const decodedVideo = decodeURIComponent(cookieVideo);
+      if (decodedVideo.startsWith("/") || decodedVideo.startsWith("http")) {
+        initialData.personalInfo = {
+          ...initialData.personalInfo,
+          heroVideoUrl: decodedVideo,
+        };
+      }
+    } catch {
+      // Ignore decode error
+    }
+  }
 
   return (
     <html lang="en" className="dark scroll-smooth">
