@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { ArrowUpRight, Mail, BarChart3, Database, ShieldCheck, Box } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { PERSONAL_INFO } from "@/data/portfolioData";
@@ -100,26 +100,143 @@ interface TypingSentence {
 const HIGHLIGHT_GRADIENT_CLASS =
   "text-transparent bg-clip-text bg-gradient-to-r from-[#42B6FF] to-[#63D9E8] [box-decoration-break:clone] [-webkit-box-decoration-break:clone]";
 
-const TYPING_SENTENCES: TypingSentence[] = [
-  {
-    text: "Turning Complex Data into Clear, Defensible Decisions.",
-    prefix: "Turning Complex Data into ",
-    highlight: "Clear, Defensible Decisions",
-    suffix: ".",
-  },
-  {
-    text: "Investigating Data. Validating Signals. Driving Action.",
-    prefix: "Investigating Data. Validating Signals. ",
-    highlight: "Driving Action",
-    suffix: ".",
-  },
-  {
-    text: "Engineering Data Systems for Better Decisions.",
-    prefix: "Engineering Data Systems for ",
-    highlight: "Better Decisions",
-    suffix: ".",
-  },
+const DEFAULT_ROTATING_HEADLINES: string[] = [
+  "Turning Complex Data into Clear, Defensible Decisions.",
+  "Connecting Customer Insights, Product Strategy, and Execution.",
+  "Building Reliable Data Systems for Better Decisions.",
 ];
+
+export function parseHeadline(rawText: string): TypingSentence {
+  const text = (rawText || "").trim();
+  if (!text) {
+    return {
+      text: "Turning Complex Data into Clear, Defensible Decisions.",
+      prefix: "Turning Complex Data into ",
+      highlight: "Clear, Defensible Decisions",
+      suffix: ".",
+    };
+  }
+
+  // Exact known matches for precision
+  if (text === "Turning Complex Data into Clear, Defensible Decisions.") {
+    return {
+      text,
+      prefix: "Turning Complex Data into ",
+      highlight: "Clear, Defensible Decisions",
+      suffix: ".",
+    };
+  }
+  if (text === "Connecting Customer Insights, Product Strategy, and Execution.") {
+    return {
+      text,
+      prefix: "Connecting Customer Insights, ",
+      highlight: "Product Strategy, and Execution",
+      suffix: ".",
+    };
+  }
+  if (text === "Building Reliable Data Systems for Better Decisions.") {
+    return {
+      text,
+      prefix: "Building Reliable Data Systems for ",
+      highlight: "Better Decisions",
+      suffix: ".",
+    };
+  }
+  if (text === "Engineering Data Systems for Better Decisions.") {
+    return {
+      text,
+      prefix: "Engineering Data Systems for ",
+      highlight: "Better Decisions",
+      suffix: ".",
+    };
+  }
+  if (text === "Investigating Data. Validating Signals. Driving Action.") {
+    return {
+      text,
+      prefix: "Investigating Data. Validating Signals. ",
+      highlight: "Driving Action",
+      suffix: ".",
+    };
+  }
+  if (text === "Investigating Data. Validating the Signal. Driving Action.") {
+    return {
+      text,
+      prefix: "Investigating Data. Validating the Signal. ",
+      highlight: "Driving Action",
+      suffix: ".",
+    };
+  }
+
+  // Robust general parser for dynamic entries saved via Admin
+  let mainBody = text;
+  let suffix = "";
+  const matchPunct = text.match(/[.!?]+$/);
+  if (matchPunct) {
+    suffix = matchPunct[0];
+    mainBody = text.slice(0, -suffix.length);
+  }
+
+  const lastPeriod = mainBody.lastIndexOf(". ");
+  if (lastPeriod !== -1) {
+    return {
+      text,
+      prefix: mainBody.slice(0, lastPeriod + 2),
+      highlight: mainBody.slice(lastPeriod + 2),
+      suffix,
+    };
+  }
+
+  const intoIndex = mainBody.lastIndexOf(" into ");
+  if (intoIndex !== -1) {
+    return {
+      text,
+      prefix: mainBody.slice(0, intoIndex + 6),
+      highlight: mainBody.slice(intoIndex + 6),
+      suffix,
+    };
+  }
+
+  const forIndex = mainBody.lastIndexOf(" for ");
+  if (forIndex !== -1) {
+    return {
+      text,
+      prefix: mainBody.slice(0, forIndex + 5),
+      highlight: mainBody.slice(forIndex + 5),
+      suffix,
+    };
+  }
+
+  const lastComma = mainBody.lastIndexOf(", ");
+  if (lastComma !== -1 && lastComma > mainBody.length * 0.3) {
+    return {
+      text,
+      prefix: mainBody.slice(0, lastComma + 2),
+      highlight: mainBody.slice(lastComma + 2),
+      suffix,
+    };
+  }
+
+  const words = mainBody.split(/\s+/);
+  if (words.length <= 2) {
+    return {
+      text,
+      prefix: "",
+      highlight: mainBody,
+      suffix,
+    };
+  }
+
+  const splitPoint = Math.max(1, Math.floor(words.length * 0.6));
+  const prefix = words.slice(0, splitPoint).join(" ") + " ";
+  const highlight = words.slice(splitPoint).join(" ");
+
+  return {
+    text,
+    prefix,
+    highlight,
+    suffix,
+  };
+}
 
 export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
   const containerRef = useRef<HTMLElement | null>(null);
@@ -127,10 +244,26 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
   const personalInfo = data?.personalInfo || PERSONAL_INFO;
   const shouldReduceMotion = useReducedMotion();
 
+  const rotatingHeadlines: string[] = useMemo(() => {
+    const list = (personalInfo as { heroRotatingHeadlines?: string[] })?.heroRotatingHeadlines;
+    if (Array.isArray(list) && list.length > 0) {
+      const valid = list.filter((h) => typeof h === "string" && h.trim().length > 0);
+      if (valid.length > 0) return valid;
+    }
+    return DEFAULT_ROTATING_HEADLINES;
+  }, [personalInfo]);
+
+  const typingSentences: TypingSentence[] = useMemo(() => {
+    return rotatingHeadlines.map(parseHeadline);
+  }, [rotatingHeadlines]);
+
   const [hoveredPin, setHoveredPin] = useState<string | null>(null);
   const [videoError, setVideoError] = useState(false);
   const [sentenceIdx, setSentenceIdx] = useState(0);
-  const [charCount, setCharCount] = useState(TYPING_SENTENCES[0].text.length);
+  const [charCount, setCharCount] = useState(() => {
+    const initialText = typingSentences[0]?.text || DEFAULT_ROTATING_HEADLINES[0];
+    return initialText.length;
+  });
 
   const videoUrl =
     (personalInfo as { heroVideoUrl?: string }).heroVideoUrl ||
@@ -144,9 +277,12 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
 
   // Progressive full-sentence typewriter animation
   useEffect(() => {
+    const count = typingSentences.length;
+    if (count === 0) return;
+
     if (shouldReduceMotion) {
       setSentenceIdx(0);
-      setCharCount(TYPING_SENTENCES[0].text.length);
+      setCharCount(typingSentences[0].text.length);
       return;
     }
 
@@ -161,12 +297,14 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
     const pauseTransition = 350; // brief pause before typing next sentence
 
     const step = () => {
-      const sentence = TYPING_SENTENCES[currentIdx];
+      const numSentences = typingSentences.length;
+      if (numSentences === 0) return;
+      const sentence = typingSentences[currentIdx % numSentences];
 
       if (!isDeleting) {
         chars++;
         setCharCount(chars);
-        setSentenceIdx(currentIdx);
+        setSentenceIdx(currentIdx % numSentences);
 
         if (chars >= sentence.text.length) {
           isDeleting = true;
@@ -178,11 +316,11 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       } else {
         chars--;
         setCharCount(chars);
-        setSentenceIdx(currentIdx);
+        setSentenceIdx(currentIdx % numSentences);
 
         if (chars <= 0) {
           isDeleting = false;
-          currentIdx = (currentIdx + 1) % TYPING_SENTENCES.length;
+          currentIdx = (currentIdx + 1) % numSentences;
           setSentenceIdx(currentIdx);
           timerId = setTimeout(step, pauseTransition);
           return;
@@ -198,9 +336,10 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
     return () => {
       clearTimeout(timerId);
     };
-  }, [shouldReduceMotion]);
+  }, [typingSentences, shouldReduceMotion]);
 
-  const currentSentence = TYPING_SENTENCES[sentenceIdx];
+  const safeSentenceIdx = typingSentences.length > 0 ? sentenceIdx % typingSentences.length : 0;
+  const currentSentence = typingSentences[safeSentenceIdx] || parseHeadline(DEFAULT_ROTATING_HEADLINES[0]);
   const prefixLen = currentSentence.prefix.length;
   const highlightLen = currentSentence.highlight.length;
 
@@ -283,10 +422,10 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             {/* Dedicated CSS Grid wrapper: All sentences occupy the same cell to establish natural max height and prevent layout shift */}
             <div className="w-full mb-6 sm:mb-8">
               <div className="grid grid-cols-1 grid-rows-1 items-start w-full">
-                {/* Phantom Invisible Sizers: All 3 complete sentences rendered invisibly in the same cell */}
-                {TYPING_SENTENCES.map((s, idx) => (
+                {/* Phantom Invisible Sizers: All complete sentences rendered invisibly in the same cell */}
+                {typingSentences.map((s, idx) => (
                   <div
-                    key={`sizer-${idx}`}
+                    key={`sizer-${idx}-${s.text}`}
                     aria-hidden="true"
                     className="col-start-1 row-start-1 w-full invisible select-none pointer-events-none"
                   >

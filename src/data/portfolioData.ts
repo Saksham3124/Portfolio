@@ -121,8 +121,8 @@ export const PERSONAL_INFO = {
   heroHeadline: "Turning Complex Data into Clear, Defensible Decisions.",
   heroRotatingHeadlines: [
     "Turning Complex Data into Clear, Defensible Decisions.",
-    "Investigating Data. Validating the Signal. Driving Action.",
-    "Engineering Data Systems for Better Decisions.",
+    "Connecting Customer Insights, Product Strategy, and Execution.",
+    "Building Reliable Data Systems for Better Decisions.",
   ],
   heroSupporting:
     "Engineering graduate focused on analytics, risk, customer insights, and AI-assisted decision systems.",
