@@ -94,11 +94,12 @@ export const PointerProvider: React.FC<{ children: React.ReactNode }> = ({
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
-      const projectCard = target.closest("[data-cursor='project'], .project-card");
-      if (projectCard) {
+      const projectBtn = target.closest("[data-cursor='project']");
+      if (projectBtn) {
         setCursorVariant("project");
         setIsHoveringProject(true);
-        const titleEl = projectCard.querySelector("h3");
+        const cardEl = projectBtn.closest("article, .clean-card");
+        const titleEl = cardEl ? cardEl.querySelector("h3, h4") : null;
         setHoveredProjectTitle(titleEl ? titleEl.textContent : null);
         return;
       }

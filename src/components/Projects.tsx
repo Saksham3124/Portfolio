@@ -136,8 +136,7 @@ export const Projects: React.FC = () => {
               {...fadeUp(0.08 + idx * 0.08)}
               whileHover={shouldReduceMotion ? {} : { y: -6, scale: 1.008 }}
               transition={{ type: "spring", stiffness: 350, damping: 25 }}
-              data-cursor="project"
-              className="clean-card project-card rounded-2xl p-6 sm:p-7 border border-white/[0.08] flex flex-col justify-between"
+              className="clean-card rounded-2xl p-6 sm:p-7 border border-white/[0.08] flex flex-col justify-between"
             >
               <div>
                 {/* Category & Badge */}
@@ -208,6 +207,7 @@ export const Projects: React.FC = () => {
                     href={project.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-cursor="project"
                     whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -1.5 }}
                     whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
                     transition={{ type: "spring", stiffness: 450, damping: 20 }}
@@ -225,6 +225,7 @@ export const Projects: React.FC = () => {
                     href={project.tableauUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-cursor="project"
                     whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -1.5 }}
                     whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
                     transition={{ type: "spring", stiffness: 450, damping: 20 }}
@@ -242,6 +243,7 @@ export const Projects: React.FC = () => {
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-cursor="project"
                     whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -1.5 }}
                     whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
                     transition={{ type: "spring", stiffness: 450, damping: 20 }}
@@ -289,8 +291,7 @@ export const Projects: React.FC = () => {
                   key={sp.id}
                   whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.008 }}
                   transition={{ type: "spring", stiffness: 350, damping: 22 }}
-                  data-cursor="project"
-                  className="clean-card project-card p-6 rounded-xl border border-white/[0.06]"
+                  className="clean-card p-6 rounded-xl border border-white/[0.06]"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                     <h4 className="text-base font-semibold text-white">{sp.title}</h4>
@@ -309,6 +310,7 @@ export const Projects: React.FC = () => {
                         href={sp.tableauUrl}
                         target="_blank"
                         rel="noopener noreferrer"
+                        data-cursor="project"
                         whileHover={shouldReduceMotion ? {} : { scale: 1.05, x: 2 }}
                         whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
                         transition={{ type: "spring", stiffness: 450, damping: 18 }}
@@ -323,6 +325,7 @@ export const Projects: React.FC = () => {
                         href={sp.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
+                        data-cursor="project"
                         whileHover={shouldReduceMotion ? {} : { scale: 1.05, x: 2 }}
                         whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
                         transition={{ type: "spring", stiffness: 450, damping: 18 }}
