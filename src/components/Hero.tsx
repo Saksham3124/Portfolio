@@ -114,7 +114,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
   return (
     <section
       id="hero"
-      className="relative z-10 min-h-[92vh] sm:min-h-screen flex flex-col justify-between pt-32 sm:pt-40 pb-20 sm:pb-28 overflow-hidden bg-[#030304]"
+      className="relative w-full h-full flex flex-col justify-between pt-20 sm:pt-28 pb-6 sm:pb-10 overflow-hidden bg-[#030304]"
     >
       {/* Background Video Layer */}
       {videoEnabled && !videoError && (
@@ -140,7 +140,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       <div className="max-w-4xl mx-auto px-6 text-center w-full relative z-10 flex-1 flex flex-col justify-center items-center">
         
         {/* Eyebrow & Positioning: DATA · ANALYTICS · RISK · PRODUCT */}
-        <div className="flex flex-col items-center gap-2 mb-6 sm:mb-8">
+        <div className="flex flex-col items-center gap-2 mb-4 sm:mb-6">
           <span className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-zinc-400">
             {personalInfo.name}
           </span>
@@ -155,7 +155,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
         </div>
 
         {/* Dominant Headline with Stable Height to Eliminate Layout Shifts */}
-        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[4.65rem] font-bold tracking-tight text-white leading-[1.08] max-w-4xl mx-auto mb-6 sm:mb-8 min-h-[140px] sm:min-h-[180px] md:min-h-[220px] lg:min-h-[240px] flex items-center justify-center text-center">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-bold tracking-tight text-white leading-[1.1] max-w-4xl mx-auto mb-4 sm:mb-6 min-h-[100px] sm:min-h-[140px] md:min-h-[170px] lg:min-h-[190px] flex items-center justify-center text-center">
           <span>
             {displayedText}
             {!isReducedMotion && (
@@ -168,7 +168,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
         </h1>
 
         {/* Static Supporting Text (Completely Static) */}
-        <p className="text-sm sm:text-base md:text-lg text-zinc-400 font-normal leading-relaxed max-w-xl mx-auto mb-8 sm:mb-10">
+        <p className="text-sm sm:text-base md:text-lg text-zinc-400 font-normal leading-relaxed max-w-xl mx-auto mb-6 sm:mb-8">
           {personalInfo.heroSupporting}
         </p>
 
@@ -249,6 +249,14 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
       <div className="relative z-10 w-full flex flex-col items-center justify-center pt-4 pb-2">
         <motion.a
           href="#about"
+          onClick={(e) => {
+            e.preventDefault();
+            const el = document.getElementById("about");
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth" });
+              window.history.pushState(null, "", "/about");
+            }
+          }}
           whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
           transition={{ type: "spring", stiffness: 400, damping: 18 }}
           className="flex flex-col items-center gap-1.5 text-zinc-400 hover:text-white transition-colors group cursor-pointer"

@@ -75,37 +75,42 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ targetSection }) =
         <Navbar onRequestResume={handleOpenResumeModal} />
 
         {/* Main page content flow */}
-        <main className="relative z-10">
-          {/* 1. Hero Section */}
-          <Hero onRequestResume={handleOpenResumeModal} />
+        <main className="relative">
+          {/* 1. Fixed Hero Section Container: Stays pinned in the viewport while scrolling */}
+          <div className="sticky top-0 h-screen w-full z-0 overflow-hidden">
+            <Hero onRequestResume={handleOpenResumeModal} />
+          </div>
 
-          {/* 2. About Me Section */}
-          <About />
+          {/* 2. Sliding Bottom Content: Climbs smoothly over the fixed Hero */}
+          <div className="relative z-20 bg-[#030304]">
+            {/* 2. About Me Section - Styled as an elevated card with rounded top shoulders */}
+            <About />
 
-          {/* 3. Evidence & Scale Counter Telemetry Section */}
-          <Highlights />
+            {/* 3. Evidence & Scale Counter Telemetry Section */}
+            <Highlights />
 
-          {/* 4. Experience & Research Section */}
-          <Experience />
+            {/* 4. Experience & Research Section */}
+            <Experience />
 
-          {/* 5. Selected Flagship & Supporting Engineering Projects */}
-          <Projects />
+            {/* 5. Selected Flagship & Supporting Engineering Projects */}
+            <Projects />
 
-          {/* 6. Academic Background Section */}
-          <Education />
+            {/* 6. Academic Background Section */}
+            <Education />
 
-          {/* 7. Technical Skills & Tools Matrix */}
-          <Skills />
+            {/* 7. Technical Skills & Tools Matrix */}
+            <Skills />
 
-          {/* 8. Verified Credentials & Honors */}
-          <Credentials />
+            {/* 8. Verified Credentials & Honors */}
+            <Credentials />
 
-          {/* 9. Direct Contact & Communication Form */}
-          <Contact onRequestResume={handleOpenResumeModal} />
+            {/* 9. Direct Contact & Communication Form */}
+            <Contact onRequestResume={handleOpenResumeModal} />
+
+            {/* Global Footer */}
+            <Footer onRequestResume={handleOpenResumeModal} />
+          </div>
         </main>
-
-        {/* Global Footer */}
-        <Footer onRequestResume={handleOpenResumeModal} />
 
         {/* Sticky Bottom-Right Quick Back to Top Bubble */}
         <BackToTop />
