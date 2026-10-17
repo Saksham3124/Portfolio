@@ -24,7 +24,7 @@ interface PortfolioViewProps {
   targetSection?: string;
 }
 
-export const PortfolioView: React.FC<PortfolioViewProps> = ({ targetSection }) => {
+export const PortfolioView: React.FC<PortfolioViewProps> = () => {
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
 
   useEffect(() => {
@@ -33,30 +33,25 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ targetSection }) =
         window.history.scrollRestoration = "manual";
       }
 
-      if (targetSection) {
-        // Allow DOM to settle before scrolling directly to target section
-        const timer = setTimeout(() => {
-          const el = document.getElementById(targetSection);
-          if (el) {
-            el.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }, 120);
-        return () => clearTimeout(timer);
-      } else if (window.location.hash) {
-        const hashId = window.location.hash.replace("#", "");
-        const actualId = hashId === "projects" ? "work" : hashId;
-        const timer = setTimeout(() => {
-          const el = document.getElementById(actualId);
-          if (el) {
-            el.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }, 140);
-        return () => clearTimeout(timer);
-      } else {
-        window.scrollTo(0, 0);
+      // Detect any incoming section hash, strip it from the URL without creating a history entry, and start at top
+      const recognizedHashes = [
+        "#about",
+        "#experience",
+        "#work",
+        "#projects",
+        "#education",
+        "#skills",
+        "#credentials",
+        "#contact",
+        "#highlights",
+      ];
+      const hash = (window.location.hash || "").toLowerCase();
+      if (hash && recognizedHashes.includes(hash)) {
+        window.history.replaceState(null, "", window.location.pathname);
       }
+      window.scrollTo(0, 0);
     }
-  }, [targetSection]);
+  }, []);
 
   const handleOpenResumeModal = () => {
     setIsResumeModalOpen(true);

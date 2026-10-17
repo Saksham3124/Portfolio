@@ -33,8 +33,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
-      const hash = id === "work" ? "#projects" : `#${id}`;
-      window.history.pushState(null, "", hash);
     } else {
       window.location.href = `/${href}`;
     }
@@ -102,7 +100,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
               if (window.location.pathname === "/" || window.location.pathname === "") {
                 e.preventDefault();
                 window.scrollTo({ top: 0, behavior: "smooth" });
-                window.history.pushState(null, "", "/");
               }
             }}
             className="flex items-center gap-2 text-zinc-100 hover:text-white transition-colors group"

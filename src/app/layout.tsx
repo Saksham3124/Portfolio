@@ -93,7 +93,7 @@ export default function RootLayout({
         <link rel="alternate icon" href="/favicon.ico" />
         <script
           dangerouslySetInnerHTML={{
-            __html: `if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; } if (!window.location.hash) { window.scrollTo(0, 0); }`,
+            __html: `(function(){if('scrollRestoration' in history){history.scrollRestoration='manual';}var r=['#about','#experience','#work','#projects','#education','#skills','#credentials','#contact','#highlights'];var h=(window.location.hash||'').toLowerCase();if(h&&r.indexOf(h)!==-1){history.replaceState(null,'',window.location.pathname);}window.scrollTo(0,0);})();`,
           }}
         />
       </head>

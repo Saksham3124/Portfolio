@@ -224,7 +224,6 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
     const el = document.getElementById("work");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
-      window.history.pushState(null, "", "#projects");
     }
   };
 
@@ -233,7 +232,6 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
     const el = document.getElementById("about");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
-      window.history.pushState(null, "", "#about");
     }
   };
 

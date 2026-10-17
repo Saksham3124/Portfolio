@@ -4,42 +4,42 @@ const nextConfig = {
     return [
       {
         source: "/about",
-        destination: "/#about",
+        destination: "/",
         permanent: false,
       },
       {
         source: "/experience",
-        destination: "/#experience",
+        destination: "/",
         permanent: false,
       },
       {
         source: "/work",
-        destination: "/#projects",
+        destination: "/",
         permanent: false,
       },
       {
         source: "/projects",
-        destination: "/#projects",
+        destination: "/",
         permanent: false,
       },
       {
         source: "/education",
-        destination: "/#education",
+        destination: "/",
         permanent: false,
       },
       {
         source: "/skills",
-        destination: "/#skills",
+        destination: "/",
         permanent: false,
       },
       {
         source: "/credentials",
-        destination: "/#credentials",
+        destination: "/",
         permanent: false,
       },
       {
         source: "/contact",
-        destination: "/#contact",
+        destination: "/",
         permanent: false,
       },
     ];

@@ -46,16 +46,27 @@ export const SectionDots: React.FC = () => {
       }
 
       // Check section bounding rects for highest active accuracy
+      const trackingList = [
+        { id: "about", targetId: "about" },
+        { id: "highlights", targetId: "about" },
+        { id: "experience", targetId: "experience" },
+        { id: "work", targetId: "work" },
+        { id: "education", targetId: "education" },
+        { id: "skills", targetId: "skills" },
+        { id: "credentials", targetId: "credentials" },
+        { id: "contact", targetId: "contact" },
+      ];
+
       let currentActive = "about";
-      for (const sec of SECTIONS) {
-        const el = document.getElementById(sec.id);
+      for (const item of trackingList) {
+        const el = document.getElementById(item.id);
         if (el) {
           const rect = el.getBoundingClientRect();
           if (
-            rect.top <= window.innerHeight * 0.42 &&
-            rect.bottom >= window.innerHeight * 0.18
+            rect.top <= window.innerHeight * 0.45 &&
+            rect.bottom >= window.innerHeight * 0.15
           ) {
-            currentActive = sec.id;
+            currentActive = item.targetId;
             break;
           }
         }
@@ -73,38 +84,35 @@ export const SectionDots: React.FC = () => {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
-      const targetHash = id === "work" ? "#projects" : `#${id}`;
-      window.history.pushState(null, "", targetHash);
     }
   };
 
   return (
-    <motion.nav
-      aria-label="Section navigation rail"
-      initial={false}
-      animate={
-        isVisible
-          ? { opacity: 1, x: 0, pointerEvents: "auto" }
-          : { opacity: 0, x: 44, pointerEvents: "none" }
-      }
-      transition={
-        shouldReduceMotion
-          ? { duration: 0.2 }
-          : {
-              type: "spring",
-              stiffness: 340,
-              damping: 24,
-              mass: 0.8,
-            }
-      }
-      className="fixed right-6 sm:right-8 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-end select-none"
-    >
-      {/* 
-        Open Vertical Rail:
-        - Continuous thin muted line running through the center of all markers
-        - No bulky background container pill
-      */}
-      <div className="relative flex flex-col items-end py-1">
+    /* Stable Viewport-Relative Positioning Wrapper:
+       Isolates `position: fixed; top: 50%; -translate-y-1/2` from Framer Motion's inline transforms,
+       guaranteeing exact vertical center alignment at every viewport size.
+    */
+    <div className="fixed right-6 sm:right-8 top-1/2 -translate-y-1/2 z-40 hidden lg:block pointer-events-none select-none">
+      <motion.nav
+        aria-label="Section navigation rail"
+        initial={false}
+        animate={
+          isVisible
+            ? { opacity: 1, x: 0, pointerEvents: "auto" }
+            : { opacity: 0, x: 44, pointerEvents: "none" }
+        }
+        transition={
+          shouldReduceMotion
+            ? { duration: 0.2 }
+            : {
+                type: "spring",
+                stiffness: 340,
+                damping: 24,
+                mass: 0.8,
+              }
+        }
+        className="relative flex flex-col items-end py-1"
+      >
         {/* Continuous thin vertical line in muted grey */}
         <div
           aria-hidden="true"
@@ -160,7 +168,7 @@ export const SectionDots: React.FC = () => {
             </motion.a>
           );
         })}
-      </div>
-    </motion.nav>
+      </motion.nav>
+    </div>
   );
 };
