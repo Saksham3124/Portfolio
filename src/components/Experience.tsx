@@ -14,7 +14,7 @@ interface OutcomeItem {
 
 const ResearchOutcomeMetrics: React.FC<{ outcomes: OutcomeItem[] }> = ({ outcomes }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(containerRef, { once: true, margin: "-40px" });
+  const isInView = useInView(containerRef, { once: true, margin: "20px" });
   const shouldReduceMotion = useReducedMotion();
 
   // Initial display states
@@ -120,43 +120,43 @@ export const Experience: React.FC = () => {
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-40px" },
+    viewport: { once: true, margin: "20px" },
     transition: { duration: 0.45, delay, ease: "easeOut" as const },
   });
 
   return (
-    <div className="pt-2 sm:pt-4 pb-14 sm:pb-16 px-4 sm:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="py-6 sm:py-8 lg:py-10 px-4 sm:px-8 flex flex-col justify-center min-h-[calc(100vh-140px)] w-full">
+      <div className="max-w-4xl mx-auto w-full">
         
         {/* Section Header */}
-        <motion.div {...fadeUp(0)} className="text-center mb-14">
-          <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
+        <motion.div {...fadeUp(0)} className="text-center mb-6 sm:mb-8">
+          <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-2 font-mono">
             Professional Experience
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-3">
             Research & Industry Experience
           </h2>
 
-          <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+          <p className="text-zinc-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
             Rigorous hands-on algorithmic problem solving, electromagnetic simulation, and quantitative research.
           </p>
         </motion.div>
 
         {/* Experience Cards */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           {experienceList.map((exp, idx) => (
             <motion.div
               key={exp.id}
               {...fadeUp(0.08 + idx * 0.05)}
-              whileHover={shouldReduceMotion ? {} : { y: -4, scale: 1.006 }}
+              whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.004 }}
               transition={{ type: "spring", stiffness: 350, damping: 25 }}
-              className="clean-card p-6 sm:p-9 rounded-2xl border border-white/[0.08]"
+              className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.08]"
             >
               {/* Header: Role, Organization, Program, Dates & Location */}
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6 pb-6 border-b border-white/[0.08]">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 pb-4 border-b border-white/[0.08]">
                 <div>
-                  <div className="inline-flex items-center gap-2 mb-2">
+                  <div className="inline-flex items-center gap-2 mb-1.5">
                     <motion.span
                       whileHover={shouldReduceMotion ? {} : { scale: 1.06, y: -1 }}
                       transition={{ type: "spring", stiffness: 450, damping: 18 }}
@@ -165,15 +165,15 @@ export const Experience: React.FC = () => {
                       {exp.program}
                     </motion.span>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
+                  <h3 className="text-lg sm:text-xl font-semibold text-white tracking-tight">
                     {exp.role}
                   </h3>
-                  <div className="text-sm sm:text-base font-medium text-zinc-300 mt-1">
+                  <div className="text-xs sm:text-sm font-medium text-zinc-300 mt-0.5">
                     {exp.organization}
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:items-end text-xs text-zinc-400 font-mono gap-1.5 shrink-0">
+                <div className="flex flex-col sm:items-end text-xs text-zinc-400 font-mono gap-1 shrink-0">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-zinc-500" />
                     {exp.period}
@@ -186,37 +186,37 @@ export const Experience: React.FC = () => {
               </div>
 
               {/* Introductory Statement */}
-              <div className="p-4 sm:p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] mb-8 text-sm sm:text-[15px] text-zinc-300 leading-relaxed">
+              <div className="p-3 sm:p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] mb-5 text-xs sm:text-sm text-zinc-300 leading-relaxed">
                 {exp.summary}
               </div>
 
               {/* Three Research Areas: Data Processing → Configuration Analysis → Validation */}
-              <div className="mb-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="mb-5">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {exp.researchAreas.map((area, aIdx) => (
                     <motion.div
                       key={area.id || aIdx}
-                      whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.015 }}
+                      whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.01 }}
                       transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                      className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/20 hover:bg-white/[0.035] transition-colors flex flex-col justify-between cursor-default"
+                      className="p-3.5 sm:p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/20 hover:bg-white/[0.035] transition-colors flex flex-col justify-between cursor-default"
                     >
                       <div>
-                        <div className="flex items-center justify-between gap-2 mb-3">
-                          <span className="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="text-[10px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
                             {area.title}
                           </span>
-                          <span className="text-xs font-mono text-zinc-500">
+                          <span className="text-[11px] font-mono text-zinc-500">
                             0{aIdx + 1}
                           </span>
                         </div>
-                        <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                        <div className="text-xs text-zinc-300 leading-relaxed">
                           {area.description ? (
                             area.description
                           ) : area.id === "data-processing" ? (
                             <>
                               Processed{" "}
                               <strong className="text-white font-semibold">
-                                20K+ RFID signatures
+                              20K+ RFID signatures
                               </strong>{" "}
                               through a modular MATLAB workflow, converting simulation outputs
                               into structured data for analysis.
@@ -225,7 +225,7 @@ export const Experience: React.FC = () => {
                             <>
                               Compared{" "}
                               <strong className="text-white font-semibold">
-                                four resonator configurations
+                              four resonator configurations
                               </strong>{" "}
                               and multiple feed variations to identify patterns associated with
                               improved chipless RFID performance.
@@ -245,13 +245,13 @@ export const Experience: React.FC = () => {
               </div>
 
               {/* Divider */}
-              <div className="border-t border-white/[0.08] my-8" />
+              <div className="border-t border-white/[0.08] my-5" />
 
               {/* Research Outcome Section */}
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-4">
+              <div className="mb-5">
+                <div className="flex items-center gap-2 mb-3">
                   <TrendingUp className="w-3.5 h-3.5 text-zinc-400" />
-                  <span className="text-xs font-mono font-semibold tracking-wider text-zinc-400 uppercase">
+                  <span className="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
                     RESEARCH OUTCOME
                   </span>
                 </div>
@@ -260,7 +260,7 @@ export const Experience: React.FC = () => {
               </div>
 
               {/* Divider */}
-              <div className="border-t border-white/[0.08] my-8" />
+              <div className="border-t border-white/[0.08] my-5" />
 
               {/* Technologies for LNMIIT */}
               <div className="flex flex-wrap items-center gap-2">
@@ -273,7 +273,7 @@ export const Experience: React.FC = () => {
                     whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
                     whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 450, damping: 16 }}
-                    className={`text-xs font-mono px-3 py-1 rounded-md border cursor-default inline-block ${
+                    className={`text-xs font-mono px-3 py-0.5 rounded-md border cursor-default inline-block ${
                       tag === "CST Studio Suite" || tag === "MATLAB"
                         ? "bg-white/[0.06] text-zinc-200 border-white/20 font-medium hover:border-white/40"
                         : "bg-white/[0.03] text-zinc-400 border-white/10 hover:border-white/25 hover:text-zinc-200"

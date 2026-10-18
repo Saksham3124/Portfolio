@@ -26,7 +26,7 @@ const MetricCounter: React.FC<MetricCounterProps> = ({
 }) => {
   const [currentVal, setCurrentVal] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-40px" });
+  const isInView = useInView(ref, { once: true, margin: "20px" });
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -98,16 +98,16 @@ export const Highlights: React.FC = () => {
   const telemetry = data.telemetry;
 
   return (
-    <div id="highlights" className="pt-8 pb-14 px-4 sm:px-8 relative border-t border-white/[0.06]">
+    <div id="highlights" className="pt-6 pb-10 sm:pb-12 px-4 sm:px-8 relative border-t border-white/[0.06]">
       <div className="max-w-4xl mx-auto">
         
         {/* Section Context Header */}
         <motion.div
           initial={shouldReduceMotion ? {} : { opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
+          viewport={{ once: true, margin: "20px" }}
           transition={{ duration: 0.45 }}
-          className="mb-12"
+          className="mb-8"
         >
           <div className="text-[11px] font-mono uppercase tracking-[0.25em] text-zinc-400 mb-2">
             Evidence & Scale
@@ -124,7 +124,7 @@ export const Highlights: React.FC = () => {
         <motion.div
           initial={shouldReduceMotion ? {} : { opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
+          viewport={{ once: true, margin: "20px" }}
           transition={{ duration: 0.45, delay: 0.08 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-white/[0.08] py-8 border-y border-white/[0.08]"
         >

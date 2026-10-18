@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { useReducedMotion } from "framer-motion";
 
 interface StackedCardProps {
   id: string;
@@ -19,56 +18,60 @@ export const StackedCard: React.FC<StackedCardProps> = ({
   zIndex,
   children,
   className = "",
-  nextCardId,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  const shouldReduceMotion = useReducedMotion();
   const [isDesktop, setIsDesktop] = useState(false);
-  const [isCovered, setIsCovered] = useState(false);
+  const [calculatedTop, setCalculatedTop] = useState<number>(76 + index * 8);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsDesktop(typeof window !== "undefined" && window.innerWidth >= 1024);
+    const updateDimensions = () => {
+      if (typeof window === "undefined") return;
+      const desktop = window.innerWidth >= 1024;
+      setIsDesktop(desktop);
+
+      if (!desktop) return;
+
+      const vh = window.innerHeight;
+      const cardEl = cardRef.current;
+      if (!cardEl) return;
+
+      const cardHeight = cardEl.offsetHeight;
+      const nominalTop = 76 + index * 8;
+      const availableHeight = vh - nominalTop - 24;
+
+      // If card is taller than the available viewport height below nominalTop,
+      // allow card to scroll through naturally so user sees 100% of the content
+      // before it pins and the next card slides over it.
+      let targetTop = nominalTop;
+      if (cardHeight > availableHeight) {
+        targetTop = vh - cardHeight - 24;
+      }
+
+      setCalculatedTop((prev) => (Math.abs(prev - targetTop) > 1 ? targetTop : prev));
     };
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
-  // Track if next card has stacked over this card for subtle depth styling
-  useEffect(() => {
-    if (!nextCardId || !isDesktop || shouldReduceMotion) {
-      setIsCovered(false);
-      return;
+    updateDimensions();
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (cardRef.current && typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(() => {
+        updateDimensions();
+      });
+      resizeObserver.observe(cardRef.current);
     }
 
-    const handleScroll = () => {
-      const nextEl = document.getElementById(nextCardId);
-      if (!nextEl) return;
-
-      const nextRect = nextEl.getBoundingClientRect();
-      const targetThreshold = 76 + (index + 1) * 12 + 60;
-      if (nextRect.top <= targetThreshold) {
-        setIsCovered(true);
-      } else {
-        setIsCovered(false);
-      }
+    window.addEventListener("resize", updateDimensions, { passive: true });
+    return () => {
+      window.removeEventListener("resize", updateDimensions);
+      if (resizeObserver) resizeObserver.disconnect();
     };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [nextCardId, index, isDesktop, shouldReduceMotion]);
-
-  // Staggered top offset for classic stacked-card deck shoulders
-  const stickyTopPx = 76 + index * 12;
+  }, [index]);
 
   const stickyStyle: React.CSSProperties = isDesktop
     ? {
         position: "sticky",
-        top: `${stickyTopPx}px`,
+        top: `${calculatedTop}px`,
         zIndex: zIndex,
-        willChange: "transform, opacity",
       }
     : {
         position: "relative",
@@ -80,19 +83,17 @@ export const StackedCard: React.FC<StackedCardProps> = ({
       id={id}
       data-card-index={index}
       style={stickyStyle}
-      className={`scroll-mt-24 transition-all duration-300 ${
-        isCovered && isDesktop && !shouldReduceMotion
-          ? "scale-[0.985] opacity-70"
-          : "scale-100 opacity-100"
-      } ${className}`}
+      className={`scroll-mt-24 transform-gpu will-change-[transform] ${className}`}
     >
-      <div className="relative rounded-2xl sm:rounded-3xl lg:rounded-[32px] bg-[#07090e] border border-white/[0.08] border-t-white/[0.16] shadow-[0_-18px_45px_rgba(0,0,0,0.85),0_12px_35px_rgba(0,0,0,0.65)]">
+      <div className="relative min-h-[calc(100vh-100px)] sm:min-h-[calc(100svh-90px)] rounded-2xl sm:rounded-3xl lg:rounded-[32px] bg-[#07090e] border border-white/[0.08] border-t-white/[0.16] shadow-[0_-18px_45px_rgba(0,0,0,0.85),0_12px_35px_rgba(0,0,0,0.65)] flex flex-col justify-between overflow-hidden">
         {/* Subtle architectural top notch accent */}
         <div
           aria-hidden="true"
-          className="w-12 h-1 rounded-full bg-white/20 mx-auto mb-3 sm:mb-4 mt-3 pointer-events-none"
+          className="w-12 h-1 rounded-full bg-white/20 mx-auto mb-3 sm:mb-4 mt-3 pointer-events-none shrink-0"
         />
-        {children}
+        <div className="flex-1 flex flex-col justify-center">
+          {children}
+        </div>
       </div>
     </div>
   );

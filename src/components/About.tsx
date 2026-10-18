@@ -14,7 +14,7 @@ export const About: React.FC = () => {
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-40px" },
+    viewport: { once: true, margin: "20px" },
     transition: { duration: 0.45, delay, ease: "easeOut" as const },
   });
 

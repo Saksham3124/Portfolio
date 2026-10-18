@@ -14,7 +14,7 @@ export const Credentials: React.FC = () => {
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-40px" },
+    viewport: { once: true, margin: "20px" },
     transition: { duration: 0.45, delay, ease: "easeOut" as const },
   });
 
@@ -25,27 +25,27 @@ export const Credentials: React.FC = () => {
   };
 
   return (
-    <div className="pt-2 sm:pt-4 pb-14 sm:pb-16 px-4 sm:px-8">
-      <div className="max-w-5xl mx-auto">
+    <div className="py-6 sm:py-8 lg:py-10 px-4 sm:px-8 lg:px-12 flex flex-col justify-center min-h-[calc(100vh-140px)] w-full">
+      <div className="max-w-5xl mx-auto w-full">
         
         {/* Section Header */}
-        <motion.div {...fadeUp(0)} className="text-center mb-16">
-          <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
+        <motion.div {...fadeUp(0)} className="text-center mb-8 sm:mb-10">
+          <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-2 font-mono">
             Verified Qualifications & Honors
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-3">
             Credentials & Achievements
           </h2>
 
-          <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
+          <p className="text-zinc-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
             Selective industry credentials reinforcing cloud architectures, relational querying, and competitive engineering milestones.
           </p>
         </motion.div>
 
         {/* Part 1: Certifications & Credentials */}
-        <div className="mb-16">
-          <motion.div {...fadeUp(0.04)} className="flex items-center gap-2 mb-8 pb-3 border-b border-white/[0.08]">
+        <div className="mb-10 sm:mb-12">
+          <motion.div {...fadeUp(0.04)} className="flex items-center gap-2 mb-5 pb-3 border-b border-white/[0.08]">
             <ShieldCheck className="w-4 h-4 text-zinc-400" />
             <h3 className="text-lg font-semibold text-white tracking-tight">
               Certifications & Credentials

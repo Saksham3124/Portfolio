@@ -78,9 +78,20 @@ export const PortfolioView: React.FC<PortfolioViewProps> = () => {
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
     handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const handleOpenResumeModal = () => {

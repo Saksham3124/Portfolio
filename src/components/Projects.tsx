@@ -105,16 +105,16 @@ export const Projects: React.FC = () => {
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-40px" },
+    viewport: { once: true, margin: "20px" },
     transition: { duration: 0.45, delay, ease: "easeOut" as const },
   });
 
   return (
-    <div className="pt-2 sm:pt-4 pb-14 sm:pb-16 px-4 sm:px-8">
+    <div className="py-6 sm:py-8 lg:py-10 px-4 sm:px-8">
       <div className="max-w-6xl mx-auto">
         
         {/* Section Header */}
-        <motion.div {...fadeUp(0)} className="text-center mb-16">
+        <motion.div {...fadeUp(0)} className="text-center mb-8 sm:mb-10">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
             Flagship Projects
           </div>

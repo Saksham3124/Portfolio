@@ -14,16 +14,16 @@ export const Skills: React.FC = () => {
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-40px" },
+    viewport: { once: true, margin: "20px" },
     transition: { duration: 0.45, delay, ease: "easeOut" as const },
   });
 
   return (
-    <div className="pt-2 sm:pt-4 pb-14 sm:pb-16 px-4 sm:px-8">
-      <div className="max-w-5xl mx-auto">
+    <div className="py-6 sm:py-8 lg:py-10 px-4 sm:px-8 lg:px-12 flex flex-col justify-center min-h-[calc(100vh-140px)] w-full">
+      <div className="max-w-5xl mx-auto w-full">
         
         {/* Section Pill & Header */}
-        <motion.div {...fadeUp(0)} className="text-center mb-14">
+        <motion.div {...fadeUp(0)} className="text-center mb-6 sm:mb-8">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
             Technical Tooling
           </div>
