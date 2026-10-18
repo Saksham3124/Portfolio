@@ -85,13 +85,19 @@ export const Education: React.FC = () => {
               <motion.div
                 key={idx}
                 {...fadeUp(0.08 + idx * 0.06)}
+                whileHover={shouldReduceMotion ? {} : { y: -4, scale: 1.006 }}
+                transition={{ type: "spring", stiffness: 350, damping: 25 }}
                 className="clean-card p-6 sm:p-9 rounded-2xl"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6 pb-6 border-b border-white/[0.08]">
                   <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-xl bg-white/[0.05] border border-white/10 text-cyan-300 shrink-0">
+                    <motion.div
+                      whileHover={shouldReduceMotion ? {} : { scale: 1.12, rotate: -4 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 16 }}
+                      className="p-3 rounded-xl bg-white/[0.05] border border-white/10 text-cyan-300 shrink-0 cursor-default"
+                    >
                       <GraduationCap className="w-6 h-6" />
-                    </div>
+                    </motion.div>
                     <div>
                       <h3 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
                         {education.degree || "B.Tech in Electronics and Communication Engineering"}
@@ -118,7 +124,7 @@ export const Education: React.FC = () => {
                   {educationDescription}
                 </p>
 
-                {/* Academic Foundations Chips */}
+                {/* Academic Foundations Chips with Pop Animation */}
                 <div className="mb-6">
                   <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-2.5 flex items-center gap-1.5">
                     <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
@@ -126,22 +132,28 @@ export const Education: React.FC = () => {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {activeCoursework.map((course, cIdx) => (
-                      <span
+                      <motion.span
                         key={cIdx}
-                        className="px-2.5 py-1 rounded-md text-xs font-mono bg-white/[0.04] border border-white/[0.08] text-zinc-300"
+                        whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1.5 }}
+                        whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 450, damping: 16 }}
+                        className="px-2.5 py-1 rounded-md text-xs font-mono bg-white/[0.04] border border-white/[0.08] hover:border-white/25 hover:text-white hover:bg-white/[0.07] text-zinc-300 transition-colors inline-block cursor-default"
                       >
                         {course}
-                      </span>
+                      </motion.span>
                     ))}
                   </div>
                 </div>
 
-                {/* Key Transferable Skill Pillars */}
+                {/* Key Transferable Skill Pillars with Pop Animation */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-5 border-t border-white/[0.06]">
                   {activeFocusAreas.map((area, fIdx) => (
-                    <div
+                    <motion.div
                       key={fIdx}
-                      className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.05]"
+                      whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.02 }}
+                      whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 20 }}
+                      className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:border-white/20 hover:bg-white/[0.04] transition-colors cursor-default"
                     >
                       <div className="text-xs font-semibold text-white mb-1">
                         {area.title}
@@ -149,7 +161,7 @@ export const Education: React.FC = () => {
                       <div className="text-[11px] text-zinc-400 leading-snug">
                         {area.desc}
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </motion.div>

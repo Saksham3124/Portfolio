@@ -264,6 +264,7 @@ export const Projects: React.FC = () => {
         <motion.div {...fadeUp(0.24)} className="mt-14 text-center">
           <motion.button
             type="button"
+            data-cursor="view"
             onClick={() => setShowSupporting(!showSupporting)}
             aria-expanded={showSupporting}
             whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -1.5 }}
