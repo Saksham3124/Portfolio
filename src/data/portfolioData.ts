@@ -229,14 +229,13 @@ export const EDUCATION: EducationItem = {
   period: "2022 – 2026",
   location: "Ranchi, Jharkhand, India",
   framing:
-    "Rigorous engineering education providing deep grounding in quantitative reasoning, systems thinking, signal integrity, and mathematical problem-solving applied to high-throughput data operations.",
+    "Developed a foundation in quantitative reasoning, mathematical analysis, and structured problem-solving, with experience applying analytical methods to complex technical problems.",
   coursework: [
-    "Signals & Systems",
-    "Digital Signal Processing",
     "Probability & Stochastic Processes",
-    "Microcontrollers & Embedded Systems",
-    "Data Structures & Algorithms",
-    "Numerical Analysis & Linear Algebra",
+    "Mathematical Modeling & Optimization",
+    "Statistical Analysis",
+    "Systems Thinking",
+    "Research & Experimental Validation",
   ],
 };
 
@@ -493,12 +492,12 @@ export const SKILL_GROUPS = [
 ];
 
 export const AREAS_OF_INTEREST = [
-  "Customer & Product Analytics",
-  "Risk & Statistical Analysis",
-  "AI-Assisted Analytics",
-  "Data Quality & Analytical Reliability",
-  "Data-Driven Operations",
-  "Decision-Support Systems",
+  "Product Strategy & Execution",
+  "Business & Operational Analysis",
+  "Risk Analytics & Decision Science",
+  "Data-Driven Decision Making",
+  "AI-Assisted Solutions",
+  "Process Improvement & Systems Reliability",
 ];
 
 export const CERTIFICATIONS: CredentialCategory[] = [

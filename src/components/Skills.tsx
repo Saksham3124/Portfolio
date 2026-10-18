@@ -9,7 +9,12 @@ export const Skills: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
   const { data } = usePortfolio();
   const skillGroups = data?.skillGroups || SKILL_GROUPS;
-  const areasOfInterest = data?.areasOfInterest || AREAS_OF_INTEREST;
+  const areasOfInterest =
+    data?.areasOfInterest &&
+    data.areasOfInterest.length > 0 &&
+    !data.areasOfInterest.includes("Customer & Product Analytics")
+      ? data.areasOfInterest
+      : AREAS_OF_INTEREST;
 
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
@@ -79,12 +84,12 @@ export const Skills: React.FC = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6">
             <div>
               <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-zinc-400 mb-1">
-                Domain Alignment
+                DOMAIN ALIGNMENT
               </div>
               <h3 className="text-lg font-semibold text-white">Areas of Interest</h3>
             </div>
             <p className="text-xs text-zinc-400 max-w-md">
-              Focus areas spanning analytics, risk, product, and data-driven operational decision support.
+              Focus areas spanning product execution, analytical problem-solving, risk evaluation, and operational improvement.
             </p>
           </div>
 
