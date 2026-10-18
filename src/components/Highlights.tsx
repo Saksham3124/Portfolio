@@ -110,13 +110,13 @@ export const Highlights: React.FC = () => {
           className="mb-8"
         >
           <div className="text-[11px] font-mono uppercase tracking-[0.25em] text-zinc-400 mb-2">
-            Evidence & Scale
+            {data?.telemetrySection?.pill || "Evidence & Scale"}
           </div>
           <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-white">
-            Audited Portfolio Telemetry & Impact
+            {data?.telemetrySection?.heading || "Audited Portfolio Telemetry & Impact"}
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400 mt-2 max-w-xl">
-            Real dataset scale analyzed across forensic invoice audit, regulatory data reliability pipelines, and multi-million transaction retail lakes.
+            {data?.telemetrySection?.subheading || "Real dataset scale analyzed across forensic invoice audit, regulatory data reliability pipelines, and multi-million transaction retail lakes."}
           </p>
         </motion.div>
 

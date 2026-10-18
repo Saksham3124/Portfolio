@@ -116,7 +116,7 @@ export const Projects: React.FC = () => {
         {/* Section Header */}
         <motion.div {...fadeUp(0)} className="text-center mb-8 sm:mb-10">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
-            Flagship Projects
+            {data?.featuredProjectsPill || "Flagship Projects"}
           </div>
 
           <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight text-white mb-4">

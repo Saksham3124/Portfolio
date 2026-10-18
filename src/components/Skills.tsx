@@ -10,9 +10,7 @@ export const Skills: React.FC = () => {
   const { data } = usePortfolio();
   const skillGroups = data?.skillGroups || SKILL_GROUPS;
   const areasOfInterest =
-    data?.areasOfInterest &&
-    data.areasOfInterest.length > 0 &&
-    !data.areasOfInterest.includes("Customer & Product Analytics")
+    data?.areasOfInterest && data.areasOfInterest.length > 0
       ? data.areasOfInterest
       : AREAS_OF_INTEREST;
 
@@ -30,15 +28,15 @@ export const Skills: React.FC = () => {
         {/* Section Pill & Header */}
         <motion.div {...fadeUp(0)} className="text-center mb-6 sm:mb-8">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
-            Technical Tooling
+            {data?.skillsSection?.pill || "Technical Tooling"}
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-4">
-            Skills & Capabilities
+            {data?.skillsSection?.heading || "Skills & Capabilities"}
           </h2>
 
           <p className="text-zinc-400 text-base max-w-xl mx-auto leading-relaxed">
-            Focused toolchain built around analytics, statistical modeling, data workflows, and decision support.
+            {data?.skillsSection?.subheading || "Focused toolchain built around analytics, statistical modeling, data workflows, and decision support."}
           </p>
         </motion.div>
 
@@ -89,7 +87,7 @@ export const Skills: React.FC = () => {
               <h3 className="text-lg font-semibold text-white">Areas of Interest</h3>
             </div>
             <p className="text-xs text-zinc-400 max-w-md">
-              Focus areas spanning product execution, analytical problem-solving, risk evaluation, and operational improvement.
+              {data?.areasOfInterestSubtitle || "Focus areas spanning product execution, analytical problem-solving, risk evaluation, and operational improvement."}
             </p>
           </div>
 

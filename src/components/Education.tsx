@@ -49,15 +49,15 @@ export const Education: React.FC = () => {
         {/* Section Header */}
         <motion.div {...fadeUp(0)} className="text-center mb-8 sm:mb-10">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
-            Academic Foundation
+            {data.educationSection?.pill || "Academic Foundation"}
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-3">
-            Education
+            {data.educationSection?.heading || "Education"}
           </h2>
 
           <p className="text-zinc-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-            Quantitative grounding in mathematical analysis, systems thinking, and structured problem-solving.
+            {data.educationSection?.subheading || "Quantitative grounding in mathematical analysis, systems thinking, and structured problem-solving."}
           </p>
         </motion.div>
 
@@ -70,6 +70,16 @@ export const Education: React.FC = () => {
               !education.framing.includes("high-throughput data operations")
                 ? education.framing
                 : "Developed a foundation in quantitative reasoning, mathematical analysis, and structured problem-solving, with experience applying analytical methods to complex technical problems.";
+
+            const activeCoursework =
+              education.coursework && education.coursework.length > 0
+                ? education.coursework
+                : academicFoundations;
+
+            const activeFocusAreas =
+              education.focusAreas && education.focusAreas.length > 0
+                ? education.focusAreas
+                : focusAreas;
 
             return (
               <motion.div
@@ -115,7 +125,7 @@ export const Education: React.FC = () => {
                     <span>Academic Foundations</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {academicFoundations.map((course, cIdx) => (
+                    {activeCoursework.map((course, cIdx) => (
                       <span
                         key={cIdx}
                         className="px-2.5 py-1 rounded-md text-xs font-mono bg-white/[0.04] border border-white/[0.08] text-zinc-300"
@@ -128,7 +138,7 @@ export const Education: React.FC = () => {
 
                 {/* Key Transferable Skill Pillars */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-5 border-t border-white/[0.06]">
-                  {focusAreas.map((area, fIdx) => (
+                  {activeFocusAreas.map((area, fIdx) => (
                     <div
                       key={fIdx}
                       className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.05]"

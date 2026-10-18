@@ -23,10 +23,10 @@ export const Footer: React.FC<FooterProps> = ({ onRequestResume }) => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-10 border-b border-white/[0.06]">
           <div>
             <div className="text-base font-semibold text-white tracking-tight">
-              Kumar Saksham<span className="text-zinc-500">.</span>
+              {personalInfo.name || "Kumar Saksham"}<span className="text-zinc-500">.</span>
             </div>
             <p className="text-xs text-zinc-400 font-mono tracking-wider mt-1 uppercase">
-              DATA · ANALYTICS · RISK · PRODUCT
+              {personalInfo.roleTitle || "DATA · ANALYTICS · RISK · PRODUCT"}
             </p>
           </div>
 
@@ -67,7 +67,7 @@ export const Footer: React.FC<FooterProps> = ({ onRequestResume }) => {
 
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
           <div>
-            © {new Date().getFullYear()} Kumar Saksham. Defensible decisions driven by data.
+            © {new Date().getFullYear()} {personalInfo.name || "Kumar Saksham"}. Defensible decisions driven by data.
           </div>
 
           <button

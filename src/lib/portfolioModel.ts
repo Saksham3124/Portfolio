@@ -39,6 +39,12 @@ export interface TelemetryMetric {
   sub: string;
 }
 
+export interface SectionHeaderContent {
+  pill?: string;
+  heading?: string;
+  subheading?: string;
+}
+
 export interface ContactSectionContent {
   pill: string;
   heading: string;
@@ -55,20 +61,27 @@ export interface PortfolioContentData {
   };
   about: AboutContent;
   telemetry: TelemetryMetric[];
+  telemetrySection?: SectionHeaderContent;
   experience: ExperienceItem[];
+  experienceSection?: SectionHeaderContent;
   education: EducationItem;
   educationList?: EducationItem[];
+  educationSection?: SectionHeaderContent;
   featuredProjects: Project[];
   supportingProjects: Project[];
+  featuredProjectsPill?: string;
   featuredProjectsHeading?: string;
   featuredProjectsSubtitle?: string;
   supportingProjectsHeading?: string;
   supportingProjectsSubtitle?: string;
   supportingProjectsButtonText?: string;
   skillGroups: typeof SKILL_GROUPS;
+  skillsSection?: SectionHeaderContent;
   areasOfInterest: string[];
+  areasOfInterestSubtitle?: string;
   certifications: CredentialCategory[];
   achievements: AchievementItem[];
+  credentialsSection?: SectionHeaderContent;
   contactSection?: ContactSectionContent;
   updatedAt?: string;
 }
@@ -146,11 +159,30 @@ export const DEFAULT_PORTFOLIO_CONTENT: PortfolioContentData = {
       sub: "Data Reliability Pipeline",
     },
   ],
+  telemetrySection: {
+    pill: "Evidence & Scale",
+    heading: "Audited Portfolio Telemetry & Impact",
+    subheading:
+      "Real dataset scale analyzed across forensic invoice audit, regulatory data reliability pipelines, and multi-million transaction retail lakes.",
+  },
   experience: EXPERIENCE,
+  experienceSection: {
+    pill: "Professional Experience",
+    heading: "Research & Industry Experience",
+    subheading:
+      "Rigorous hands-on algorithmic problem solving, electromagnetic simulation, and quantitative research.",
+  },
   education: EDUCATION,
   educationList: [EDUCATION],
+  educationSection: {
+    pill: "Academic Foundation",
+    heading: "Education",
+    subheading:
+      "Quantitative grounding in mathematical analysis, systems thinking, and structured problem-solving.",
+  },
   featuredProjects: FEATURED_PROJECTS,
   supportingProjects: SUPPORTING_PROJECTS,
+  featuredProjectsPill: "Flagship Projects",
   featuredProjectsHeading: "Work & Flagship Projects",
   featuredProjectsSubtitle:
     "Evidence-based projects supporting customer opportunity modeling, forensic anomaly detection, regulatory data reliability, and payment uncertainty recovery.",
@@ -160,9 +192,23 @@ export const DEFAULT_PORTFOLIO_CONTENT: PortfolioContentData = {
   supportingProjectsButtonText:
     "Inspect Supporting Pipelines (Credit Risk, Rail Telemetry, Financial Modeling)",
   skillGroups: SKILL_GROUPS,
+  skillsSection: {
+    pill: "Technical Tooling",
+    heading: "Skills & Capabilities",
+    subheading:
+      "Focused toolchain built around analytics, statistical modeling, data workflows, and decision support.",
+  },
   areasOfInterest: AREAS_OF_INTEREST,
+  areasOfInterestSubtitle:
+    "Focus areas spanning product execution, analytical problem-solving, risk evaluation, and operational improvement.",
   certifications: CERTIFICATIONS,
   achievements: ACHIEVEMENTS,
+  credentialsSection: {
+    pill: "Verified Qualifications & Honors",
+    heading: "Credentials & Achievements",
+    subheading:
+      "Selective industry credentials reinforcing cloud architectures, relational querying, and competitive engineering milestones.",
+  },
   contactSection: {
     pill: "Get in Touch",
     heading: "Start a Conversation",

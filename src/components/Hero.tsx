@@ -414,7 +414,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             {/* Eyebrow Positioning: DATA · RISK · ENGINEERING · PRODUCT */}
             <div className="inline-flex items-center gap-2 mb-3 sm:mb-5">
               <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.22em] sm:tracking-[0.28em] text-zinc-400">
-                DATA · RISK · ENGINEERING · PRODUCT
+                {personalInfo.roleTitle || "DATA · RISK · ENGINEERING · PRODUCT"}
               </span>
             </div>
 

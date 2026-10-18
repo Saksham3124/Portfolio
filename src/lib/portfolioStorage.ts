@@ -74,6 +74,30 @@ export function getPortfolioData(): PortfolioContentData {
           ...DEFAULT_PORTFOLIO_CONTENT.about,
           ...(parsed.about || {}),
         },
+        educationSection: {
+          ...DEFAULT_PORTFOLIO_CONTENT.educationSection,
+          ...(parsed.educationSection || {}),
+        },
+        skillsSection: {
+          ...DEFAULT_PORTFOLIO_CONTENT.skillsSection,
+          ...(parsed.skillsSection || {}),
+        },
+        experienceSection: {
+          ...DEFAULT_PORTFOLIO_CONTENT.experienceSection,
+          ...(parsed.experienceSection || {}),
+        },
+        telemetrySection: {
+          ...DEFAULT_PORTFOLIO_CONTENT.telemetrySection,
+          ...(parsed.telemetrySection || {}),
+        },
+        credentialsSection: {
+          ...DEFAULT_PORTFOLIO_CONTENT.credentialsSection,
+          ...(parsed.credentialsSection || {}),
+        },
+        contactSection: {
+          ...DEFAULT_PORTFOLIO_CONTENT.contactSection,
+          ...(parsed.contactSection || {}),
+        },
       };
       memoryCache = merged;
       return merged;

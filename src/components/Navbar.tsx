@@ -118,7 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
             className="flex items-center gap-2 text-zinc-100 hover:text-white transition-colors group"
           >
             <span className="font-semibold tracking-tight text-base sm:text-lg">
-              Kumar Saksham<span className="text-zinc-500">.</span>
+              {personalInfo?.name || "Kumar Saksham"}<span className="text-zinc-500">.</span>
             </span>
           </a>
 

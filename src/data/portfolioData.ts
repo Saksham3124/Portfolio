@@ -45,6 +45,7 @@ export interface EducationItem {
   location: string;
   framing: string;
   coursework: string[];
+  focusAreas?: { title: string; desc: string }[];
 }
 
 export interface CredentialCategory {
@@ -236,6 +237,20 @@ export const EDUCATION: EducationItem = {
     "Statistical Analysis",
     "Systems Thinking",
     "Research & Experimental Validation",
+  ],
+  focusAreas: [
+    {
+      title: "Quantitative Reasoning",
+      desc: "Applying mathematical and statistical thinking to evaluate problems and interpret results.",
+    },
+    {
+      title: "Analytical Problem-Solving",
+      desc: "Breaking complex problems into structured steps and evaluating possible solutions.",
+    },
+    {
+      title: "Research & Validation",
+      desc: "Testing assumptions, comparing results, and investigating discrepancies to improve analytical reliability.",
+    },
   ],
 };
 

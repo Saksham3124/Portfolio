@@ -87,27 +87,33 @@ const ResearchOutcomeMetrics: React.FC<{ outcomes: OutcomeItem[] }> = ({ outcome
   }, [isInView, shouldReduceMotion]);
 
   const displayValues = [val1, val2, val3];
+  const defaultValues = ["20K+", "66% → 80%", "4"];
 
   return (
     <div ref={containerRef} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      {outcomes.map((outcome, oIdx) => (
-        <motion.div
-          key={oIdx}
-          whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
-          transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          className="p-4 sm:p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] transition-colors cursor-default"
-        >
-          <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-1.5 font-mono tabular-nums min-h-[36px] sm:min-h-[40px] flex items-center">
-            {displayValues[oIdx] ?? outcome.value}
-          </div>
-          <div className="text-xs sm:text-sm font-medium text-zinc-300 mb-1">
-            {outcome.label}
-          </div>
-          <div className="text-[11px] text-zinc-500 leading-snug">
-            {outcome.sub}
-          </div>
-        </motion.div>
-      ))}
+      {outcomes.map((outcome, oIdx) => {
+        const isDefault = outcome.value === defaultValues[oIdx];
+        const displayVal = isDefault ? (displayValues[oIdx] ?? outcome.value) : outcome.value;
+
+        return (
+          <motion.div
+            key={oIdx}
+            whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            className="p-4 sm:p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] transition-colors cursor-default"
+          >
+            <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-1.5 font-mono tabular-nums min-h-[36px] sm:min-h-[40px] flex items-center">
+              {displayVal}
+            </div>
+            <div className="text-xs sm:text-sm font-medium text-zinc-300 mb-1">
+              {outcome.label}
+            </div>
+            <div className="text-[11px] text-zinc-500 leading-snug">
+              {outcome.sub}
+            </div>
+          </motion.div>
+        );
+      })}
     </div>
   );
 };
@@ -131,15 +137,15 @@ export const Experience: React.FC = () => {
         {/* Section Header */}
         <motion.div {...fadeUp(0)} className="text-center mb-6 sm:mb-8">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-2 font-mono">
-            Professional Experience
+            {data?.experienceSection?.pill || "Professional Experience"}
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white mb-3">
-            Research & Industry Experience
+            {data?.experienceSection?.heading || "Research & Industry Experience"}
           </h2>
 
           <p className="text-zinc-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-            Rigorous hands-on algorithmic problem solving, electromagnetic simulation, and quantitative research.
+            {data?.experienceSection?.subheading || "Rigorous hands-on algorithmic problem solving, electromagnetic simulation, and quantitative research."}
           </p>
         </motion.div>
 
