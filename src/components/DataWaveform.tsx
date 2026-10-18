@@ -338,7 +338,7 @@ export const DataWaveform: React.FC = () => {
   return (
     <div
       aria-hidden="true"
-      className="fixed left-0 top-0 h-screen w-32 sm:w-56 md:w-64 lg:w-72 xl:w-[320px] z-30 pointer-events-none select-none overflow-hidden"
+      className="fixed left-0 top-0 h-screen w-32 sm:w-56 md:w-64 lg:w-72 xl:w-[320px] z-[5] pointer-events-none select-none overflow-hidden"
     >
       <canvas
         ref={canvasRef}

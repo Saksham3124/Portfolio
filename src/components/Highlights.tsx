@@ -98,8 +98,8 @@ export const Highlights: React.FC = () => {
   const telemetry = data.telemetry;
 
   return (
-    <section id="highlights" className="py-20 relative border-t border-white/[0.06] bg-[#030304]">
-      <div className="max-w-5xl mx-auto px-6">
+    <div id="highlights" className="pt-8 pb-14 px-4 sm:px-8 relative border-t border-white/[0.06]">
+      <div className="max-w-4xl mx-auto">
         
         {/* Section Context Header */}
         <motion.div
@@ -144,6 +144,6 @@ export const Highlights: React.FC = () => {
         </motion.div>
 
       </div>
-    </section>
+    </div>
   );
 };

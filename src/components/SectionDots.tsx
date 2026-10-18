@@ -57,15 +57,14 @@ export const SectionDots: React.FC = () => {
         { id: "contact", targetId: "contact" },
       ];
 
+      // Check stacked section bounding rects in reverse (topmost stacked card in viewport takes priority)
       let currentActive = "about";
-      for (const item of trackingList) {
+      for (let i = trackingList.length - 1; i >= 0; i--) {
+        const item = trackingList[i];
         const el = document.getElementById(item.id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (
-            rect.top <= window.innerHeight * 0.45 &&
-            rect.bottom >= window.innerHeight * 0.15
-          ) {
+          if (rect.top <= window.innerHeight * 0.48) {
             currentActive = item.targetId;
             break;
           }

@@ -110,8 +110,8 @@ export const Projects: React.FC = () => {
   });
 
   return (
-    <section id="work" className="py-24 relative border-t border-white/[0.06] bg-[#030304]">
-      <div className="max-w-6xl mx-auto px-6">
+    <div className="pt-2 sm:pt-4 pb-14 sm:pb-16 px-4 sm:px-8">
+      <div className="max-w-6xl mx-auto">
         
         {/* Section Header */}
         <motion.div {...fadeUp(0)} className="text-center mb-16">
@@ -343,6 +343,6 @@ export const Projects: React.FC = () => {
         </motion.div>
 
       </div>
-    </section>
+    </div>
   );
 };

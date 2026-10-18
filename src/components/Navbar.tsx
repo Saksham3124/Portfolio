@@ -66,11 +66,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onRequestResume }) => {
         { id: "contact", navId: "contact" },
       ];
 
-      for (const section of sections) {
+      // Check stacked section bounding rects in reverse (topmost stacked card in viewport takes priority)
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
         const el = document.getElementById(section.id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= 260 && rect.bottom >= 140) {
+          if (rect.top <= window.innerHeight * 0.48) {
             setActiveSection(section.navId);
             return;
           }

@@ -19,6 +19,7 @@ import { BackToTop } from "@/components/BackToTop";
 import { PointerProvider } from "@/context/PointerContext";
 import { CustomCursor } from "@/components/CustomCursor";
 import { DataWaveform } from "@/components/DataWaveform";
+import { StackedCard } from "@/components/StackedCard";
 
 interface PortfolioViewProps {
   targetSection?: string;
@@ -26,6 +27,7 @@ interface PortfolioViewProps {
 
 export const PortfolioView: React.FC<PortfolioViewProps> = () => {
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [heroOpacity, setHeroOpacity] = useState(1);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -53,6 +55,34 @@ export const PortfolioView: React.FC<PortfolioViewProps> = () => {
     }
   }, []);
 
+  // Graceful hero fade-out as stacked content ascends on desktop
+  useEffect(() => {
+    const handleScroll = () => {
+      if (typeof window === "undefined") return;
+      if (window.innerWidth < 640) {
+        setHeroOpacity(1);
+        return;
+      }
+
+      const vh = window.innerHeight;
+      const scrollY = window.scrollY;
+      const fadeStart = vh * 0.35;
+      const fadeEnd = vh * 0.85;
+
+      if (scrollY <= fadeStart) {
+        setHeroOpacity(1);
+      } else if (scrollY >= fadeEnd) {
+        setHeroOpacity(0);
+      } else {
+        setHeroOpacity(1 - (scrollY - fadeStart) / (fadeEnd - fadeStart));
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleOpenResumeModal = () => {
     setIsResumeModalOpen(true);
   };
@@ -70,7 +100,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = () => {
         {/* Dynamic Animated Ambient Background */}
         <AnimatedBackground />
 
-        {/* Sparse Interactive Particle Field along the Left Viewport Edge */}
+        {/* Sparse Interactive Particle Field along the Left Viewport Edge (Stationary behind central cards) */}
         <DataWaveform />
 
         {/* Fixed Right-side Vertical Section Navigation Rail */}
@@ -82,38 +112,55 @@ export const PortfolioView: React.FC<PortfolioViewProps> = () => {
         {/* Main page content flow */}
         <main className="relative">
           {/* 1. Fixed Hero Section Container: Pinned in viewport on desktop, natural full-screen flow on mobile */}
-          <div className="relative sm:sticky sm:top-0 min-h-[100svh] sm:h-screen w-full z-0 sm:overflow-hidden">
+          <div
+            style={{
+              opacity: heroOpacity,
+              pointerEvents: heroOpacity < 0.1 ? "none" : "auto",
+              transition: "opacity 0.15s ease-out",
+            }}
+            className="relative sm:sticky sm:top-0 min-h-[100svh] sm:h-screen w-full z-0 sm:overflow-hidden"
+          >
             <Hero onRequestResume={handleOpenResumeModal} />
           </div>
 
-          {/* 2. Sliding Bottom Content: Climbs smoothly over the fixed Hero */}
-          <div className="relative z-20 bg-[#030304]">
-            {/* 2. About Me Section - Styled as an elevated card with rounded top shoulders */}
-            <About />
+          {/* 2. Central Content Column: Distinct Fixed-Frame Stacked Cards */}
+          <div className="relative z-20 w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 xl:pr-24 pt-6 pb-20 space-y-10 sm:space-y-14 lg:space-y-20">
+            {/* Card 1: About Me & Evidence Telemetry */}
+            <StackedCard id="about" index={0} zIndex={10} nextCardId="experience">
+              <About />
+              <Highlights />
+            </StackedCard>
 
-            {/* 3. Evidence & Scale Counter Telemetry Section */}
-            <Highlights />
+            {/* Card 2: Research & Industry Experience */}
+            <StackedCard id="experience" index={1} zIndex={12} nextCardId="work">
+              <Experience />
+            </StackedCard>
 
-            {/* 4. Experience & Research Section */}
-            <Experience />
+            {/* Card 3: Selected Flagship & Supporting Engineering Projects */}
+            <StackedCard id="work" index={2} zIndex={14} nextCardId="education">
+              <Projects />
+            </StackedCard>
 
-            {/* 5. Selected Flagship & Supporting Engineering Projects */}
-            <Projects />
+            {/* Card 4: Academic Foundation & Coursework */}
+            <StackedCard id="education" index={3} zIndex={16} nextCardId="skills">
+              <Education />
+            </StackedCard>
 
-            {/* 6. Academic Background Section */}
-            <Education />
+            {/* Card 5: Technical Tooling & Capabilities */}
+            <StackedCard id="skills" index={4} zIndex={18} nextCardId="credentials">
+              <Skills />
+            </StackedCard>
 
-            {/* 7. Technical Skills & Tools Matrix */}
-            <Skills />
+            {/* Card 6: Verified Credentials & Honors */}
+            <StackedCard id="credentials" index={5} zIndex={20} nextCardId="contact">
+              <Credentials />
+            </StackedCard>
 
-            {/* 8. Verified Credentials & Honors */}
-            <Credentials />
-
-            {/* 9. Direct Contact & Communication Form */}
-            <Contact onRequestResume={handleOpenResumeModal} />
-
-            {/* Global Footer */}
-            <Footer onRequestResume={handleOpenResumeModal} />
+            {/* Card 7: Direct Contact & Closing Deck Footer */}
+            <StackedCard id="contact" index={6} zIndex={22}>
+              <Contact onRequestResume={handleOpenResumeModal} />
+              <Footer onRequestResume={handleOpenResumeModal} />
+            </StackedCard>
           </div>
         </main>
 

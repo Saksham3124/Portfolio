@@ -33,17 +33,8 @@ export const About: React.FC = () => {
   };
 
   return (
-    <section
-      id="about"
-      className="relative z-20 pt-10 sm:pt-14 pb-24 rounded-t-[32px] sm:rounded-t-[44px] md:rounded-t-[48px] bg-[#060609] border-t border-white/[0.10] shadow-[0_-30px_70px_rgba(0,0,0,0.95),0_-1px_0_rgba(255,255,255,0.08)] scroll-mt-16 sm:scroll-mt-20"
-    >
-      {/* Architectural Top Notch Accent */}
-      <div
-        aria-hidden="true"
-        className="w-12 h-1 rounded-full bg-white/15 mx-auto mb-8 sm:mb-12 mt-1 pointer-events-none"
-      />
-
-      <div className="max-w-4xl mx-auto px-6">
+    <div className="pt-2 sm:pt-4 pb-12 sm:pb-16 px-4 sm:px-8">
+      <div className="max-w-4xl mx-auto">
         
         {/* Mobile Domain Focus Cards: Analytics, Data, Risk, Product (Visible only on mobile screens < sm, revealing naturally on vertical scroll) */}
         <motion.div {...fadeUp(0)} className="block sm:hidden mb-12">
@@ -134,6 +125,6 @@ export const About: React.FC = () => {
         </div>
 
       </div>
-    </section>
+    </div>
   );
 };

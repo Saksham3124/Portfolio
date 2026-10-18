@@ -17,7 +17,7 @@ export const Footer: React.FC<FooterProps> = ({ onRequestResume }) => {
   };
 
   return (
-    <footer className="border-t border-white/[0.06] pt-14 pb-12 bg-[#030304]">
+    <footer className="border-t border-white/[0.06] pt-12 pb-10 bg-transparent">
       <div className="max-w-5xl mx-auto px-6">
         
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-10 border-b border-white/[0.06]">
