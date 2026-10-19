@@ -157,6 +157,72 @@ export const HERO_METRICS = IMPACT_METRICS;
 
 export const EXPERIENCE: ExperienceItem[] = [
   {
+    id: "sun-shine-automation-2026",
+    role: "Business Analyst Intern",
+    organization: "Sun Shine Automation India Ltd",
+    program: "Business Analysis & Operations",
+    period: "Jan 2026 – June 2026",
+    location: "Jaipur, India",
+    type: "Industry Internship",
+    summary:
+      "Analyzed historical B2B order data, seasonal demand patterns, and after-sales service records using Excel, SQL, and Python. Identified recurring client requirements to support demand forecasting, proactive production planning, and maintenance scheduling, contributing to improved planning efficiency and engineering resource utilization.",
+    researchAreas: [
+      {
+        id: "demand-forecasting",
+        title: "DEMAND FORECASTING & TREND ANALYSIS",
+        highlight: "B2B Order Data & Trends",
+        description:
+          "Analyzed historical B2B order data and seasonal demand trends using Excel and SQL to identify recurring purchasing patterns and anticipate future client requirements.",
+      },
+      {
+        id: "production-planning",
+        title: "PRODUCTION PLANNING OPTIMIZATION",
+        highlight: "~18% Efficiency Gain",
+        description:
+          "Leveraged historical order patterns to anticipate repeat orders and align production schedules with projected client demand, contributing to an approximately 18% improvement in production planning efficiency.",
+      },
+      {
+        id: "resource-planning",
+        title: "AFTER-SALES SERVICE & RESOURCE PLANNING",
+        highlight: "Workforce Utilization",
+        description:
+          "Analyzed historical maintenance and service requirements to anticipate after-sales demand, enabling better engineer scheduling and workforce utilization.",
+      },
+    ],
+    outcomes: [
+      {
+        value: "18%",
+        label: "Planning Efficiency Improvement",
+        sub: "Historical Order Analysis",
+      },
+      {
+        value: "3",
+        label: "Analytical Tools Used",
+        sub: "Excel, SQL & Python",
+      },
+      {
+        value: "2",
+        label: "Operational Areas Analyzed",
+        sub: "Production & After-Sales Service",
+      },
+    ],
+    highlights: [
+      "Applied Excel, SQL, and Python to analyze historical order data and identify recurring B2B purchasing patterns.",
+      "Supported proactive production scheduling through demand forecasting, contributing to an approximately 18% improvement in production planning efficiency.",
+      "Used historical maintenance trends to anticipate service requirements and improve engineering resource allocation.",
+    ],
+    tags: [
+      "Microsoft Excel",
+      "SQL",
+      "Python",
+      "Historical Data Analysis",
+      "Trend Analysis",
+      "Demand Forecasting",
+      "Production Planning",
+      "Workforce Planning",
+    ],
+  },
+  {
     id: "lnmiit-lusip-2025",
     role: "Summer Research Intern",
     organization: "The LNM Institute of Information Technology (LNMIIT)",

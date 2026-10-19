@@ -12,108 +12,99 @@ interface OutcomeItem {
   sub: string;
 }
 
-const ResearchOutcomeMetrics: React.FC<{ outcomes: OutcomeItem[] }> = ({ outcomes }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(containerRef, { once: true, margin: "20px" });
+const OutcomeCard: React.FC<{ outcome: OutcomeItem; isInView: boolean }> = ({
+  outcome,
+  isInView,
+}) => {
   const shouldReduceMotion = useReducedMotion();
-
-  // Initial display states
-  const [val1, setVal1] = useState(shouldReduceMotion ? "20K+" : "0");
-  const [val2, setVal2] = useState(shouldReduceMotion ? "66% → 80%" : "66%");
-  const [val3, setVal3] = useState(shouldReduceMotion ? "4" : "0");
+  const [displayVal, setDisplayVal] = useState(shouldReduceMotion ? outcome.value : "0");
 
   useEffect(() => {
     if (shouldReduceMotion) {
-      setVal1("20K+");
-      setVal2("66% → 80%");
-      setVal3("4");
+      setDisplayVal(outcome.value);
       return;
     }
-
     if (!isInView) return;
 
-    let animFrame: number;
-    let startTime: number | null = null;
-    const duration = 1250; // 1.25 seconds
+    // Special LNMIIT arrow progression transition
+    if (outcome.value === "66% → 80%") {
+      let startTime: number | null = null;
+      const duration = 1250;
+      const easeOutQuad = (t: number) => t * (2 - t);
+      let animFrame: number;
+      const step = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        if (progress >= 1) {
+          setDisplayVal("66% → 80%");
+        } else if (elapsed < 350) {
+          setDisplayVal("66%");
+        } else if (elapsed < 650) {
+          setDisplayVal("66% →");
+        } else {
+          const effProgress = (elapsed - 650) / (duration - 650);
+          const currentEff = Math.round(66 + (80 - 66) * easeOutQuad(effProgress));
+          setDisplayVal(`66% → ${Math.min(currentEff, 80)}%`);
+        }
+        if (progress < 1) animFrame = requestAnimationFrame(step);
+      };
+      animFrame = requestAnimationFrame(step);
+      return () => cancelAnimationFrame(animFrame);
+    }
 
-    // Smooth ease-out quad function
-    const easeOutQuad = (t: number) => t * (2 - t);
+    // Numbers with optional suffixes like "20K+", "18%", "3", "2"
+    const match = outcome.value.match(/^(\d+(?:\.\d+)?)(.*)$/);
+    if (match) {
+      const targetNum = parseFloat(match[1]);
+      const suffix = match[2] || "";
+      let startTime: number | null = null;
+      const duration = 1200;
+      const easeOutQuad = (t: number) => t * (2 - t);
+      let animFrame: number;
+      const step = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const currentVal = Math.round(targetNum * easeOutQuad(progress));
+        setDisplayVal(`${currentVal}${suffix}`);
+        if (progress < 1) animFrame = requestAnimationFrame(step);
+      };
+      animFrame = requestAnimationFrame(step);
+      return () => cancelAnimationFrame(animFrame);
+    }
 
-    const step = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = easeOutQuad(progress);
+    setDisplayVal(outcome.value);
+  }, [isInView, outcome.value, shouldReduceMotion]);
 
-      // 1. Metric 1: 0 -> 20K+ (abbreviated counter, no decimals)
-      if (progress >= 1) {
-        setVal1("20K+");
-      } else {
-        const kValue = Math.round(eased * 20);
-        setVal1(kValue === 0 ? "0" : `${kValue}K`);
-      }
+  return (
+    <motion.div
+      whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      className="p-4 sm:p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] transition-colors cursor-default"
+    >
+      <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-1.5 font-mono tabular-nums min-h-[36px] sm:min-h-[40px] flex items-center">
+        {displayVal}
+      </div>
+      <div className="text-xs sm:text-sm font-medium text-zinc-300 mb-1">
+        {outcome.label}
+      </div>
+      <div className="text-[11px] text-zinc-500 leading-snug">
+        {outcome.sub}
+      </div>
+    </motion.div>
+  );
+};
 
-      // 2. Metric 2: 66% → 80% (communicates starting value -> improved value, settling into 66% → 80%)
-      if (progress >= 1) {
-        setVal2("66% → 80%");
-      } else if (elapsed < 350) {
-        setVal2("66%");
-      } else if (elapsed < 650) {
-        setVal2("66% →");
-      } else {
-        const effProgress = (elapsed - 650) / (duration - 650);
-        const currentEff = Math.round(66 + (80 - 66) * easeOutQuad(effProgress));
-        setVal2(`66% → ${Math.min(currentEff, 80)}%`);
-      }
-
-      // 3. Metric 3: 0 -> 4
-      if (progress >= 1) {
-        setVal3("4");
-      } else {
-        const configCount = Math.round(eased * 4);
-        setVal3(`${configCount}`);
-      }
-
-      if (progress < 1) {
-        animFrame = requestAnimationFrame(step);
-      }
-    };
-
-    animFrame = requestAnimationFrame(step);
-
-    return () => {
-      if (animFrame) cancelAnimationFrame(animFrame);
-    };
-  }, [isInView, shouldReduceMotion]);
-
-  const displayValues = [val1, val2, val3];
-  const defaultValues = ["20K+", "66% → 80%", "4"];
+const ResearchOutcomeMetrics: React.FC<{ outcomes: OutcomeItem[] }> = ({ outcomes }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: true, margin: "20px" });
 
   return (
     <div ref={containerRef} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      {outcomes.map((outcome, oIdx) => {
-        const isDefault = outcome.value === defaultValues[oIdx];
-        const displayVal = isDefault ? (displayValues[oIdx] ?? outcome.value) : outcome.value;
-
-        return (
-          <motion.div
-            key={oIdx}
-            whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
-            transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            className="p-4 sm:p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] transition-colors cursor-default"
-          >
-            <div className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-1.5 font-mono tabular-nums min-h-[36px] sm:min-h-[40px] flex items-center">
-              {displayVal}
-            </div>
-            <div className="text-xs sm:text-sm font-medium text-zinc-300 mb-1">
-              {outcome.label}
-            </div>
-            <div className="text-[11px] text-zinc-500 leading-snug">
-              {outcome.sub}
-            </div>
-          </motion.div>
-        );
-      })}
+      {outcomes.map((outcome, oIdx) => (
+        <OutcomeCard key={oIdx} outcome={outcome} isInView={isInView} />
+      ))}
     </div>
   );
 };
@@ -196,8 +187,13 @@ export const Experience: React.FC = () => {
                 {exp.summary}
               </div>
 
-              {/* Three Research Areas: Data Processing → Configuration Analysis → Validation */}
+              {/* Three Focus Areas / Key Contributions */}
               <div className="mb-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
+                    {exp.type === "Research Internship" ? "Research Areas & Methodology" : "Key Contributions & Focus Areas"}
+                  </span>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {exp.researchAreas.map((area, aIdx) => (
                     <motion.div
@@ -250,15 +246,37 @@ export const Experience: React.FC = () => {
                 </div>
               </div>
 
+              {/* Key Highlights & Achievements */}
+              {exp.highlights && exp.highlights.length > 0 && (
+                <>
+                  <div className="border-t border-white/[0.08] my-5" />
+                  <div className="mb-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
+                        Key Highlights & Achievements
+                      </span>
+                    </div>
+                    <ul className="space-y-2">
+                      {exp.highlights.map((h, hIdx) => (
+                        <li key={hIdx} className="text-xs text-zinc-300 leading-relaxed flex items-start gap-2.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400/80 mt-1.5 shrink-0" />
+                          <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              )}
+
               {/* Divider */}
               <div className="border-t border-white/[0.08] my-5" />
 
-              {/* Research Outcome Section */}
+              {/* Key Outcomes & Metrics Section */}
               <div className="mb-5">
                 <div className="flex items-center gap-2 mb-3">
                   <TrendingUp className="w-3.5 h-3.5 text-zinc-400" />
                   <span className="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
-                    RESEARCH OUTCOME
+                    {exp.type === "Research Internship" ? "Research Outcomes & Metrics" : "Key Outcomes & Metrics"}
                   </span>
                 </div>
 
@@ -268,10 +286,10 @@ export const Experience: React.FC = () => {
               {/* Divider */}
               <div className="border-t border-white/[0.08] my-5" />
 
-              {/* Technologies for LNMIIT */}
+              {/* Technologies & Tools */}
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-mono text-zinc-500 mr-1">
-                  Technologies:
+                  Technologies & Tools:
                 </span>
                 {exp.tags.map((tag) => (
                   <motion.span
