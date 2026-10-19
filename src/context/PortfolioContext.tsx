@@ -31,13 +31,20 @@ export const PortfolioProvider: React.FC<{
         const cached = localStorage.getItem("portfolio_cached_data");
         if (cached) {
           const parsed = JSON.parse(cached);
-          if (parsed && parsed.personalInfo) {
+          if (parsed && typeof parsed === "object") {
             base = {
+              ...DEFAULT_PORTFOLIO_CONTENT,
               ...base,
               ...parsed,
               personalInfo: {
+                ...DEFAULT_PORTFOLIO_CONTENT.personalInfo,
                 ...base.personalInfo,
-                ...parsed.personalInfo,
+                ...(parsed.personalInfo || {}),
+                contact: {
+                  ...DEFAULT_PORTFOLIO_CONTENT.personalInfo.contact,
+                  ...(base.personalInfo?.contact || {}),
+                  ...(parsed.personalInfo?.contact || {}),
+                },
               },
             };
           }
@@ -66,18 +73,42 @@ export const PortfolioProvider: React.FC<{
       const res = await fetch("/api/portfolio-data", { cache: "no-store" });
       if (res.ok) {
         const json = await res.json();
-        setData(json);
+        
+        let shouldApplyServer = true;
         if (typeof window !== "undefined") {
           try {
-            localStorage.setItem("portfolio_cached_data", JSON.stringify(json));
-            if (json.personalInfo?.heroVideoUrl) {
-              localStorage.setItem("portfolio_hero_video", json.personalInfo.heroVideoUrl);
-              document.cookie = `portfolio_hero_video=${encodeURIComponent(
-                json.personalInfo.heroVideoUrl
-              )}; path=/; max-age=31536000; SameSite=Lax`;
+            const cached = localStorage.getItem("portfolio_cached_data");
+            if (cached) {
+              const localData = JSON.parse(cached);
+              const localTime = localData?.updatedAt ? new Date(localData.updatedAt).getTime() : 0;
+              const serverTime = json?.updatedAt ? new Date(json.updatedAt).getTime() : 0;
+              
+              // If local edits are newer than the server response (e.g. serverless container restarted with old defaults),
+              // PRESERVE the user's edits! Do NOT let the server wipe them out.
+              if (localTime > serverTime) {
+                shouldApplyServer = false;
+                setData(localData);
+              }
             }
           } catch {
             // Ignore storage errors
+          }
+        }
+
+        if (shouldApplyServer) {
+          setData(json);
+          if (typeof window !== "undefined") {
+            try {
+              localStorage.setItem("portfolio_cached_data", JSON.stringify(json));
+              if (json.personalInfo?.heroVideoUrl) {
+                localStorage.setItem("portfolio_hero_video", json.personalInfo.heroVideoUrl);
+                document.cookie = `portfolio_hero_video=${encodeURIComponent(
+                  json.personalInfo.heroVideoUrl
+                )}; path=/; max-age=31536000; SameSite=Lax`;
+              }
+            } catch {
+              // Ignore storage errors
+            }
           }
         }
       }

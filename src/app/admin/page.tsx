@@ -84,6 +84,18 @@ export default function AdminPage() {
   const [showResetConfirmModal, setShowResetConfirmModal] = useState(false);
   const [resetting, setResetting] = useState(false);
 
+  // GitHub Sync Integration State
+  const [gitHubToken, setGitHubToken] = useState("");
+  const [showTokenInput, setShowTokenInput] = useState(false);
+  const [gitHubTesting, setGitHubTesting] = useState(false);
+  const [gitHubStatus, setGitHubStatus] = useState<{
+    tested: boolean;
+    valid?: boolean;
+    message?: string;
+    hasPushAccess?: boolean;
+    repo?: string;
+  }>({ tested: false });
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Helper for toasts
@@ -99,6 +111,28 @@ export default function AdminPage() {
       const res = await fetch("/api/portfolio-data", { cache: "no-store" });
       if (res.ok) {
         const fetched = await res.json();
+
+        // Check if local browser cache has newer edits that were saved
+        if (typeof window !== "undefined") {
+          try {
+            const cached = localStorage.getItem("portfolio_cached_data");
+            if (cached) {
+              const localData = JSON.parse(cached);
+              const localTime = localData?.updatedAt ? new Date(localData.updatedAt).getTime() : 0;
+              const serverTime = fetched?.updatedAt ? new Date(fetched.updatedAt).getTime() : 0;
+              if (localTime > serverTime) {
+                setData(localData);
+                setIsDirty(false);
+                setLoadingData(false);
+                showToast("Restored your latest saved portfolio edits from browser cache", "success");
+                return;
+              }
+            }
+          } catch {
+            // ignore
+          }
+        }
+
         setData(fetched);
         setIsDirty(false);
       }
@@ -109,8 +143,20 @@ export default function AdminPage() {
     }
   }, []);
 
-  // Check auth on mount
+  // Check auth and stored token on mount
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("portfolio_github_token") || "";
+      if (storedToken) {
+        setGitHubToken(storedToken);
+        setGitHubStatus({
+          tested: true,
+          valid: true,
+          message: "Configured from browser storage",
+        });
+      }
+    }
+
     async function checkAuth() {
       try {
         const res = await fetch("/api/admin/check", { cache: "no-store" });
@@ -172,9 +218,17 @@ export default function AdminPage() {
   const handleSaveAll = async () => {
     setSaving(true);
     try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (typeof window !== "undefined") {
+        const token = localStorage.getItem("portfolio_github_token") || gitHubToken.trim();
+        if (token) {
+          headers["x-github-token"] = token;
+        }
+      }
+
       const res = await fetch("/api/admin/portfolio-data", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(data),
       });
 
@@ -183,22 +237,39 @@ export default function AdminPage() {
         showToast(resData.error || "Failed to save portfolio data", "error");
       } else {
         setIsDirty(false);
-        showToast("Portfolio changes successfully saved and applied to live site!");
+        const savedTime = resData.savedAt || new Date().toISOString();
+        const updatedWithTimestamp = {
+          ...data,
+          updatedAt: savedTime,
+        };
+        setData(updatedWithTimestamp);
+
         if (typeof window !== "undefined") {
           try {
-            localStorage.setItem("portfolio_cached_data", JSON.stringify(data));
-            if (data.personalInfo.heroVideoUrl) {
-              localStorage.setItem("portfolio_hero_video", data.personalInfo.heroVideoUrl);
+            localStorage.setItem("portfolio_cached_data", JSON.stringify(updatedWithTimestamp));
+            if (updatedWithTimestamp.personalInfo?.heroVideoUrl) {
+              localStorage.setItem("portfolio_hero_video", updatedWithTimestamp.personalInfo.heroVideoUrl);
               document.cookie = `portfolio_hero_video=${encodeURIComponent(
-                data.personalInfo.heroVideoUrl
+                updatedWithTimestamp.personalInfo.heroVideoUrl
               )}; path=/; max-age=31536000; SameSite=Lax`;
             }
           } catch {
             // Ignore
           }
           window.dispatchEvent(
-            new CustomEvent("portfolio_data_updated", { detail: data })
+            new CustomEvent("portfolio_data_updated", { detail: updatedWithTimestamp })
           );
+        }
+
+        if (resData.syncedToGitHub) {
+          showToast("Saved & automatically committed to GitHub repository! Vercel is redeploying.", "success");
+        } else if (resData.isEphemeral) {
+          showToast(
+            "Saved to local session buffer! (Tip: Set GitHub Token in Settings for permanent multi-device sync)",
+            "success"
+          );
+        } else {
+          showToast("Portfolio changes successfully saved and applied to live site!", "success");
         }
       }
     } catch {
@@ -206,6 +277,63 @@ export default function AdminPage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  // GitHub test & management handlers
+  const handleTestGitHub = async () => {
+    const token = gitHubToken.trim();
+    if (!token) {
+      showToast("Please enter a GitHub Personal Access Token first", "error");
+      return;
+    }
+    setGitHubTesting(true);
+    setGitHubStatus({ tested: false });
+    try {
+      const res = await fetch("/api/admin/check-github", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      const resData = await res.json();
+      if (res.ok && resData.success) {
+        setGitHubStatus({
+          tested: true,
+          valid: true,
+          hasPushAccess: resData.hasPushAccess,
+          repo: resData.repo,
+          message: `Connected to ${resData.repo} (Branch: ${resData.defaultBranch}, Push: ${resData.hasPushAccess ? "Authorized" : "Denied"})`,
+        });
+        if (typeof window !== "undefined") {
+          localStorage.setItem("portfolio_github_token", token);
+        }
+        showToast("GitHub Token verified and saved in browser!", "success");
+      } else {
+        setGitHubStatus({
+          tested: true,
+          valid: false,
+          message: resData.error || "GitHub verification failed",
+        });
+        showToast(resData.error || "GitHub verification failed", "error");
+      }
+    } catch {
+      setGitHubStatus({
+        tested: true,
+        valid: false,
+        message: "Network error checking GitHub",
+      });
+      showToast("Network error verifying GitHub Token", "error");
+    } finally {
+      setGitHubTesting(false);
+    }
+  };
+
+  const handleClearGitHubToken = () => {
+    setGitHubToken("");
+    setGitHubStatus({ tested: false });
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("portfolio_github_token");
+    }
+    showToast("GitHub Token removed from browser storage");
   };
 
   // Change Password
@@ -831,9 +959,16 @@ export default function AdminPage() {
                 <span className="font-semibold text-sm tracking-tight text-white">
                   Kumar Saksham
                 </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.05] text-zinc-400 border border-white/5">
-                  Studio CMS
-                </span>
+                {gitHubStatus.valid ? (
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    GitHub Sync Active
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.05] text-zinc-400 border border-white/5">
+                    Studio CMS
+                  </span>
+                )}
                 {loadingData && (
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/15 text-blue-300 border border-blue-500/30 flex items-center gap-1">
                     <RefreshCw className="w-2.5 h-2.5 animate-spin" />
@@ -4109,19 +4244,113 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* GitHub Sync Info Card */}
-                <div className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 sm:p-8 space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-mono uppercase text-zinc-400 tracking-wider">
-                    <FolderKanban className="w-4 h-4 text-zinc-300" />
-                    <span>Optional Permanent GitHub Repository Sync</span>
+                {/* GitHub Cloud Sync Card */}
+                <div className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 sm:p-8 space-y-4">
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
+                        <FolderKanban className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h2 className="text-base font-semibold text-white">Permanent GitHub Cloud Sync</h2>
+                          {gitHubStatus.valid ? (
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                              Active
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                              Disconnected
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-zinc-400 mt-0.5">
+                          Automatically commits content changes directly to <code className="text-zinc-300 font-mono text-[11px]">Saksham3124/Portfolio</code> on GitHub, triggering Vercel to redeploy permanently across all devices.
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-xs text-zinc-400 leading-relaxed">
-                    By default, changes are instantly saved to persistent local / serverless storage and active in-memory cache. If you want changes made from the admin panel to also create git commits in your GitHub repository automatically, you can set these environment variables on Vercel:
-                  </p>
-                  <div className="p-3 rounded-xl bg-black/60 border border-white/10 font-mono text-[11px] text-zinc-300 space-y-1">
-                    <div>GITHUB_TOKEN=ghp_yourPersonalAccessToken</div>
-                    <div>GITHUB_REPO=Saksham3124/Portfolio</div>
-                    <div>GITHUB_BRANCH=main</div>
+
+                  <div className="space-y-3 pt-2">
+                    <div>
+                      <label className="text-xs font-mono text-zinc-400 uppercase tracking-wider block mb-1.5">
+                        GitHub Personal Access Token (PAT)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showTokenInput ? "text" : "password"}
+                          value={gitHubToken}
+                          onChange={(e) => {
+                            setGitHubToken(e.target.value);
+                            setGitHubStatus({ tested: false });
+                          }}
+                          placeholder="ghp_xxxxxxxxxxxxxxxxxxxx or github_pat_xxxxxxxx"
+                          className="w-full pl-3.5 pr-10 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-xs font-mono text-white focus:outline-none focus:border-white/30"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowTokenInput(!showTokenInput)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                        >
+                          {showTokenInput ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-zinc-500 mt-1">
+                        Token is securely saved only in your local browser session and sent encrypted via HTTPS. Needs <strong>Contents (Read & Write)</strong> permission on your repository.
+                      </p>
+                    </div>
+
+                    {gitHubStatus.message && (
+                      <div className={`p-3 rounded-xl text-xs font-mono border ${gitHubStatus.valid ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-300" : "bg-red-500/10 border-red-500/20 text-red-300"}`}>
+                        {gitHubStatus.message}
+                      </div>
+                    )}
+
+                    <div className="flex flex-wrap items-center gap-3 pt-1">
+                      <button
+                        type="button"
+                        onClick={handleTestGitHub}
+                        disabled={gitHubTesting || !gitHubToken}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold transition-all disabled:opacity-50 shadow-sm"
+                      >
+                        {gitHubTesting ? (
+                          <>
+                            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                            <span>Verifying Connection...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Shield className="w-3.5 h-3.5" />
+                            <span>Test & Save Token</span>
+                          </>
+                        )}
+                      </button>
+
+                      {gitHubToken && (
+                        <button
+                          type="button"
+                          onClick={handleClearGitHubToken}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-all"
+                        >
+                          <span>Remove Token</span>
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={handleSaveAll}
+                        disabled={saving}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-white transition-all ml-auto"
+                      >
+                        <Save className="w-3.5 h-3.5" />
+                        <span>Commit Portfolio to GitHub Now</span>
+                      </button>
+                    </div>
+
+                    <div className="pt-2 text-[11px] text-zinc-500 font-mono space-y-1">
+                      <div>Tip: Alternatively, you can add <code className="text-zinc-400">GITHUB_TOKEN</code> to your Vercel Project Environment Variables.</div>
+                    </div>
                   </div>
                 </div>
 

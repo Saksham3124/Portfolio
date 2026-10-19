@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = (await request.json()) as PortfolioContentData;
+    const body = (await request.json()) as PortfolioContentData & { gitHubToken?: string };
 
     if (!body || typeof body !== "object") {
       return NextResponse.json(
@@ -37,7 +37,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await savePortfolioData(body);
+    const customToken =
+      request.headers.get("x-github-token") || body.gitHubToken || undefined;
+
+    const result = await savePortfolioData(body, customToken);
     if (!result.success) {
       return NextResponse.json(
         { error: result.error || "Failed to save portfolio data" },
@@ -50,6 +53,9 @@ export async function POST(request: Request) {
       message: "Portfolio data saved successfully",
       savedAt: new Date().toISOString(),
       filePath: result.filePath,
+      isEphemeral: result.isEphemeral,
+      syncedToGitHub: result.syncedToGitHub,
+      githubError: result.githubError,
     });
   } catch (error: unknown) {
     const errorMsg = error instanceof Error ? error.message : "Internal error";

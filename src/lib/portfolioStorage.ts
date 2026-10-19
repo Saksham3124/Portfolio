@@ -25,6 +25,15 @@ function getCandidateFilePaths(): { primaryPath: string; tempPath: string } {
   return { primaryPath, tempPath };
 }
 
+export interface SaveResult {
+  success: boolean;
+  filePath: string;
+  isEphemeral: boolean;
+  syncedToGitHub: boolean;
+  githubError?: string;
+  error?: string;
+}
+
 /**
  * Get current portfolio data, reading from disk if available, otherwise returning defaults
  */
@@ -82,10 +91,18 @@ export function getPortfolioData(): PortfolioContentData {
           ...DEFAULT_PORTFOLIO_CONTENT.skillsSection,
           ...(parsed.skillsSection || {}),
         },
+        experience:
+          Array.isArray(parsed.experience) && parsed.experience.length > 0
+            ? parsed.experience
+            : DEFAULT_PORTFOLIO_CONTENT.experience,
         experienceSection: {
           ...DEFAULT_PORTFOLIO_CONTENT.experienceSection,
           ...(parsed.experienceSection || {}),
         },
+        educationList:
+          Array.isArray(parsed.educationList) && parsed.educationList.length > 0
+            ? parsed.educationList
+            : DEFAULT_PORTFOLIO_CONTENT.educationList,
         telemetrySection: {
           ...DEFAULT_PORTFOLIO_CONTENT.telemetrySection,
           ...(parsed.telemetrySection || {}),
@@ -113,8 +130,9 @@ export function getPortfolioData(): PortfolioContentData {
  * Save updated portfolio data to disk and cache
  */
 export async function savePortfolioData(
-  newData: PortfolioContentData
-): Promise<{ success: boolean; filePath: string; error?: string }> {
+  newData: PortfolioContentData,
+  customGitHubToken?: string
+): Promise<SaveResult> {
   try {
     const withTimestamp = {
       ...newData,
@@ -125,6 +143,7 @@ export async function savePortfolioData(
 
     const { primaryPath, tempPath } = getCandidateFilePaths();
     let savedPath = primaryPath;
+    let isEphemeral = false;
 
     // Attempt primary path first
     try {
@@ -142,21 +161,39 @@ export async function savePortfolioData(
       }
       fs.writeFileSync(tempPath, JSON.stringify(withTimestamp, null, 2), "utf-8");
       savedPath = tempPath;
+      isEphemeral = true;
     }
 
-    // Optional: If GitHub Token and Repo are configured in environment variables, commit to GitHub
-    if (process.env.GITHUB_TOKEN && process.env.GITHUB_REPO) {
+    let syncedToGitHub = false;
+    let githubError: string | undefined;
+
+    const tokenToUse = customGitHubToken || process.env.GITHUB_TOKEN;
+    if (tokenToUse) {
       try {
-        await syncToGitHub(withTimestamp);
+        await syncToGitHub(withTimestamp, tokenToUse);
+        syncedToGitHub = true;
       } catch (ghErr) {
+        githubError = ghErr instanceof Error ? ghErr.message : String(ghErr);
         console.warn("GitHub sync warning:", ghErr);
       }
     }
 
-    return { success: true, filePath: savedPath };
+    return {
+      success: true,
+      filePath: savedPath,
+      isEphemeral,
+      syncedToGitHub,
+      githubError,
+    };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);
-    return { success: false, filePath: "", error: errorMsg };
+    return {
+      success: false,
+      filePath: "",
+      isEphemeral: false,
+      syncedToGitHub: false,
+      error: errorMsg,
+    };
   }
 }
 
@@ -180,14 +217,21 @@ export function resetPortfolioData(): boolean {
 }
 
 /**
- * Sync data to GitHub repository via GitHub API if GITHUB_TOKEN is set
+ * Sync data to GitHub repository via GitHub API if GITHUB_TOKEN is available
  */
-async function syncToGitHub(data: PortfolioContentData): Promise<void> {
-  const token = process.env.GITHUB_TOKEN;
+export async function syncToGitHub(
+  data: PortfolioContentData,
+  customToken?: string
+): Promise<void> {
+  const token = customToken || process.env.GITHUB_TOKEN;
+  if (!token) {
+    throw new Error("No GitHub Token provided or configured.");
+  }
   const repo = process.env.GITHUB_REPO || "Saksham3124/Portfolio";
+  const branch = process.env.GITHUB_BRANCH || "main";
   const filePath = "src/data/portfolioContent.json";
 
-  const getUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
+  const getUrl = `https://api.github.com/repos/${repo}/contents/${filePath}?ref=${branch}`;
   let sha: string | undefined;
 
   try {
@@ -195,7 +239,9 @@ async function syncToGitHub(data: PortfolioContentData): Promise<void> {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/vnd.github.v3+json",
+        "User-Agent": "Portfolio-Admin-CMS",
       },
+      cache: "no-store",
     });
     if (checkRes.ok) {
       const fileData = await checkRes.json();
@@ -207,18 +253,24 @@ async function syncToGitHub(data: PortfolioContentData): Promise<void> {
 
   const contentBase64 = Buffer.from(JSON.stringify(data, null, 2)).toString("base64");
 
-  await fetch(getUrl, {
+  const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: "application/vnd.github.v3+json",
       "Content-Type": "application/json",
+      "User-Agent": "Portfolio-Admin-CMS",
     },
     body: JSON.stringify({
       message: "Update portfolio content via Admin Panel CMS",
       content: contentBase64,
       sha: sha || undefined,
-      branch: "main",
+      branch: branch,
     }),
   });
+
+  if (!putRes.ok) {
+    const errText = await putRes.text();
+    throw new Error(`GitHub API commit failed (${putRes.status}): ${errText}`);
+  }
 }
