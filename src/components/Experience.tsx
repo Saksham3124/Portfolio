@@ -319,28 +319,33 @@ export const Experience: React.FC = () => {
     return () => window.removeEventListener("resize", checkDesktop);
   }, []);
 
-  // Stationary trigger element placed at the transition boundary between Card 1 and Card 2.
-  const triggerRef = useRef<HTMLDivElement>(null);
+  // Shared container tracking for the coordinated full-card replacement
+  const deckContainerRef = useRef<HTMLDivElement>(null);
 
-  // Short, crisp trigger window:
-  // "start 95%": Card 2's boundary enters near the bottom of the viewport
-  // "start 55%": Card 2 settles in place directly on top
+  // Runway scroll space added to the deck container on desktop (~420px of smooth runway)
+  const RUNWAY_PX = 420;
+
   const { scrollYProgress } = useScroll({
-    target: triggerRef,
-    offset: ["start 95%", "start 55%"],
+    target: deckContainerRef,
+    offset: ["start 100px", "end end"],
   });
 
-  // Pick-up-and-place animation values:
-  // Position is nearly stationary: subtle settling drop of just 12px
-  const card2Y = useTransform(scrollYProgress, [0, 1], [-12, 0]);
-  // Subtle scale drop from slightly elevated (1.018) down to rested (1.0)
-  const card2Scale = useTransform(scrollYProgress, [0, 1], [1.018, 1.0]);
-  // Smooth, fast opacity fade-in
-  const card2Opacity = useTransform(scrollYProgress, [0, 0.35, 1], [0.15, 0.65, 1]);
+  // Phase 2: Once Card 1 reaches final readable position, hold the card frame stationary in viewport
+  // Window scroll naturally moves elements UP; holdY translates DOWN to cancel scroll movement
+  const holdY = useTransform(scrollYProgress, [0.28, 0.62], [0, 160]);
 
-  // Underlying card (Card 1) subtly recedes in depth as Card 2 lands on top
-  const card1Scale = useTransform(scrollYProgress, [0, 1], [1.0, 0.985]);
-  const card1Opacity = useTransform(scrollYProgress, [0, 1], [1.0, 0.65]);
+  // Phase 3: Card replacement sequence
+  // Card 1 gently recedes as Card 2 replaces it
+  const card1Opacity = useTransform(scrollYProgress, [0.30, 0.52], [1.0, 0.0]);
+  const card1Scale = useTransform(scrollYProgress, [0.30, 0.52], [1.0, 0.985]);
+
+  // Card 2 fades in directly over Card 1 as one complete opaque card (scale: 1.015 -> 1.0)
+  const card2Opacity = useTransform(scrollYProgress, [0.30, 0.52], [0.0, 1.0]);
+  const card2Scale = useTransform(scrollYProgress, [0.30, 0.52], [1.015, 1.0]);
+
+  // Interactive pointer events routing: Card 1 is clickable during Phase 1; Card 2 during Phase 4
+  const card1PointerEvents = useTransform(scrollYProgress, (v) => (v > 0.42 ? "none" : "auto"));
+  const card2PointerEvents = useTransform(scrollYProgress, (v) => (v > 0.42 ? "auto" : "none"));
 
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
@@ -350,7 +355,7 @@ export const Experience: React.FC = () => {
   });
 
   const hasTwoOrMore = experienceList.length >= 2;
-  const enablePlacementEffect = isDesktop && !shouldReduceMotion && hasTwoOrMore;
+  const enableReplacementTransition = isDesktop && !shouldReduceMotion && hasTwoOrMore;
 
   return (
     <div className="py-6 sm:py-8 lg:py-10 px-4 sm:px-8 flex flex-col justify-center min-h-[calc(100vh-140px)] w-full">
@@ -373,55 +378,76 @@ export const Experience: React.FC = () => {
 
         {/* Experience Cards */}
         {hasTwoOrMore ? (
-          <div className="relative">
-            {/* Card 1: Business Analyst Intern (Normal document flow, z-10) */}
-            <motion.div
-              style={
-                enablePlacementEffect
-                  ? { scale: card1Scale, opacity: card1Opacity }
-                  : undefined
-              }
-              className="relative z-10 transform-gpu will-change-transform"
-            >
-              <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.08] bg-[#07090e]">
-                <ExperienceCardContent
-                  exp={experienceList[0]}
-                  shouldReduceMotion={shouldReduceMotion}
-                />
+          <div
+            ref={deckContainerRef}
+            className="relative w-full"
+            style={{
+              paddingBottom: enableReplacementTransition ? `${RUNWAY_PX}px` : 0,
+            }}
+          >
+            {/* Desktop Full-Card Replacement Stage: Shared Grid Container */}
+            {enableReplacementTransition ? (
+              <motion.div
+                style={{ y: holdY }}
+                className="grid grid-cols-1 grid-rows-1 relative w-full transform-gpu will-change-transform"
+              >
+                {/* Card 1: Business Analyst Intern (Foundation Layer, z-10) */}
+                <motion.div
+                  style={{
+                    opacity: card1Opacity,
+                    scale: card1Scale,
+                    pointerEvents: card1PointerEvents,
+                  }}
+                  className="col-start-1 row-start-1 relative z-10 transform-gpu will-change-transform"
+                >
+                  <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.08] bg-[#07090e]">
+                    <ExperienceCardContent
+                      exp={experienceList[0]}
+                      shouldReduceMotion={shouldReduceMotion}
+                    />
+                  </div>
+                </motion.div>
+
+                {/* Card 2: Summer Research Intern LNMIIT (Replacement Layer, z-20) */}
+                <motion.div
+                  style={{
+                    opacity: card2Opacity,
+                    scale: card2Scale,
+                    pointerEvents: card2PointerEvents,
+                  }}
+                  className="col-start-1 row-start-1 relative z-20 transform-gpu will-change-transform"
+                >
+                  <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.14] border-t-white/[0.24] bg-[#080a12] shadow-[0_20px_50px_rgba(0,0,0,0.85)]">
+                    <ExperienceCardContent
+                      exp={experienceList[1]}
+                      isPlacedCard={true}
+                      shouldReduceMotion={shouldReduceMotion}
+                    />
+                  </div>
+                </motion.div>
+              </motion.div>
+            ) : (
+              /* Fallback for Mobile / Reduced-Motion: Natural Sequential Flow */
+              <div className="space-y-6">
+                {experienceList.map((exp, idx) => (
+                  <motion.div
+                    key={exp.id || idx}
+                    {...fadeUp(0.08 + idx * 0.05)}
+                    whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.004 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.08] bg-[#07090e]"
+                  >
+                    <ExperienceCardContent
+                      exp={exp}
+                      isPlacedCard={idx === 1}
+                      shouldReduceMotion={shouldReduceMotion}
+                    />
+                  </motion.div>
+                ))}
               </div>
-            </motion.div>
+            )}
 
-            {/* Stationary Trigger Element for scroll calculation (untransformed, zero scroll blocking) */}
-            <div
-              ref={triggerRef}
-              className="h-px w-full -mt-px pointer-events-none"
-            />
-
-            {/* Card 2: LNMIIT Research Intern (Placed Directly on Top, z-20) */}
-            <motion.div
-              style={
-                enablePlacementEffect
-                  ? {
-                      y: card2Y,
-                      scale: card2Scale,
-                      opacity: card2Opacity,
-                    }
-                  : undefined
-              }
-              className={`relative z-20 transform-gpu will-change-transform ${
-                enablePlacementEffect ? "lg:-mt-20 mt-6" : "mt-6"
-              }`}
-            >
-              <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.14] border-t-white/[0.24] bg-[#080a12] shadow-[0_-25px_60px_rgba(0,0,0,0.95),0_15px_35px_rgba(0,0,0,0.85)]">
-                <ExperienceCardContent
-                  exp={experienceList[1]}
-                  isPlacedCard={true}
-                  shouldReduceMotion={shouldReduceMotion}
-                />
-              </div>
-            </motion.div>
-
-            {/* Any remaining experience cards (if added in the future) */}
+            {/* Any remaining experience cards (if ever added in the future) */}
             {experienceList.slice(2).map((exp, idx) => (
               <div key={exp.id || idx} className="mt-6 relative z-10">
                 <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.08] bg-[#07090e]">
