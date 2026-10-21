@@ -116,53 +116,23 @@ const ResearchOutcomeMetrics: React.FC<{ outcomes: OutcomeItem[] }> = ({ outcome
 };
 
 /**
- * Common content renderer for an experience entry
+ * Common content renderer for an experience entry.
+ * Purely renders the authentic role details, summary, contributions, metrics, and tags.
+ * Contains no artificial implementation labels.
  */
 const ExperienceCardContent: React.FC<{
   exp: (typeof EXPERIENCE)[0];
-  isFirstCard?: boolean;
-  isLayeredCard?: boolean;
+  isPlacedCard?: boolean;
   shouldReduceMotion: boolean | null;
-}> = ({ exp, isFirstCard = false, isLayeredCard = false, shouldReduceMotion }) => {
+}> = ({ exp, isPlacedCard = false, shouldReduceMotion }) => {
   return (
     <>
-      {/* Architectural top notch on incoming layered card */}
-      {isLayeredCard && (
+      {/* Subtle top architectural notch for the placed card */}
+      {isPlacedCard && (
         <div
           aria-hidden="true"
-          className="w-12 h-1 rounded-full bg-cyan-400/50 mx-auto mb-3.5 pointer-events-none shrink-0"
+          className="w-12 h-1 rounded-full bg-white/20 mx-auto mb-4 pointer-events-none shrink-0"
         />
-      )}
-
-      {/* Layer Identifier Header Bar */}
-      {isFirstCard && (
-        <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-4 pb-2.5 border-b border-white/[0.08]">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-blue-500/90 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
-            <span className="font-semibold text-zinc-200">Featured Entry 01</span>
-            <span className="text-zinc-600">•</span>
-            <span className="text-zinc-400">Industry Experience</span>
-          </div>
-          <div className="hidden sm:flex items-center gap-1.5 text-zinc-500 text-[10px]">
-            <span>Scroll for Research Card</span>
-            <span className="text-zinc-600">↓</span>
-          </div>
-        </div>
-      )}
-
-      {isLayeredCard && (
-        <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-4 pb-2.5 border-b border-white/[0.08]">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400/90 shadow-[0_0_8px_rgba(34,211,238,0.6)]" />
-            <span className="font-semibold text-zinc-200">Layered Card 02</span>
-            <span className="text-zinc-600">•</span>
-            <span className="text-zinc-400">Academic Research</span>
-          </div>
-          <div className="hidden sm:flex items-center gap-1.5 text-cyan-400/80 text-[10px] font-medium">
-            <span>Placement Overlay</span>
-            <span className="text-cyan-400">↑</span>
-          </div>
-        </div>
       )}
 
       {/* Header: Role, Organization, Program, Dates & Location */}
@@ -339,8 +309,6 @@ export const Experience: React.FC = () => {
   const experienceList = data?.experience || EXPERIENCE;
 
   const [isDesktop, setIsDesktop] = useState(false);
-  const card1Ref = useRef<HTMLDivElement>(null);
-  const [card1Height, setCard1Height] = useState<number>(680);
 
   useEffect(() => {
     const checkDesktop = () => {
@@ -351,45 +319,28 @@ export const Experience: React.FC = () => {
     return () => window.removeEventListener("resize", checkDesktop);
   }, []);
 
-  // Measure dynamic height of Card 1 to guarantee exact pixel positioning
-  useEffect(() => {
-    if (!card1Ref.current) return;
-    const updateHeight = () => {
-      if (card1Ref.current) {
-        setCard1Height(card1Ref.current.offsetHeight);
-      }
-    };
-    updateHeight();
-    const ro = new ResizeObserver(updateHeight);
-    ro.observe(card1Ref.current);
-    return () => ro.disconnect();
-  }, []);
+  // Stationary trigger element placed at the transition boundary between Card 1 and Card 2.
+  const triggerRef = useRef<HTMLDivElement>(null);
 
-  // Stationary trigger element placed directly at the boundary between Card 1 and Card 2.
-  // Tracking this trigger ensures zero feedback loops and deterministic scroll progress.
-  const placementTriggerRef = useRef<HTMLDivElement>(null);
-
-  // Offset range:
-  // "start 90%": The bottom of Card 1 has reached 90% from the top of the viewport (user is finishing reading Card 1).
-  // "start 25%": Card 2 has completed its upward placement transition over Card 1.
+  // Short, crisp trigger window:
+  // "start 95%": Card 2's boundary enters near the bottom of the viewport
+  // "start 55%": Card 2 settles in place directly on top
   const { scrollYProgress } = useScroll({
-    target: placementTriggerRef,
-    offset: ["start 90%", "start 25%"],
+    target: triggerRef,
+    offset: ["start 95%", "start 55%"],
   });
 
-  // Overlap amount: Card 2 covers ~86% of Card 1, leaving the top accent header of Card 1 peeking out
-  const overlapDistance = Math.round(card1Height * 0.86);
+  // Pick-up-and-place animation values:
+  // Position is nearly stationary: subtle settling drop of just 12px
+  const card2Y = useTransform(scrollYProgress, [0, 1], [-12, 0]);
+  // Subtle scale drop from slightly elevated (1.018) down to rested (1.0)
+  const card2Scale = useTransform(scrollYProgress, [0, 1], [1.018, 1.0]);
+  // Smooth, fast opacity fade-in
+  const card2Opacity = useTransform(scrollYProgress, [0, 0.35, 1], [0.15, 0.65, 1]);
 
-  // Card 1 transforms: gently recedes in depth as Card 2 glides into place over it
-  const card1Scale = useTransform(scrollYProgress, [0, 1], [1.0, 0.965]);
-  const card1Opacity = useTransform(scrollYProgress, [0, 0.65, 1], [1.0, 0.88, 0.62]);
-  const card1Y = useTransform(scrollYProgress, [0, 1], [0, -22]);
-
-  // Card 2 placement transform:
-  // Paired with negative top margin `marginTop = -overlapDistance`:
-  // At scrollYProgress = 0: y = overlapDistance, so net offset is -overlapDistance + overlapDistance = 0px (normal flow, 0 overlap).
-  // At scrollYProgress = 1: y = 0px, so net offset is -overlapDistance (Card 2 has smoothly slid 600px+ UP over Card 1).
-  const card2Y = useTransform(scrollYProgress, [0, 1], [overlapDistance, 0]);
+  // Underlying card (Card 1) subtly recedes in depth as Card 2 lands on top
+  const card1Scale = useTransform(scrollYProgress, [0, 1], [1.0, 0.985]);
+  const card1Opacity = useTransform(scrollYProgress, [0, 1], [1.0, 0.65]);
 
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
@@ -399,7 +350,7 @@ export const Experience: React.FC = () => {
   });
 
   const hasTwoOrMore = experienceList.length >= 2;
-  const enablePlacementTransition = isDesktop && !shouldReduceMotion && hasTwoOrMore;
+  const enablePlacementEffect = isDesktop && !shouldReduceMotion && hasTwoOrMore;
 
   return (
     <div className="py-6 sm:py-8 lg:py-10 px-4 sm:px-8 flex flex-col justify-center min-h-[calc(100vh-140px)] w-full">
@@ -425,10 +376,9 @@ export const Experience: React.FC = () => {
           <div className="relative">
             {/* Card 1: Business Analyst Intern (Normal document flow, z-10) */}
             <motion.div
-              ref={card1Ref}
               style={
-                enablePlacementTransition
-                  ? { scale: card1Scale, opacity: card1Opacity, y: card1Y }
+                enablePlacementEffect
+                  ? { scale: card1Scale, opacity: card1Opacity }
                   : undefined
               }
               className="relative z-10 transform-gpu will-change-transform"
@@ -436,36 +386,36 @@ export const Experience: React.FC = () => {
               <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.08] bg-[#07090e]">
                 <ExperienceCardContent
                   exp={experienceList[0]}
-                  isFirstCard={true}
                   shouldReduceMotion={shouldReduceMotion}
                 />
               </div>
             </motion.div>
 
-            {/* Stationary Trigger Element for scroll calculation (untransformed, zero feedback) */}
+            {/* Stationary Trigger Element for scroll calculation (untransformed, zero scroll blocking) */}
             <div
-              ref={placementTriggerRef}
+              ref={triggerRef}
               className="h-px w-full -mt-px pointer-events-none"
             />
 
-            {/* Card 2: LNMIIT Research Intern (Incoming Placement Card, z-20) */}
+            {/* Card 2: LNMIIT Research Intern (Placed Directly on Top, z-20) */}
             <motion.div
               style={
-                enablePlacementTransition
+                enablePlacementEffect
                   ? {
                       y: card2Y,
-                      marginTop: -overlapDistance,
+                      scale: card2Scale,
+                      opacity: card2Opacity,
                     }
                   : undefined
               }
               className={`relative z-20 transform-gpu will-change-transform ${
-                !enablePlacementTransition ? "mt-6" : ""
+                enablePlacementEffect ? "lg:-mt-20 mt-6" : "mt-6"
               }`}
             >
-              <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.14] border-t-white/[0.24] bg-[#080a12] shadow-[0_-30px_70px_rgba(0,0,0,0.95),0_15px_35px_rgba(0,0,0,0.85)]">
+              <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.14] border-t-white/[0.24] bg-[#080a12] shadow-[0_-25px_60px_rgba(0,0,0,0.95),0_15px_35px_rgba(0,0,0,0.85)]">
                 <ExperienceCardContent
                   exp={experienceList[1]}
-                  isLayeredCard={true}
+                  isPlacedCard={true}
                   shouldReduceMotion={shouldReduceMotion}
                 />
               </div>
@@ -495,7 +445,6 @@ export const Experience: React.FC = () => {
               >
                 <ExperienceCardContent
                   exp={exp}
-                  isFirstCard={idx === 0}
                   shouldReduceMotion={shouldReduceMotion}
                 />
               </motion.div>
