@@ -1,13 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import {
-  motion,
-  useInView,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { Calendar, MapPin, TrendingUp } from "lucide-react";
 import { EXPERIENCE } from "@/data/portfolioData";
 import { usePortfolio } from "@/context/PortfolioContext";
@@ -115,237 +109,10 @@ const ResearchOutcomeMetrics: React.FC<{ outcomes: OutcomeItem[] }> = ({ outcome
   );
 };
 
-/**
- * Common content renderer for an experience entry.
- * Purely renders the authentic role details, summary, contributions, metrics, and tags.
- * Contains no artificial implementation labels.
- */
-const ExperienceCardContent: React.FC<{
-  exp: (typeof EXPERIENCE)[0];
-  isPlacedCard?: boolean;
-  shouldReduceMotion: boolean | null;
-}> = ({ exp, isPlacedCard = false, shouldReduceMotion }) => {
-  return (
-    <>
-      {/* Subtle top architectural notch for the placed card */}
-      {isPlacedCard && (
-        <div
-          aria-hidden="true"
-          className="w-12 h-1 rounded-full bg-white/20 mx-auto mb-4 pointer-events-none shrink-0"
-        />
-      )}
-
-      {/* Header: Role, Organization, Program, Dates & Location */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 pb-4 border-b border-white/[0.08]">
-        <div>
-          <div className="inline-flex items-center gap-2 mb-1.5">
-            <motion.span
-              whileHover={shouldReduceMotion ? {} : { scale: 1.06, y: -1 }}
-              transition={{ type: "spring", stiffness: 450, damping: 18 }}
-              className="text-xs font-mono text-zinc-300 px-2.5 py-0.5 rounded bg-white/[0.06] border border-white/10 font-medium inline-block cursor-default"
-            >
-              {exp.program}
-            </motion.span>
-          </div>
-          <h3 className="text-lg sm:text-xl font-semibold text-white tracking-tight">
-            {exp.role}
-          </h3>
-          <div className="text-xs sm:text-sm font-medium text-zinc-300 mt-0.5">
-            {exp.organization}
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:items-end text-xs text-zinc-400 font-mono gap-1 shrink-0">
-          <span className="flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-zinc-500" />
-            {exp.period}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-zinc-500" />
-            {exp.location}
-          </span>
-        </div>
-      </div>
-
-      {/* Introductory Statement */}
-      <div className="p-3 sm:p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] mb-5 text-xs sm:text-sm text-zinc-300 leading-relaxed">
-        {exp.summary}
-      </div>
-
-      {/* Three Focus Areas / Key Contributions */}
-      <div className="mb-5">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
-            {exp.type === "Research Internship"
-              ? "Research Areas & Methodology"
-              : "Key Contributions & Focus Areas"}
-          </span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {exp.researchAreas.map((area, aIdx) => (
-            <motion.div
-              key={area.id || aIdx}
-              whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.01 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="p-3.5 sm:p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/20 hover:bg-white/[0.035] transition-colors flex flex-col justify-between cursor-default"
-            >
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="text-[10px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
-                    {area.title}
-                  </span>
-                  <span className="text-[11px] font-mono text-zinc-500">
-                    0{aIdx + 1}
-                  </span>
-                </div>
-                <div className="text-xs text-zinc-300 leading-relaxed">
-                  {area.description ? (
-                    area.description
-                  ) : area.id === "data-processing" ? (
-                    <>
-                      Processed{" "}
-                      <strong className="text-white font-semibold">
-                        20K+ RFID signatures
-                      </strong>{" "}
-                      through a modular MATLAB workflow, converting simulation outputs
-                      into structured data for analysis.
-                    </>
-                  ) : area.id === "configuration-analysis" ? (
-                    <>
-                      Compared{" "}
-                      <strong className="text-white font-semibold">
-                        four resonator configurations
-                      </strong>{" "}
-                      and multiple feed variations to identify patterns associated with
-                      improved chipless RFID performance.
-                    </>
-                  ) : (
-                    <>
-                      Cross-checked experimental results against simulation outputs,
-                      investigated discrepancies, and refined a reproducible analytical
-                      workflow.
-                    </>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Key Highlights & Achievements */}
-      {exp.highlights && exp.highlights.length > 0 && (
-        <>
-          <div className="border-t border-white/[0.08] my-5" />
-          <div className="mb-5">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
-                Key Highlights & Achievements
-              </span>
-            </div>
-            <ul className="space-y-2">
-              {exp.highlights.map((h, hIdx) => (
-                <li
-                  key={hIdx}
-                  className="text-xs text-zinc-300 leading-relaxed flex items-start gap-2.5"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400/80 mt-1.5 shrink-0" />
-                  <span>{h}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </>
-      )}
-
-      {/* Divider */}
-      <div className="border-t border-white/[0.08] my-5" />
-
-      {/* Key Outcomes & Metrics Section */}
-      <div className="mb-5">
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="w-3.5 h-3.5 text-zinc-400" />
-          <span className="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
-            {exp.type === "Research Internship"
-              ? "Research Outcomes & Metrics"
-              : "Key Outcomes & Metrics"}
-          </span>
-        </div>
-
-        <ResearchOutcomeMetrics outcomes={exp.outcomes} />
-      </div>
-
-      {/* Divider */}
-      <div className="border-t border-white/[0.08] my-5" />
-
-      {/* Technologies & Tools */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-mono text-zinc-500 mr-1">
-          Technologies & Tools:
-        </span>
-        {exp.tags.map((tag) => (
-          <motion.span
-            key={tag}
-            whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
-            whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 450, damping: 16 }}
-            className={`text-xs font-mono px-3 py-0.5 rounded-md border cursor-default inline-block ${
-              tag === "CST Studio Suite" || tag === "MATLAB"
-                ? "bg-white/[0.06] text-zinc-200 border-white/20 font-medium hover:border-white/40"
-                : "bg-white/[0.03] text-zinc-400 border-white/10 hover:border-white/25 hover:text-zinc-200"
-            }`}
-          >
-            {tag}
-          </motion.span>
-        ))}
-      </div>
-    </>
-  );
-};
-
 export const Experience: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
   const { data } = usePortfolio();
   const experienceList = data?.experience || EXPERIENCE;
-
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const checkDesktop = () => {
-      setIsDesktop(typeof window !== "undefined" && window.innerWidth >= 1024);
-    };
-    checkDesktop();
-    window.addEventListener("resize", checkDesktop, { passive: true });
-    return () => window.removeEventListener("resize", checkDesktop);
-  }, []);
-
-  // Shared container tracking for the coordinated full-card replacement
-  const deckContainerRef = useRef<HTMLDivElement>(null);
-
-  // Runway scroll space added to the deck container on desktop (~420px of smooth runway)
-  const RUNWAY_PX = 420;
-
-  const { scrollYProgress } = useScroll({
-    target: deckContainerRef,
-    offset: ["start 100px", "end end"],
-  });
-
-  // Phase 2: Once Card 1 reaches final readable position, hold the card frame stationary in viewport
-  // Window scroll naturally moves elements UP; holdY translates DOWN to cancel scroll movement
-  const holdY = useTransform(scrollYProgress, [0.28, 0.62], [0, 160]);
-
-  // Phase 3: Card replacement sequence
-  // Card 1 gently recedes as Card 2 replaces it
-  const card1Opacity = useTransform(scrollYProgress, [0.30, 0.52], [1.0, 0.0]);
-  const card1Scale = useTransform(scrollYProgress, [0.30, 0.52], [1.0, 0.985]);
-
-  // Card 2 fades in directly over Card 1 as one complete opaque card (scale: 1.015 -> 1.0)
-  const card2Opacity = useTransform(scrollYProgress, [0.30, 0.52], [0.0, 1.0]);
-  const card2Scale = useTransform(scrollYProgress, [0.30, 0.52], [1.015, 1.0]);
-
-  // Interactive pointer events routing: Card 1 is clickable during Phase 1; Card 2 during Phase 4
-  const card1PointerEvents = useTransform(scrollYProgress, (v) => (v > 0.42 ? "none" : "auto"));
-  const card2PointerEvents = useTransform(scrollYProgress, (v) => (v > 0.42 ? "auto" : "none"));
 
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
@@ -354,12 +121,10 @@ export const Experience: React.FC = () => {
     transition: { duration: 0.45, delay, ease: "easeOut" as const },
   });
 
-  const hasTwoOrMore = experienceList.length >= 2;
-  const enableReplacementTransition = isDesktop && !shouldReduceMotion && hasTwoOrMore;
-
   return (
     <div className="py-6 sm:py-8 lg:py-10 px-4 sm:px-8 flex flex-col justify-center min-h-[calc(100vh-140px)] w-full">
       <div className="max-w-4xl mx-auto w-full">
+        
         {/* Section Header */}
         <motion.div {...fadeUp(0)} className="text-center mb-6 sm:mb-8">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-2 font-mono">
@@ -371,112 +136,181 @@ export const Experience: React.FC = () => {
           </h2>
 
           <p className="text-zinc-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-            {data?.experienceSection?.subheading ||
-              "Rigorous hands-on algorithmic problem solving, electromagnetic simulation, and quantitative research."}
+            {data?.experienceSection?.subheading || "Rigorous hands-on algorithmic problem solving, electromagnetic simulation, and quantitative research."}
           </p>
         </motion.div>
 
         {/* Experience Cards */}
-        {hasTwoOrMore ? (
-          <div
-            ref={deckContainerRef}
-            className="relative w-full"
-            style={{
-              paddingBottom: enableReplacementTransition ? `${RUNWAY_PX}px` : 0,
-            }}
-          >
-            {/* Desktop Full-Card Replacement Stage: Shared Grid Container */}
-            {enableReplacementTransition ? (
-              <motion.div
-                style={{ y: holdY }}
-                className="grid grid-cols-1 grid-rows-1 relative w-full transform-gpu will-change-transform"
-              >
-                {/* Card 1: Business Analyst Intern (Foundation Layer, z-10) */}
-                <motion.div
-                  style={{
-                    opacity: card1Opacity,
-                    scale: card1Scale,
-                    pointerEvents: card1PointerEvents,
-                  }}
-                  className="col-start-1 row-start-1 relative z-10 transform-gpu will-change-transform"
-                >
-                  <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.08] bg-[#07090e]">
-                    <ExperienceCardContent
-                      exp={experienceList[0]}
-                      shouldReduceMotion={shouldReduceMotion}
-                    />
+        <div className="space-y-6">
+          {experienceList.map((exp, idx) => (
+            <motion.div
+              key={exp.id}
+              {...fadeUp(0.08 + idx * 0.05)}
+              whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.004 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+              className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.08]"
+            >
+              {/* Header: Role, Organization, Program, Dates & Location */}
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4 pb-4 border-b border-white/[0.08]">
+                <div>
+                  <div className="inline-flex items-center gap-2 mb-1.5">
+                    <motion.span
+                      whileHover={shouldReduceMotion ? {} : { scale: 1.06, y: -1 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 18 }}
+                      className="text-xs font-mono text-zinc-300 px-2.5 py-0.5 rounded bg-white/[0.06] border border-white/10 font-medium inline-block cursor-default"
+                    >
+                      {exp.program}
+                    </motion.span>
                   </div>
-                </motion.div>
-
-                {/* Card 2: Summer Research Intern LNMIIT (Replacement Layer, z-20) */}
-                <motion.div
-                  style={{
-                    opacity: card2Opacity,
-                    scale: card2Scale,
-                    pointerEvents: card2PointerEvents,
-                  }}
-                  className="col-start-1 row-start-1 relative z-20 transform-gpu will-change-transform"
-                >
-                  <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.14] border-t-white/[0.24] bg-[#080a12] shadow-[0_20px_50px_rgba(0,0,0,0.85)]">
-                    <ExperienceCardContent
-                      exp={experienceList[1]}
-                      isPlacedCard={true}
-                      shouldReduceMotion={shouldReduceMotion}
-                    />
+                  <h3 className="text-lg sm:text-xl font-semibold text-white tracking-tight">
+                    {exp.role}
+                  </h3>
+                  <div className="text-xs sm:text-sm font-medium text-zinc-300 mt-0.5">
+                    {exp.organization}
                   </div>
-                </motion.div>
-              </motion.div>
-            ) : (
-              /* Fallback for Mobile / Reduced-Motion: Natural Sequential Flow */
-              <div className="space-y-6">
-                {experienceList.map((exp, idx) => (
-                  <motion.div
-                    key={exp.id || idx}
-                    {...fadeUp(0.08 + idx * 0.05)}
-                    whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.004 }}
-                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                    className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.08] bg-[#07090e]"
-                  >
-                    <ExperienceCardContent
-                      exp={exp}
-                      isPlacedCard={idx === 1}
-                      shouldReduceMotion={shouldReduceMotion}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            )}
+                </div>
 
-            {/* Any remaining experience cards (if ever added in the future) */}
-            {experienceList.slice(2).map((exp, idx) => (
-              <div key={exp.id || idx} className="mt-6 relative z-10">
-                <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.08] bg-[#07090e]">
-                  <ExperienceCardContent
-                    exp={exp}
-                    shouldReduceMotion={shouldReduceMotion}
-                  />
+                <div className="flex flex-col sm:items-end text-xs text-zinc-400 font-mono gap-1 shrink-0">
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-zinc-500" />
+                    {exp.period}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-zinc-500" />
+                    {exp.location}
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {experienceList.map((exp, idx) => (
-              <motion.div
-                key={exp.id || idx}
-                {...fadeUp(0.08 + idx * 0.05)}
-                whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.004 }}
-                transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.08] bg-[#07090e]"
-              >
-                <ExperienceCardContent
-                  exp={exp}
-                  shouldReduceMotion={shouldReduceMotion}
-                />
-              </motion.div>
-            ))}
-          </div>
-        )}
+
+              {/* Introductory Statement */}
+              <div className="p-3 sm:p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] mb-5 text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                {exp.summary}
+              </div>
+
+              {/* Three Focus Areas / Key Contributions */}
+              <div className="mb-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
+                    {exp.type === "Research Internship" ? "Research Areas & Methodology" : "Key Contributions & Focus Areas"}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {exp.researchAreas.map((area, aIdx) => (
+                    <motion.div
+                      key={area.id || aIdx}
+                      whileHover={shouldReduceMotion ? {} : { y: -2, scale: 1.01 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                      className="p-3.5 sm:p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/20 hover:bg-white/[0.035] transition-colors flex flex-col justify-between cursor-default"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="text-[10px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
+                            {area.title}
+                          </span>
+                          <span className="text-[11px] font-mono text-zinc-500">
+                            0{aIdx + 1}
+                          </span>
+                        </div>
+                        <div className="text-xs text-zinc-300 leading-relaxed">
+                          {area.description ? (
+                            area.description
+                          ) : area.id === "data-processing" ? (
+                            <>
+                              Processed{" "}
+                              <strong className="text-white font-semibold">
+                              20K+ RFID signatures
+                              </strong>{" "}
+                              through a modular MATLAB workflow, converting simulation outputs
+                              into structured data for analysis.
+                            </>
+                          ) : area.id === "configuration-analysis" ? (
+                            <>
+                              Compared{" "}
+                              <strong className="text-white font-semibold">
+                              four resonator configurations
+                              </strong>{" "}
+                              and multiple feed variations to identify patterns associated with
+                              improved chipless RFID performance.
+                            </>
+                          ) : (
+                            <>
+                              Cross-checked experimental results against simulation outputs,
+                              investigated discrepancies, and refined a reproducible analytical
+                              workflow.
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Key Highlights & Achievements */}
+              {exp.highlights && exp.highlights.length > 0 && (
+                <>
+                  <div className="border-t border-white/[0.08] my-5" />
+                  <div className="mb-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
+                        Key Highlights & Achievements
+                      </span>
+                    </div>
+                    <ul className="space-y-2">
+                      {exp.highlights.map((h, hIdx) => (
+                        <li key={hIdx} className="text-xs text-zinc-300 leading-relaxed flex items-start gap-2.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400/80 mt-1.5 shrink-0" />
+                          <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              )}
+
+              {/* Divider */}
+              <div className="border-t border-white/[0.08] my-5" />
+
+              {/* Key Outcomes & Metrics Section */}
+              <div className="mb-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <TrendingUp className="w-3.5 h-3.5 text-zinc-400" />
+                  <span className="text-[11px] font-mono font-semibold tracking-wider text-zinc-400 uppercase">
+                    {exp.type === "Research Internship" ? "Research Outcomes & Metrics" : "Key Outcomes & Metrics"}
+                  </span>
+                </div>
+
+                <ResearchOutcomeMetrics outcomes={exp.outcomes} />
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-white/[0.08] my-5" />
+
+              {/* Technologies & Tools */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-mono text-zinc-500 mr-1">
+                  Technologies & Tools:
+                </span>
+                {exp.tags.map((tag) => (
+                  <motion.span
+                    key={tag}
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.08, y: -1 }}
+                    whileTap={shouldReduceMotion ? {} : { scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 16 }}
+                    className={`text-xs font-mono px-3 py-0.5 rounded-md border cursor-default inline-block ${
+                      tag === "CST Studio Suite" || tag === "MATLAB"
+                        ? "bg-white/[0.06] text-zinc-200 border-white/20 font-medium hover:border-white/40"
+                        : "bg-white/[0.03] text-zinc-400 border-white/10 hover:border-white/25 hover:text-zinc-200"
+                    }`}
+                  >
+                    {tag}
+                  </motion.span>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
       </div>
     </div>
   );
