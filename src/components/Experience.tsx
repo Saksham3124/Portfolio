@@ -130,7 +130,7 @@ const ExperienceCardContent: React.FC<{
       {isLayeredCard && (
         <div
           aria-hidden="true"
-          className="w-10 h-1 rounded-full bg-cyan-400/40 mx-auto mb-3.5 pointer-events-none shrink-0"
+          className="w-12 h-1 rounded-full bg-cyan-400/50 mx-auto mb-3.5 pointer-events-none shrink-0"
         />
       )}
 
@@ -158,9 +158,9 @@ const ExperienceCardContent: React.FC<{
             <span className="text-zinc-600">•</span>
             <span className="text-zinc-400">Academic Research</span>
           </div>
-          <div className="hidden sm:flex items-center gap-1.5 text-zinc-500 text-[10px]">
-            <span>Stacked Entry</span>
-            <span className="text-zinc-600">↑</span>
+          <div className="hidden sm:flex items-center gap-1.5 text-cyan-400/80 text-[10px] font-medium">
+            <span>Placement Overlay</span>
+            <span className="text-cyan-400">↑</span>
           </div>
         </div>
       )}
@@ -339,6 +339,8 @@ export const Experience: React.FC = () => {
   const experienceList = data?.experience || EXPERIENCE;
 
   const [isDesktop, setIsDesktop] = useState(false);
+  const card1Ref = useRef<HTMLDivElement>(null);
+  const [card1Height, setCard1Height] = useState<number>(680);
 
   useEffect(() => {
     const checkDesktop = () => {
@@ -349,25 +351,45 @@ export const Experience: React.FC = () => {
     return () => window.removeEventListener("resize", checkDesktop);
   }, []);
 
-  // Stationary trigger element directly preceding Card 2 in normal document flow.
-  // It has zero transforms, guaranteeing a smooth, feedback-free scroll measurement.
-  const card2TriggerRef = useRef<HTMLDivElement>(null);
+  // Measure dynamic height of Card 1 to guarantee exact pixel positioning
+  useEffect(() => {
+    if (!card1Ref.current) return;
+    const updateHeight = () => {
+      if (card1Ref.current) {
+        setCard1Height(card1Ref.current.offsetHeight);
+      }
+    };
+    updateHeight();
+    const ro = new ResizeObserver(updateHeight);
+    ro.observe(card1Ref.current);
+    return () => ro.disconnect();
+  }, []);
 
+  // Stationary trigger element placed directly at the boundary between Card 1 and Card 2.
+  // Tracking this trigger ensures zero feedback loops and deterministic scroll progress.
+  const placementTriggerRef = useRef<HTMLDivElement>(null);
+
+  // Offset range:
+  // "start 90%": The bottom of Card 1 has reached 90% from the top of the viewport (user is finishing reading Card 1).
+  // "start 25%": Card 2 has completed its upward placement transition over Card 1.
   const { scrollYProgress } = useScroll({
-    target: card2TriggerRef,
-    offset: ["start end", "start 35%"],
+    target: placementTriggerRef,
+    offset: ["start 90%", "start 25%"],
   });
 
-  // Card 1 transforms subtly on desktop as Card 2 glides into stacked focus
-  const card1Scale = useTransform(scrollYProgress, [0, 1], [1, 0.975]);
-  const card1Opacity = useTransform(scrollYProgress, [0, 0.7, 1], [1, 0.94, 0.82]);
-  const card1Y = useTransform(scrollYProgress, [0, 1], [0, -18]);
+  // Overlap amount: Card 2 covers ~86% of Card 1, leaving the top accent header of Card 1 peeking out
+  const overlapDistance = Math.round(card1Height * 0.86);
 
-  // Card 2 enters with upward translation to stack over Card 1.
-  // Paired with negative top margin lg:-mt-24 (-96px):
-  // When scrollYProgress = 0, y = 96px, net translation = 0px (normal flow, 0 overlap)
-  // When scrollYProgress = 1, y = 0px, net translation = -96px (stacked over Card 1)
-  const card2Y = useTransform(scrollYProgress, [0, 1], [96, 0]);
+  // Card 1 transforms: gently recedes in depth as Card 2 glides into place over it
+  const card1Scale = useTransform(scrollYProgress, [0, 1], [1.0, 0.965]);
+  const card1Opacity = useTransform(scrollYProgress, [0, 0.65, 1], [1.0, 0.88, 0.62]);
+  const card1Y = useTransform(scrollYProgress, [0, 1], [0, -22]);
+
+  // Card 2 placement transform:
+  // Paired with negative top margin `marginTop = -overlapDistance`:
+  // At scrollYProgress = 0: y = overlapDistance, so net offset is -overlapDistance + overlapDistance = 0px (normal flow, 0 overlap).
+  // At scrollYProgress = 1: y = 0px, so net offset is -overlapDistance (Card 2 has smoothly slid 600px+ UP over Card 1).
+  const card2Y = useTransform(scrollYProgress, [0, 1], [overlapDistance, 0]);
 
   const fadeUp = (delay = 0) => ({
     initial: shouldReduceMotion ? false : { opacity: 0, y: 14 },
@@ -377,7 +399,7 @@ export const Experience: React.FC = () => {
   });
 
   const hasTwoOrMore = experienceList.length >= 2;
-  const enableLayeredTransition = isDesktop && !shouldReduceMotion && hasTwoOrMore;
+  const enablePlacementTransition = isDesktop && !shouldReduceMotion && hasTwoOrMore;
 
   return (
     <div className="py-6 sm:py-8 lg:py-10 px-4 sm:px-8 flex flex-col justify-center min-h-[calc(100vh-140px)] w-full">
@@ -403,8 +425,9 @@ export const Experience: React.FC = () => {
           <div className="relative">
             {/* Card 1: Business Analyst Intern (Normal document flow, z-10) */}
             <motion.div
+              ref={card1Ref}
               style={
-                enableLayeredTransition
+                enablePlacementTransition
                   ? { scale: card1Scale, opacity: card1Opacity, y: card1Y }
                   : undefined
               }
@@ -419,20 +442,27 @@ export const Experience: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* Stationary Trigger Element for scroll calculation (untransformed) */}
+            {/* Stationary Trigger Element for scroll calculation (untransformed, zero feedback) */}
             <div
-              ref={card2TriggerRef}
+              ref={placementTriggerRef}
               className="h-px w-full -mt-px pointer-events-none"
             />
 
-            {/* Card 2: LNMIIT Research Intern (Incoming Layered Card, z-20) */}
+            {/* Card 2: LNMIIT Research Intern (Incoming Placement Card, z-20) */}
             <motion.div
-              style={enableLayeredTransition ? { y: card2Y } : undefined}
+              style={
+                enablePlacementTransition
+                  ? {
+                      y: card2Y,
+                      marginTop: -overlapDistance,
+                    }
+                  : undefined
+              }
               className={`relative z-20 transform-gpu will-change-transform ${
-                enableLayeredTransition ? "lg:-mt-24 mt-6" : "mt-6"
+                !enablePlacementTransition ? "mt-6" : ""
               }`}
             >
-              <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.14] border-t-white/[0.24] bg-[#080a12] shadow-[0_-25px_60px_rgba(0,0,0,0.95),0_15px_35px_rgba(0,0,0,0.85)]">
+              <div className="clean-card p-5 sm:p-7 rounded-2xl border border-white/[0.14] border-t-white/[0.24] bg-[#080a12] shadow-[0_-30px_70px_rgba(0,0,0,0.95),0_15px_35px_rgba(0,0,0,0.85)]">
                 <ExperienceCardContent
                   exp={experienceList[1]}
                   isLayeredCard={true}
