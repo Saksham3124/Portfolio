@@ -1,21 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   ArrowUpRight,
   CheckCircle2,
   ChevronDown,
   ExternalLink,
   Layers,
+  Maximize2,
+  X,
 } from "lucide-react";
 import { GithubIcon, TableauIcon } from "@/components/BrandIcons";
-import { FEATURED_PROJECTS, SUPPORTING_PROJECTS } from "@/data/portfolioData";
+import { FEATURED_PROJECTS, SUPPORTING_PROJECTS, Project } from "@/data/portfolioData";
 import { usePortfolio } from "@/context/PortfolioContext";
 
 interface MetricItem {
   label: string;
   value: string;
+}
+
+interface ModalItem {
+  title: string;
+  subtitle?: string;
+  src: string;
+  alt: string;
+  isGif?: boolean;
 }
 
 const ProjectMetrics: React.FC<{ metrics: MetricItem[] }> = ({ metrics }) => {
@@ -83,8 +93,339 @@ const ProjectMetrics: React.FC<{ metrics: MetricItem[] }> = ({ metrics }) => {
   );
 };
 
+/**
+ * Customer Segmentation Dashboard Carousel Component:
+ * - 3 authentic views: Overview, Customer Segmentation, Promotional Analysis
+ * - Auto-rotates every 5.5 seconds (paused on hover / interaction)
+ * - 3 compact, clearly labelled selectors immediately below preview
+ * - Clickable to open high-res modal
+ * - Fixed aspect ratio & selector dimensions so switching never shifts card height
+ */
+const CustomerSegmentationCarousel: React.FC<{
+  onOpenModal: (item: ModalItem) => void;
+}> = ({ onOpenModal }) => {
+  const shouldReduceMotion = useReducedMotion();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const views = [
+    {
+      id: "overview",
+      label: "Overview",
+      src: "/projects/customer-segmentation-overview.png",
+      alt: "Dunnhumby Customer Segmentation — Executive Overview Dashboard",
+      description: "Executive Overview Dashboard (Household sales, department volume, campaign reach)",
+    },
+    {
+      id: "segmentation",
+      label: "Customer Segmentation",
+      src: "/projects/customer-segmentation-segmentation.png",
+      alt: "Dunnhumby Customer Segmentation — Category & Segment Insights Dashboard",
+      description: "Category & Household Segment Insights (Demographics, income brackets, basket sizes)",
+    },
+    {
+      id: "promotional",
+      label: "Promotional Analysis",
+      src: "/projects/customer-segmentation-promotional.png",
+      alt: "Dunnhumby Customer Segmentation — Promotional Opportunity & Affinity Diagnostic",
+      description: "Promotional Opportunity Diagnostic (High-affinity uncampaigned households, lift models)",
+    },
+  ];
+
+  // Automatic rotation between dashboards every 5.5 seconds
+  useEffect(() => {
+    if (isPaused || shouldReduceMotion) return;
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % views.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, [isPaused, shouldReduceMotion, views.length]);
+
+  const activeView = views[activeIndex];
+
+  return (
+    <div
+      className="mb-5"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* 16:9 Fixed-Dimension Preview Frame */}
+      <div
+        onClick={() =>
+          onOpenModal({
+            title: "Promotional Opportunity & Customer Segmentation Analysis",
+            subtitle: activeView.description,
+            src: activeView.src,
+            alt: activeView.alt,
+          })
+        }
+        className="group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border border-white/[0.08] hover:border-cyan-500/40 transition-colors cursor-pointer"
+        title="Click to view full-size dashboard"
+      >
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={activeView.id}
+            src={activeView.src}
+            alt={activeView.alt}
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="w-full h-full object-contain"
+            loading="lazy"
+            decoding="async"
+          />
+        </AnimatePresence>
+
+        {/* Hover overlay hint */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/75 border border-white/20 text-[11px] font-mono text-zinc-200 backdrop-blur-sm shadow-lg">
+            <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Click to expand</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3 Compact Selectors Immediately Below Preview */}
+      <div className="grid grid-cols-3 gap-1.5 mt-2.5 h-8">
+        {views.map((view, idx) => {
+          const isActive = idx === activeIndex;
+          return (
+            <button
+              key={view.id}
+              type="button"
+              onClick={() => {
+                setActiveIndex(idx);
+                setIsPaused(true);
+              }}
+              onFocus={() => setIsPaused(true)}
+              onBlur={() => setIsPaused(false)}
+              className={`px-2 py-1 rounded-lg text-[9.5px] sm:text-[10.5px] font-mono font-medium transition-all text-center truncate border ${
+                isActive
+                  ? "bg-white/[0.12] text-white border-cyan-400/40 shadow-[0_0_12px_rgba(34,211,238,0.15)]"
+                  : "bg-white/[0.03] text-zinc-400 border-white/[0.06] hover:bg-white/[0.06] hover:text-zinc-200"
+              }`}
+              title={view.label}
+            >
+              {view.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Visual Preview Renderer for Project Cards:
+ * Dispatches to the appropriate preview based on project ID.
+ */
+const ProjectVisualPreview: React.FC<{
+  project: Project;
+  onOpenModal: (item: ModalItem) => void;
+}> = ({ project, onOpenModal }) => {
+  // 1. Customer Segmentation: 3-view carousel
+  if (project.id === "dunnhumby-promotional-analytics") {
+    return <CustomerSegmentationCarousel onOpenModal={onOpenModal} />;
+  }
+
+  // 2. GST Invoice Anomaly Detection: static Tableau dashboard
+  if (project.id === "gst-anomaly-detection") {
+    return (
+      <div className="mb-5">
+        <div
+          onClick={() =>
+            onOpenModal({
+              title: "GST Invoice Anomaly Detection & Vendor Risk Scoring",
+              subtitle: "Forensic Tableau Drill-Down Dashboard (50K+ Invoices, 32 High-Risk Vendors, AI Narratives)",
+              src: "/projects/gst-invoice-anomaly-dashboard.png",
+              alt: "GST Invoice Anomaly Detection Forensic Tableau Dashboard",
+            })
+          }
+          className="group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border border-white/[0.08] hover:border-cyan-500/40 transition-colors cursor-pointer"
+          title="Click to view full-size dashboard"
+        >
+          <img
+            src="/projects/gst-invoice-anomaly-dashboard.png"
+            alt="GST Invoice Anomaly Detection Forensic Tableau Dashboard"
+            className="w-full h-full object-contain"
+            loading="lazy"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/75 border border-white/20 text-[11px] font-mono text-zinc-200 backdrop-blur-sm shadow-lg">
+              <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Click to expand</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. E-Way Bill Data Reliability Pipeline: static architecture diagram
+  if (project.id === "ewaybill-data-reliability") {
+    return (
+      <div className="mb-5">
+        <div
+          onClick={() =>
+            onOpenModal({
+              title: "E-Way Bill Data Reliability & Reconciliation Pipeline",
+              subtitle: "End-to-end Architecture: Ingestion, Validation, Reconciliation, and Reliability Gate",
+              src: "/projects/ewaybill-architecture-pipeline.jpg",
+              alt: "E-Way Bill Data Reliability Pipeline Architecture Diagram",
+            })
+          }
+          className="group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border border-white/[0.08] hover:border-cyan-500/40 transition-colors cursor-pointer"
+          title="Click to view full-size architecture diagram"
+        >
+          <img
+            src="/projects/ewaybill-architecture-pipeline.jpg"
+            alt="E-Way Bill Data Reliability Pipeline Architecture Diagram"
+            className="w-full h-full object-contain"
+            loading="lazy"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/75 border border-white/20 text-[11px] font-mono text-zinc-200 backdrop-blur-sm shadow-lg">
+              <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Click to expand</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 4. Payment Status Recovery: continuous looping GIF walkthrough
+  if (project.id === "payment-status-recovery") {
+    return (
+      <div className="mb-5">
+        <div
+          onClick={() =>
+            onOpenModal({
+              title: "Payment Status Recovery",
+              subtitle: "UPI Transaction Uncertainty Engine Walkthrough",
+              src: "/Payment%20Status%20Recovery%20Walkthrough.gif",
+              alt: "Payment Status Recovery Walkthrough Interface Animation",
+              isGif: true,
+            })
+          }
+          className="group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border border-white/[0.08] hover:border-cyan-500/40 transition-colors cursor-pointer"
+          title="Click to view full-size walkthrough"
+        >
+          <img
+            src="/Payment%20Status%20Recovery%20Walkthrough.gif"
+            alt="Payment Status Recovery Walkthrough Interface Animation"
+            className="w-full h-full object-contain"
+            loading="lazy"
+            decoding="async"
+          />
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/75 border border-white/20 text-[11px] font-mono text-zinc-200 backdrop-blur-sm shadow-lg">
+              <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Click to expand</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+/**
+ * Lightbox Modal for Full-Size Asset Viewing
+ */
+const ImageLightboxModal: React.FC<{
+  item: ModalItem | null;
+  onClose: () => void;
+}> = ({ item, onClose }) => {
+  const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (!item) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [item, onClose]);
+
+  if (!item) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={shouldReduceMotion ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={shouldReduceMotion ? undefined : { opacity: 0 }}
+        transition={{ duration: 0.2 }}
+        onClick={onClose}
+        className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 lg:p-10 cursor-zoom-out"
+        role="dialog"
+        aria-modal="true"
+        aria-label={item.title}
+      >
+        <motion.div
+          initial={shouldReduceMotion ? false : { scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={shouldReduceMotion ? undefined : { scale: 0.95, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          onClick={(e) => e.stopPropagation()}
+          className="relative max-w-5xl w-full max-h-[92vh] bg-[#090b12] border border-white/15 rounded-2xl overflow-hidden shadow-2xl flex flex-col cursor-default"
+        >
+          {/* Modal Header */}
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/[0.08] bg-white/[0.02]">
+            <div className="min-w-0 pr-4">
+              <h3 className="text-sm sm:text-base font-semibold text-white tracking-tight truncate">
+                {item.title}
+              </h3>
+              {item.subtitle && (
+                <p className="text-xs text-zinc-400 font-mono truncate mt-0.5">
+                  {item.subtitle}
+                </p>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+              aria-label="Close image preview"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Modal Image Viewport */}
+          <div className="relative w-full flex-1 flex items-center justify-center p-2 sm:p-4 bg-black/60 overflow-auto">
+            <img
+              src={item.src}
+              alt={item.alt}
+              className="max-h-[76vh] w-auto max-w-full object-contain rounded-lg shadow-xl"
+            />
+          </div>
+
+          {/* Modal Footer */}
+          <div className="px-4 py-2 border-t border-white/[0.06] bg-white/[0.02] flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+            <span>{item.isGif ? "Looping Walkthrough Preview" : "High-Resolution Screenshot"}</span>
+            <span className="hidden sm:inline">Press Esc or click outside to dismiss</span>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 export const Projects: React.FC = () => {
   const [showSupporting, setShowSupporting] = useState(false);
+  const [modalItem, setModalItem] = useState<ModalItem | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const { data } = usePortfolio();
   const featuredProjects = data?.featuredProjects || FEATURED_PROJECTS;
@@ -112,7 +453,6 @@ export const Projects: React.FC = () => {
   return (
     <div className="py-6 sm:py-8 lg:py-10 px-4 sm:px-8">
       <div className="max-w-6xl mx-auto">
-        
         {/* Section Header */}
         <motion.div {...fadeUp(0)} className="text-center mb-8 sm:mb-10">
           <div className="inline-block px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-medium text-zinc-400 mb-3 font-mono">
@@ -160,6 +500,12 @@ export const Projects: React.FC = () => {
                 <p className="text-xs font-medium text-zinc-400 mb-4 leading-relaxed">
                   {project.tagline}
                 </p>
+
+                {/* Visual Preview Area */}
+                <ProjectVisualPreview
+                  project={project}
+                  onOpenModal={(item) => setModalItem(item)}
+                />
 
                 {/* Description */}
                 <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed mb-6">
@@ -273,7 +619,11 @@ export const Projects: React.FC = () => {
             className="group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-mono font-medium text-zinc-300 bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 hover:border-white/20 hover:text-white focus:outline-none focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:border-white/30 active:bg-white/[0.05] transition-all duration-200 cursor-pointer backdrop-blur-md"
           >
             <span>{showSupporting ? "Hide Supporting Pipelines" : supportingBtnText}</span>
-            <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-200 transition-transform duration-200 ${showSupporting ? "rotate-180" : ""}`} />
+            <ChevronDown
+              className={`w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-200 transition-transform duration-200 ${
+                showSupporting ? "rotate-180" : ""
+              }`}
+            />
           </motion.button>
 
           {showSupporting && (
@@ -298,7 +648,10 @@ export const Projects: React.FC = () => {
                     <h4 className="text-base font-semibold text-white">{sp.title}</h4>
                     <div className="flex flex-wrap gap-1">
                       {sp.targetRoleRelevance.map((r) => (
-                        <span key={r} className="text-[10px] font-mono text-zinc-400 bg-white/[0.03] px-2 py-0.5 rounded border border-white/5">
+                        <span
+                          key={r}
+                          className="text-[10px] font-mono text-zinc-400 bg-white/[0.03] px-2 py-0.5 rounded border border-white/5"
+                        >
                           {r}
                         </span>
                       ))}
@@ -342,8 +695,10 @@ export const Projects: React.FC = () => {
             </motion.div>
           )}
         </motion.div>
-
       </div>
+
+      {/* Lightbox Modal */}
+      <ImageLightboxModal item={modalItem} onClose={() => setModalItem(null)} />
     </div>
   );
 };
