@@ -474,6 +474,7 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
             <p className="text-[13.5px] sm:text-lg md:text-xl text-zinc-400 font-normal leading-relaxed max-w-xl mb-4 sm:mb-9">
               {(personalInfo as { heroSubtitle?: string }).heroSubtitle ||
                 personalInfo.heroSupporting ||
+                data?.about?.subheading ||
                 personalInfo.coreNarrative ||
                 "I combine structured analysis, statistical methods, and reliable data workflows to solve customer, risk, and data-quality problems and support better decisions."}
             </p>

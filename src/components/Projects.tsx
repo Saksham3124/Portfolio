@@ -177,7 +177,7 @@ const CustomerSegmentationCarousel: React.FC<{
     }
     interactionTimerRef.current = setTimeout(() => {
       setIsInteracting(false);
-    }, 8000); // 8-second calm window
+    }, 6000); // 6-second calm window while user is interacting
   };
 
   useEffect(() => {
@@ -186,7 +186,7 @@ const CustomerSegmentationCarousel: React.FC<{
     };
   }, []);
 
-  // Automatic rotation between dashboards every 5.5 seconds
+  // Automatic rotation between dashboards every 3 seconds
   // Only runs when preloaded, in viewport, not hovered, not actively interacting, and not reduced motion
   useEffect(() => {
     if (!allPreloaded || !isInView || isHovered || isInteracting || shouldReduceMotion) {
@@ -196,7 +196,7 @@ const CustomerSegmentationCarousel: React.FC<{
     const timer = setInterval(() => {
       setDirection(1); // strictly right-to-left
       setActiveIndex((prev) => (prev + 1) % views.length);
-    }, 5500);
+    }, 3000);
 
     return () => clearInterval(timer);
   }, [allPreloaded, isInView, isHovered, isInteracting, shouldReduceMotion, views.length]);
@@ -256,7 +256,7 @@ const CustomerSegmentationCarousel: React.FC<{
               x: {
                 type: "tween",
                 ease: [0.25, 1, 0.5, 1],
-                duration: shouldReduceMotion ? 0 : 0.52,
+                duration: shouldReduceMotion ? 0 : 0.4,
               },
             }}
             className="absolute inset-0 w-full h-full flex items-center justify-center bg-[#06080e] select-none"

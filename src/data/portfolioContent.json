@@ -19,6 +19,35 @@
       "linkedin": "https://www.linkedin.com/in/kumarsaksham/"
     }
   },
+  "about": {
+    "pill": "Analytical Foundation · Decision Focus",
+    "heading": "From Analytical Thinking to Practical Execution",
+    "subheading": "I combine structured analysis, statistical methods, and reliable data workflows to solve customer, risk, and data-quality problems and support better decisions.",
+    "narrativeParagraph1": "My academic and research experience has helped me develop a strong foundation in quantitative reasoning, research methodology, and structured problem-solving. I approach complex problems by breaking them down, examining the available evidence, and identifying meaningful patterns.",
+    "narrativeParagraph2": "I apply this approach to business and product problems across risk, operations, and data systems. I enjoy understanding business requirements, evaluating opportunities, and translating analytical findings into practical solutions.",
+    "pillars": [
+      {
+        "title": "Product Thinking & Execution",
+        "description": "Problem framing, prioritisation, metrics definition, and delivery.",
+        "iconName": "LineChart"
+      },
+      {
+        "title": "Risk & Decision Science",
+        "description": "Risk modelling, anomaly detection, hypothesis testing, and validation.",
+        "iconName": "ShieldCheck"
+      },
+      {
+        "title": "Applied AI & Automation",
+        "description": "LLM APIs, structured AI outputs, and task-specific automation.",
+        "iconName": "Cpu"
+      },
+      {
+        "title": "Data Systems & Reliability",
+        "description": "SQL, data pipelines, validation, and analytics engineering.",
+        "iconName": "Database"
+      }
+    ]
+  },
   "experience": [
     {
       "id": "sun-shine-automation-2026",

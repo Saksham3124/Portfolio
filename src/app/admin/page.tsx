@@ -1218,6 +1218,7 @@ export default function AdminPage() {
                   <textarea
                     rows={3}
                     value={
+                      data.about?.subheading ??
                       data.personalInfo.heroSubtitle ??
                       data.personalInfo.heroSupporting ??
                       "I combine structured analysis, statistical methods, and reliable data workflows to solve customer, risk, and data-quality problems and support better decisions."
@@ -1226,6 +1227,10 @@ export default function AdminPage() {
                       const val = e.target.value;
                       setData({
                         ...data,
+                        about: {
+                          ...data.about,
+                          subheading: val,
+                        },
                         personalInfo: {
                           ...data.personalInfo,
                           heroSubtitle: val,
@@ -2112,6 +2117,37 @@ export default function AdminPage() {
                       className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                    Hero Subtitle
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={
+                      data.about?.subheading ??
+                      data.personalInfo.heroSubtitle ??
+                      "I combine structured analysis, statistical methods, and reliable data workflows to solve customer, risk, and data-quality problems and support better decisions."
+                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setData({
+                        ...data,
+                        about: { ...data.about, subheading: val },
+                        personalInfo: {
+                          ...data.personalInfo,
+                          heroSubtitle: val,
+                          heroSupporting: val,
+                        },
+                      });
+                      setIsDirty(true);
+                    }}
+                    className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none leading-relaxed"
+                  />
+                  <p className="text-[10px] text-zinc-500 font-mono mt-1">
+                    Editable narrative displayed directly beneath &apos;{data.about.heading}&apos; on the portfolio.
+                  </p>
                 </div>
 
                 <div>

@@ -82,7 +82,7 @@ export const About: React.FC = () => {
           </h2>
 
           <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-            {about.subheading}
+            {about.subheading || (data.personalInfo as { heroSubtitle?: string })?.heroSubtitle}
           </p>
         </motion.div>
 

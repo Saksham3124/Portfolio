@@ -95,36 +95,36 @@ export const DEFAULT_PORTFOLIO_CONTENT: PortfolioContentData = {
   },
   about: {
     pill: "Analytical Foundation · Decision Focus",
-    heading: "Analytics in Service of Better Decisions",
+    heading: "From Analytical Thinking to Practical Execution",
     subheading:
       "I combine structured analysis, statistical methods, and reliable data workflows to solve customer, risk, and data-quality problems and support better decisions.",
     narrativeParagraph1:
-      "My academic foundation is in Electronics and Communication Engineering at BIT Mesra, complemented by research at LNMIIT. Working across electromagnetic simulation, signal processing, and numerical optimization taught me to approach complex technical problems from first principles.",
+      "My academic and research experience has helped me develop a strong foundation in quantitative reasoning, research methodology, and structured problem-solving. I approach complex problems by breaking them down, examining the available evidence, and identifying meaningful patterns.",
     narrativeParagraph2:
-      "I now apply that structured mindset to Customer Analytics, Risk Modeling, and Data Systems. My work focuses on evaluating real data scale, uncovering verifiable signals, and building reliable decision-support systems.",
+      "I apply this approach to business and product problems across risk, operations, and data systems. I enjoy understanding business requirements, evaluating opportunities, and translating analytical findings into practical solutions.",
     pillars: [
       {
-        title: "Customer & Product Analytics",
+        title: "Product Thinking & Execution",
         description:
-          "Customer behavior, segmentation, opportunity modeling, and decision support.",
+          "Problem framing, prioritisation, metrics definition, and delivery.",
         iconName: "LineChart",
       },
       {
-        title: "Risk & Statistical Analysis",
+        title: "Risk & Decision Science",
         description:
-          "Risk scoring, anomaly detection, statistical validation, and evidence-based analysis.",
+          "Risk modelling, anomaly detection, hypothesis testing, and validation.",
         iconName: "ShieldCheck",
       },
       {
-        title: "AI-Assisted Analytics",
+        title: "Applied AI & Automation",
         description:
-          "LLM APIs, structured AI outputs, risk narratives, and AI-assisted analytical workflows.",
+          "LLM APIs, structured AI outputs, and task-specific automation.",
         iconName: "Cpu",
       },
       {
-        title: "Data & Analytical Systems",
+        title: "Data Systems & Reliability",
         description:
-          "SQL, data quality, reliable workflows, dashboards, and analytical implementation.",
+          "SQL, data pipelines, validation, and analytics engineering.",
         iconName: "Database",
       },
     ],
