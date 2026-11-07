@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useInView } from "framer-motion";
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -105,80 +105,174 @@ const CustomerSegmentationCarousel: React.FC<{
   onOpenModal: (item: ModalItem) => void;
 }> = ({ onOpenModal }) => {
   const shouldReduceMotion = useReducedMotion();
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { margin: "100px" });
 
-  const views = [
-    {
-      id: "overview",
-      label: "Overview",
-      src: "/projects/customer-segmentation-overview.png",
-      alt: "Dunnhumby Customer Segmentation — Executive Overview Dashboard",
-      description: "Executive Overview Dashboard (Household sales, department volume, campaign reach)",
-    },
-    {
-      id: "segmentation",
-      label: "Customer Segmentation",
-      src: "/projects/customer-segmentation-segmentation.png",
-      alt: "Dunnhumby Customer Segmentation — Category & Segment Insights Dashboard",
-      description: "Category & Household Segment Insights (Demographics, income brackets, basket sizes)",
-    },
-    {
-      id: "promotional",
-      label: "Promotional Analysis",
-      src: "/projects/customer-segmentation-promotional.png",
-      alt: "Dunnhumby Customer Segmentation — Promotional Opportunity & Affinity Diagnostic",
-      description: "Promotional Opportunity Diagnostic (High-affinity uncampaigned households, lift models)",
-    },
-  ];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
+  const [allPreloaded, setAllPreloaded] = useState(false);
+  const interactionTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const views = React.useMemo(
+    () => [
+      {
+        id: "overview",
+        label: "Overview",
+        src: "/projects/customer-segmentation-overview.png",
+        alt: "Dunnhumby Customer Segmentation — Executive Overview Dashboard",
+        description:
+          "Executive Overview Dashboard (Household sales, department volume, campaign reach)",
+      },
+      {
+        id: "segmentation",
+        label: "Customer Segmentation",
+        src: "/projects/customer-segmentation-segmentation.png",
+        alt: "Dunnhumby Customer Segmentation — Category & Segment Insights Dashboard",
+        description:
+          "Category & Household Segment Insights (Demographics, income brackets, basket sizes)",
+      },
+      {
+        id: "promotional",
+        label: "Promotional Analysis",
+        src: "/projects/customer-segmentation-promotional.png",
+        alt: "Dunnhumby Customer Segmentation — Promotional Opportunity & Affinity Diagnostic",
+        description:
+          "Promotional Opportunity Diagnostic (High-affinity uncampaigned households, lift models)",
+      },
+    ],
+    []
+  );
+
+  // Preload all 3 dashboard images in the browser before auto-rotation commences
+  useEffect(() => {
+    let loadedCount = 0;
+    const total = views.length;
+
+    views.forEach((view) => {
+      const img = new Image();
+      img.src = view.src;
+      const onDone = () => {
+        loadedCount++;
+        if (loadedCount >= total) {
+          setAllPreloaded(true);
+        }
+      };
+
+      if (img.complete) {
+        onDone();
+      } else {
+        img.onload = onDone;
+        img.onerror = onDone;
+      }
+    });
+  }, [views]);
+
+  // Handle interaction pause (e.g. touch or tab click)
+  const triggerInteractionPause = () => {
+    setIsInteracting(true);
+    if (interactionTimerRef.current) {
+      clearTimeout(interactionTimerRef.current);
+    }
+    interactionTimerRef.current = setTimeout(() => {
+      setIsInteracting(false);
+    }, 8000); // 8-second calm window
+  };
+
+  useEffect(() => {
+    return () => {
+      if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
+    };
+  }, []);
 
   // Automatic rotation between dashboards every 5.5 seconds
+  // Only runs when preloaded, in viewport, not hovered, not actively interacting, and not reduced motion
   useEffect(() => {
-    if (isPaused || shouldReduceMotion) return;
+    if (!allPreloaded || !isInView || isHovered || isInteracting || shouldReduceMotion) {
+      return;
+    }
+
     const timer = setInterval(() => {
+      setDirection(1); // strictly right-to-left
       setActiveIndex((prev) => (prev + 1) % views.length);
     }, 5500);
+
     return () => clearInterval(timer);
-  }, [isPaused, shouldReduceMotion, views.length]);
+  }, [allPreloaded, isInView, isHovered, isInteracting, shouldReduceMotion, views.length]);
 
   const activeView = views[activeIndex];
 
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: shouldReduceMotion ? "0%" : dir >= 0 ? "100%" : "-100%",
+    }),
+    center: {
+      x: "0%",
+    },
+    exit: (dir: number) => ({
+      x: shouldReduceMotion ? "0%" : dir >= 0 ? "-100%" : "100%",
+    }),
+  };
+
+  const handleSelectTab = (idx: number) => {
+    if (idx === activeIndex) return;
+    setDirection(idx > activeIndex ? 1 : -1);
+    setActiveIndex(idx);
+    triggerInteractionPause();
+  };
+
   return (
     <div
+      ref={containerRef}
       className="mb-5"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* 16:9 Fixed-Dimension Preview Frame */}
       <div
-        onClick={() =>
+        onClick={() => {
+          triggerInteractionPause();
           onOpenModal({
             title: "Promotional Opportunity & Customer Segmentation Analysis",
             subtitle: activeView.description,
             src: activeView.src,
             alt: activeView.alt,
-          })
-        }
+          });
+        }}
+        onTouchStart={triggerInteractionPause}
         className="group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border border-white/[0.08] hover:border-cyan-500/40 transition-colors cursor-pointer"
         title="Click to view full-size dashboard"
       >
-        <AnimatePresence mode="wait">
-          <motion.img
+        <AnimatePresence initial={false} custom={direction}>
+          <motion.div
             key={activeView.id}
-            src={activeView.src}
-            alt={activeView.alt}
-            initial={shouldReduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={shouldReduceMotion ? undefined : { opacity: 0 }}
-            transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="w-full h-full object-contain"
-            loading="lazy"
-            decoding="async"
-          />
+            custom={direction}
+            variants={slideVariants}
+            initial={shouldReduceMotion ? false : "enter"}
+            animate="center"
+            exit={shouldReduceMotion ? undefined : "exit"}
+            transition={{
+              x: {
+                type: "tween",
+                ease: [0.25, 1, 0.5, 1],
+                duration: shouldReduceMotion ? 0 : 0.52,
+              },
+            }}
+            className="absolute inset-0 w-full h-full flex items-center justify-center bg-[#06080e] select-none"
+          >
+            <img
+              src={activeView.src}
+              alt={activeView.alt}
+              className="w-full h-full object-contain pointer-events-none"
+              draggable={false}
+              loading="eager"
+            />
+          </motion.div>
         </AnimatePresence>
 
         {/* Hover overlay hint */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 z-10 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/75 border border-white/20 text-[11px] font-mono text-zinc-200 backdrop-blur-sm shadow-lg">
             <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
             <span>Click to expand</span>
@@ -194,12 +288,9 @@ const CustomerSegmentationCarousel: React.FC<{
             <button
               key={view.id}
               type="button"
-              onClick={() => {
-                setActiveIndex(idx);
-                setIsPaused(true);
-              }}
-              onFocus={() => setIsPaused(true)}
-              onBlur={() => setIsPaused(false)}
+              onClick={() => handleSelectTab(idx)}
+              onFocus={() => setIsHovered(true)}
+              onBlur={() => setIsHovered(false)}
               className={`px-2 py-1 rounded-lg text-[9.5px] sm:text-[10.5px] font-mono font-medium transition-all text-center truncate border ${
                 isActive
                   ? "bg-white/[0.12] text-white border-cyan-400/40 shadow-[0_0_12px_rgba(34,211,238,0.15)]"

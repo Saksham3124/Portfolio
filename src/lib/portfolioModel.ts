@@ -58,6 +58,7 @@ export interface PortfolioContentData {
   personalInfo: typeof PERSONAL_INFO & {
     heroVideoUrl?: string;
     heroVideoEnabled?: boolean;
+    heroSubtitle?: string;
   };
   about: AboutContent;
   telemetry: TelemetryMetric[];

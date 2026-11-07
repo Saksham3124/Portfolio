@@ -1213,20 +1213,32 @@ export default function AdminPage() {
 
                 <div>
                   <label className="text-xs font-mono text-zinc-400 uppercase tracking-wider block mb-1.5">
-                    Hero Supporting Subtitle
+                    Hero Subtitle
                   </label>
                   <textarea
-                    rows={2}
-                    value={data.personalInfo.heroSupporting}
+                    rows={3}
+                    value={
+                      data.personalInfo.heroSubtitle ??
+                      data.personalInfo.heroSupporting ??
+                      "I combine structured analysis, statistical methods, and reliable data workflows to solve customer, risk, and data-quality problems and support better decisions."
+                    }
                     onChange={(e) => {
+                      const val = e.target.value;
                       setData({
                         ...data,
-                        personalInfo: { ...data.personalInfo, heroSupporting: e.target.value },
+                        personalInfo: {
+                          ...data.personalInfo,
+                          heroSubtitle: val,
+                          heroSupporting: val,
+                        },
                       });
                       setIsDirty(true);
                     }}
-                    className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none focus:border-white/30"
+                    className="w-full px-3.5 py-2 rounded-xl bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none focus:border-white/30 leading-relaxed"
                   />
+                  <p className="text-[11px] text-zinc-500 font-mono mt-1">
+                    Editable narrative displayed immediately beneath the primary hero headline.
+                  </p>
                 </div>
 
                 <div>

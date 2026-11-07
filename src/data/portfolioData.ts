@@ -125,8 +125,10 @@ export const PERSONAL_INFO = {
     "Connecting Customer Insights, Product Strategy, and Execution.",
     "Building Reliable Data Systems for Better Decisions.",
   ],
+  heroSubtitle:
+    "I combine structured analysis, statistical methods, and reliable data workflows to solve customer, risk, and data-quality problems and support better decisions.",
   heroSupporting:
-    "Engineering graduate focused on analytics, risk, customer insights, and AI-assisted decision systems.",
+    "I combine structured analysis, statistical methods, and reliable data workflows to solve customer, risk, and data-quality problems and support better decisions.",
   heroVideoEnabled: true,
   heroVideoUrl: "/videos/hero-background.mp4",
   coreNarrative:

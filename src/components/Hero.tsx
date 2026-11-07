@@ -472,7 +472,10 @@ export const Hero: React.FC<HeroProps> = ({ onRequestResume }) => {
 
             {/* Supporting Narrative Text (Dynamically loaded from Admin CMS Studio) */}
             <p className="text-[13.5px] sm:text-lg md:text-xl text-zinc-400 font-normal leading-relaxed max-w-xl mb-4 sm:mb-9">
-              {personalInfo.heroSupporting || "Engineering graduate focused on analytics, risk, customer insights, and AI-assisted decision systems."}
+              {(personalInfo as { heroSubtitle?: string }).heroSubtitle ||
+                personalInfo.heroSupporting ||
+                personalInfo.coreNarrative ||
+                "I combine structured analysis, statistical methods, and reliable data workflows to solve customer, risk, and data-quality problems and support better decisions."}
             </p>
 
             {/* Action Control Buttons Matching Mockup */}
