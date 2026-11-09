@@ -65,6 +65,14 @@ export const PointerProvider: React.FC<{ children: React.ReactNode }> = ({
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
+      const previewEl = target.closest("[data-cursor='preview']");
+      if (previewEl) {
+        setCursorVariant("hidden");
+        setIsHoveringProject(false);
+        setHoveredProjectTitle(null);
+        return;
+      }
+
       const viewBtn = target.closest("[data-cursor='project'], [data-cursor='view']");
       if (viewBtn) {
         setCursorVariant("project");

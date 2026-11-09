@@ -139,7 +139,7 @@ const InteractivePreviewFrame: React.FC<{
       onClick={isExpandable ? onClick : undefined}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
-      data-cursor={isExpandable ? "project" : undefined}
+      data-cursor={isExpandable ? "preview" : undefined}
       className={`group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border transition-all duration-300 select-none ${
         isExpandable
           ? "cursor-pointer border-white/[0.08] hover:border-cyan-500/40 hover:shadow-[0_0_25px_rgba(34,211,238,0.08)]"
@@ -163,6 +163,22 @@ const InteractivePreviewFrame: React.FC<{
           }}
           className="pointer-events-none absolute z-10 w-64 h-64 rounded-full bg-cyan-400/[0.07] blur-2xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"
         />
+      )}
+
+      {/* Cursor-Following High-Contrast Contextual Pill Label */}
+      {isExpandable && !shouldReduceMotion && (
+        <motion.div
+          style={{
+            x: springX,
+            y: springY,
+            translateX: "-50%",
+            translateY: "-50%",
+          }}
+          className="pointer-events-none absolute z-20 hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/90 border border-white/20 text-[11px] font-mono font-medium text-white backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.85)] transition-opacity duration-200 opacity-0 group-hover:opacity-100"
+        >
+          <Maximize2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+          <span>View Preview</span>
+        </motion.div>
       )}
 
       {/* Static Fallback for Touch or Reduced Motion */}
