@@ -165,22 +165,6 @@ const InteractivePreviewFrame: React.FC<{
         />
       )}
 
-      {/* Cursor-Following Contextual Pill Label */}
-      {isExpandable && !shouldReduceMotion && (
-        <motion.div
-          style={{
-            x: springX,
-            y: springY,
-            translateX: "-50%",
-            translateY: "-50%",
-          }}
-          className="pointer-events-none absolute z-20 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/80 border border-white/20 text-[11px] font-mono text-zinc-200 backdrop-blur-md shadow-xl transition-opacity duration-200 opacity-0 group-hover:opacity-100"
-        >
-          <Maximize2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-          <span className="font-medium">View Preview</span>
-        </motion.div>
-      )}
-
       {/* Static Fallback for Touch or Reduced Motion */}
       {isExpandable && shouldReduceMotion && (
         <div className="absolute inset-0 z-10 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
