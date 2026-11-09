@@ -115,6 +115,14 @@ export function getPortfolioData(): PortfolioContentData {
           ...DEFAULT_PORTFOLIO_CONTENT.contactSection,
           ...(parsed.contactSection || {}),
         },
+        featuredProjects:
+          Array.isArray(parsed.featuredProjects) && parsed.featuredProjects.length > 0
+            ? parsed.featuredProjects
+            : DEFAULT_PORTFOLIO_CONTENT.featuredProjects,
+        supportingProjects:
+          Array.isArray(parsed.supportingProjects) && parsed.supportingProjects.length > 0
+            ? parsed.supportingProjects
+            : DEFAULT_PORTFOLIO_CONTENT.supportingProjects,
       };
       memoryCache = merged;
       return merged;

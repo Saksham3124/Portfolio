@@ -1,7 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence, useReducedMotion, useInView } from "framer-motion";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { createPortal } from "react-dom";
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  useInView,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -12,7 +20,7 @@ import {
   X,
 } from "lucide-react";
 import { GithubIcon, TableauIcon } from "@/components/BrandIcons";
-import { FEATURED_PROJECTS, SUPPORTING_PROJECTS, Project } from "@/data/portfolioData";
+import { FEATURED_PROJECTS, SUPPORTING_PROJECTS, Project, ProjectPreviewItem } from "@/data/portfolioData";
 import { usePortfolio } from "@/context/PortfolioContext";
 
 interface MetricItem {
@@ -94,16 +102,107 @@ const ProjectMetrics: React.FC<{ metrics: MetricItem[] }> = ({ metrics }) => {
 };
 
 /**
+ * Subtle Cursor-Following Interactive Preview Frame
+ * Uses lightweight motion values and spring physics (0 React state re-renders on mousemove)
+ */
+const InteractivePreviewFrame: React.FC<{
+  children: React.ReactNode;
+  onClick?: () => void;
+  title?: string;
+  isExpandable?: boolean;
+}> = ({ children, onClick, title, isExpandable = true }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springX = useSpring(mouseX, { stiffness: 350, damping: 28 });
+  const springY = useSpring(mouseY, { stiffness: 350, damping: 28 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current || shouldReduceMotion) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    mouseX.set(e.clientX - rect.left);
+    mouseY.set(e.clientY - rect.top);
+  };
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    mouseX.jump(e.clientX - rect.left);
+    mouseY.jump(e.clientY - rect.top);
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      onClick={isExpandable ? onClick : undefined}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      className={`group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border transition-all duration-300 ${
+        isExpandable
+          ? "cursor-pointer border-white/[0.08] hover:border-cyan-500/40 hover:shadow-[0_0_25px_rgba(34,211,238,0.08)]"
+          : "border-white/[0.08]"
+      }`}
+      title={isExpandable ? (title || "Click to expand preview") : undefined}
+    >
+      {/* Underlying Preview Content */}
+      {children}
+
+      {/* Cursor-Following Soft Radial Spotlight */}
+      {isExpandable && !shouldReduceMotion && (
+        <motion.div
+          style={{
+            x: springX,
+            y: springY,
+            translateX: "-50%",
+            translateY: "-50%",
+          }}
+          className="pointer-events-none absolute z-10 w-64 h-64 rounded-full bg-cyan-400/[0.07] blur-2xl transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+        />
+      )}
+
+      {/* Cursor-Following Contextual Pill Label */}
+      {isExpandable && !shouldReduceMotion && (
+        <motion.div
+          style={{
+            x: springX,
+            y: springY,
+            translateX: "-50%",
+            translateY: "-50%",
+          }}
+          className="pointer-events-none absolute z-20 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/80 border border-white/20 text-[11px] font-mono text-zinc-200 backdrop-blur-md shadow-xl transition-opacity duration-200 opacity-0 group-hover:opacity-100"
+        >
+          <Maximize2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+          <span className="font-medium">View Preview</span>
+        </motion.div>
+      )}
+
+      {/* Static Fallback for Touch or Reduced Motion */}
+      {isExpandable && shouldReduceMotion && (
+        <div className="absolute inset-0 z-10 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/75 border border-white/20 text-[11px] font-mono text-zinc-200 backdrop-blur-sm shadow-lg">
+            <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Click to expand</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/**
  * Customer Segmentation Dashboard Carousel Component:
  * - 3 authentic views: Overview, Customer Segmentation, Promotional Analysis
- * - Auto-rotates every 5.5 seconds (paused on hover / interaction)
+ * - Auto-rotates every 3 seconds (paused on hover / interaction)
  * - 3 compact, clearly labelled selectors immediately below preview
  * - Clickable to open high-res modal
  * - Fixed aspect ratio & selector dimensions so switching never shifts card height
  */
 const CustomerSegmentationCarousel: React.FC<{
   onOpenModal: (item: ModalItem) => void;
-}> = ({ onOpenModal }) => {
+  customViews?: ProjectPreviewItem[];
+}> = ({ onOpenModal, customViews }) => {
   const shouldReduceMotion = useReducedMotion();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { margin: "100px" });
@@ -115,7 +214,7 @@ const CustomerSegmentationCarousel: React.FC<{
   const [allPreloaded, setAllPreloaded] = useState(false);
   const interactionTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  const views = React.useMemo(
+  const defaultViews = useMemo(
     () => [
       {
         id: "overview",
@@ -144,6 +243,8 @@ const CustomerSegmentationCarousel: React.FC<{
     ],
     []
   );
+
+  const views = customViews && customViews.length > 0 ? customViews : defaultViews;
 
   // Preload all 3 dashboard images in the browser before auto-rotation commences
   useEffect(() => {
@@ -201,7 +302,7 @@ const CustomerSegmentationCarousel: React.FC<{
     return () => clearInterval(timer);
   }, [allPreloaded, isInView, isHovered, isInteracting, shouldReduceMotion, views.length]);
 
-  const activeView = views[activeIndex];
+  const activeView = views[activeIndex] || views[0];
 
   const slideVariants = {
     enter: (dir: number) => ({
@@ -229,19 +330,16 @@ const CustomerSegmentationCarousel: React.FC<{
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* 16:9 Fixed-Dimension Preview Frame */}
-      <div
+      <InteractivePreviewFrame
         onClick={() => {
           triggerInteractionPause();
           onOpenModal({
             title: "Promotional Opportunity & Customer Segmentation Analysis",
             subtitle: activeView.description,
             src: activeView.src,
-            alt: activeView.alt,
+            alt: activeView.alt || activeView.label || "Customer Segmentation Dashboard",
           });
         }}
-        onTouchStart={triggerInteractionPause}
-        className="group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border border-white/[0.08] hover:border-cyan-500/40 transition-colors cursor-pointer"
         title="Click to view full-size dashboard"
       >
         <AnimatePresence initial={false} custom={direction}>
@@ -270,15 +368,7 @@ const CustomerSegmentationCarousel: React.FC<{
             />
           </motion.div>
         </AnimatePresence>
-
-        {/* Hover overlay hint */}
-        <div className="absolute inset-0 z-10 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/75 border border-white/20 text-[11px] font-mono text-zinc-200 backdrop-blur-sm shadow-lg">
-            <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Click to expand</span>
-          </div>
-        </div>
-      </div>
+      </InteractivePreviewFrame>
 
       {/* 3 Compact Selectors Immediately Below Preview */}
       <div className="grid grid-cols-3 gap-1.5 mt-2.5 h-8">
@@ -309,22 +399,71 @@ const CustomerSegmentationCarousel: React.FC<{
 
 /**
  * Visual Preview Renderer for Project Cards:
- * Dispatches to the appropriate preview based on project ID.
+ * Supports dynamic admin preview configurations and default fallbacks.
  */
 const ProjectVisualPreview: React.FC<{
   project: Project;
   onOpenModal: (item: ModalItem) => void;
 }> = ({ project, onOpenModal }) => {
-  // 1. Customer Segmentation: 3-view carousel
-  if (project.id === "dunnhumby-promotional-analytics") {
-    return <CustomerSegmentationCarousel onOpenModal={onOpenModal} />;
+  const preview = project.preview;
+
+  // 1. Carousel View (e.g. Dunnhumby Customer Segmentation)
+  if (preview?.type === "carousel" || project.id === "dunnhumby-promotional-analytics") {
+    return (
+      <CustomerSegmentationCarousel
+        onOpenModal={onOpenModal}
+        customViews={preview?.views}
+      />
+    );
   }
 
-  // 2. GST Invoice Anomaly Detection: static Tableau dashboard
+  // 2. Explicit preview object from Admin CMS
+  if (preview?.src) {
+    const isVideo = preview.type === "video";
+    const isGif = preview.type === "gif";
+    return (
+      <div className="mb-5">
+        <InteractivePreviewFrame
+          onClick={() =>
+            onOpenModal({
+              title: project.title,
+              subtitle: project.tagline,
+              src: preview.src!,
+              alt: preview.alt || project.title,
+              isGif,
+            })
+          }
+          isExpandable={preview.isExpandable !== false}
+          title={`Click to view full-size ${project.title}`}
+        >
+          {isVideo ? (
+            <video
+              src={preview.src}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <img
+              src={preview.src}
+              alt={preview.alt || project.title}
+              className="w-full h-full object-contain"
+              loading="lazy"
+              decoding="async"
+            />
+          )}
+        </InteractivePreviewFrame>
+      </div>
+    );
+  }
+
+  // 3. Fallbacks for original four projects if preview is omitted:
   if (project.id === "gst-anomaly-detection") {
     return (
       <div className="mb-5">
-        <div
+        <InteractivePreviewFrame
           onClick={() =>
             onOpenModal({
               title: "GST Invoice Anomaly Detection & Vendor Risk Scoring",
@@ -333,7 +472,6 @@ const ProjectVisualPreview: React.FC<{
               alt: "GST Invoice Anomaly Detection Forensic Tableau Dashboard",
             })
           }
-          className="group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border border-white/[0.08] hover:border-cyan-500/40 transition-colors cursor-pointer"
           title="Click to view full-size dashboard"
         >
           <img
@@ -343,22 +481,15 @@ const ProjectVisualPreview: React.FC<{
             loading="lazy"
             decoding="async"
           />
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/75 border border-white/20 text-[11px] font-mono text-zinc-200 backdrop-blur-sm shadow-lg">
-              <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Click to expand</span>
-            </div>
-          </div>
-        </div>
+        </InteractivePreviewFrame>
       </div>
     );
   }
 
-  // 3. E-Way Bill Data Reliability Pipeline: static architecture diagram
   if (project.id === "ewaybill-data-reliability") {
     return (
       <div className="mb-5">
-        <div
+        <InteractivePreviewFrame
           onClick={() =>
             onOpenModal({
               title: "E-Way Bill Data Reliability & Reconciliation Pipeline",
@@ -367,7 +498,6 @@ const ProjectVisualPreview: React.FC<{
               alt: "E-Way Bill Data Reliability Pipeline Architecture Diagram",
             })
           }
-          className="group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border border-white/[0.08] hover:border-cyan-500/40 transition-colors cursor-pointer"
           title="Click to view full-size architecture diagram"
         >
           <img
@@ -377,22 +507,15 @@ const ProjectVisualPreview: React.FC<{
             loading="lazy"
             decoding="async"
           />
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/75 border border-white/20 text-[11px] font-mono text-zinc-200 backdrop-blur-sm shadow-lg">
-              <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Click to expand</span>
-            </div>
-          </div>
-        </div>
+        </InteractivePreviewFrame>
       </div>
     );
   }
 
-  // 4. Payment Status Recovery: continuous looping GIF walkthrough
   if (project.id === "payment-status-recovery") {
     return (
       <div className="mb-5">
-        <div
+        <InteractivePreviewFrame
           onClick={() =>
             onOpenModal({
               title: "Payment Status Recovery",
@@ -402,7 +525,6 @@ const ProjectVisualPreview: React.FC<{
               isGif: true,
             })
           }
-          className="group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border border-white/[0.08] hover:border-cyan-500/40 transition-colors cursor-pointer"
           title="Click to view full-size walkthrough"
         >
           <img
@@ -412,13 +534,7 @@ const ProjectVisualPreview: React.FC<{
             loading="lazy"
             decoding="async"
           />
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/75 border border-white/20 text-[11px] font-mono text-zinc-200 backdrop-blur-sm shadow-lg">
-              <Maximize2 className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Click to expand</span>
-            </div>
-          </div>
-        </div>
+        </InteractivePreviewFrame>
       </div>
     );
   }
@@ -428,89 +544,113 @@ const ProjectVisualPreview: React.FC<{
 
 /**
  * Lightbox Modal for Full-Size Asset Viewing
+ * Uses createPortal to escape transformed parent stacking contexts and center properly in viewport
  */
 const ImageLightboxModal: React.FC<{
   item: ModalItem | null;
   onClose: () => void;
 }> = ({ item, onClose }) => {
   const shouldReduceMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!item) return;
+
+    // Prevent background scrolling while modal is open, with scrollbar width compensation
+    const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+    document.body.style.overflow = "hidden";
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleKeyDown);
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
     };
   }, [item, onClose]);
 
-  if (!item) return null;
+  if (!mounted || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
-      <motion.div
-        initial={shouldReduceMotion ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={shouldReduceMotion ? undefined : { opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        onClick={onClose}
-        className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 lg:p-10 cursor-zoom-out"
-        role="dialog"
-        aria-modal="true"
-        aria-label={item.title}
-      >
+      {item && (
         <motion.div
-          initial={shouldReduceMotion ? false : { scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={shouldReduceMotion ? undefined : { scale: 0.95, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          onClick={(e) => e.stopPropagation()}
-          className="relative max-w-5xl w-full max-h-[92vh] bg-[#090b12] border border-white/15 rounded-2xl overflow-hidden shadow-2xl flex flex-col cursor-default"
+          key="project-lightbox-backdrop"
+          initial={shouldReduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={shouldReduceMotion ? undefined : { opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          onClick={onClose}
+          className="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 lg:p-8 cursor-zoom-out overflow-y-auto"
+          role="dialog"
+          aria-modal="true"
+          aria-label={item.title}
         >
-          {/* Modal Header */}
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/[0.08] bg-white/[0.02]">
-            <div className="min-w-0 pr-4">
-              <h3 className="text-sm sm:text-base font-semibold text-white tracking-tight truncate">
-                {item.title}
-              </h3>
-              {item.subtitle && (
-                <p className="text-xs text-zinc-400 font-mono truncate mt-0.5">
-                  {item.subtitle}
-                </p>
-              )}
+          <motion.div
+            key="project-lightbox-dialog"
+            initial={shouldReduceMotion ? false : { scale: 0.95, opacity: 0, y: 8 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={shouldReduceMotion ? undefined : { scale: 0.95, opacity: 0, y: 8 }}
+            transition={{ type: "spring", stiffness: 420, damping: 28 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-5xl w-full max-h-[92vh] my-auto bg-[#090b12] border border-white/15 rounded-2xl overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.85)] flex flex-col cursor-default"
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/[0.08] bg-white/[0.02] shrink-0">
+              <div className="min-w-0 pr-4">
+                <h3 className="text-sm sm:text-base font-semibold text-white tracking-tight truncate">
+                  {item.title}
+                </h3>
+                {item.subtitle && (
+                  <p className="text-xs text-zinc-400 font-mono truncate mt-0.5">
+                    {item.subtitle}
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+                aria-label="Close image preview"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors shrink-0"
-              aria-label="Close image preview"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
 
-          {/* Modal Image Viewport */}
-          <div className="relative w-full flex-1 flex items-center justify-center p-2 sm:p-4 bg-black/60 overflow-auto">
-            <img
-              src={item.src}
-              alt={item.alt}
-              className="max-h-[76vh] w-auto max-w-full object-contain rounded-lg shadow-xl"
-            />
-          </div>
+            {/* Modal Image Viewport */}
+            <div className="relative w-full flex-1 min-h-0 flex items-center justify-center p-2 sm:p-4 bg-black/75 overflow-auto">
+              <img
+                src={item.src}
+                alt={item.alt}
+                className="max-h-[74vh] w-auto max-w-full object-contain rounded-lg shadow-xl"
+              />
+            </div>
 
-          {/* Modal Footer */}
-          <div className="px-4 py-2 border-t border-white/[0.06] bg-white/[0.02] flex items-center justify-between text-[11px] text-zinc-400 font-mono">
-            <span>{item.isGif ? "Looping Walkthrough Preview" : "High-Resolution Screenshot"}</span>
-            <span className="hidden sm:inline">Press Esc or click outside to dismiss</span>
-          </div>
+            {/* Modal Footer */}
+            <div className="px-4 py-2 border-t border-white/[0.06] bg-white/[0.02] flex items-center justify-between text-[11px] text-zinc-400 font-mono shrink-0">
+              <span>
+                {item.isGif ? "Looping Walkthrough Preview" : "High-Resolution Preview"}
+              </span>
+              <span className="hidden sm:inline">Press Esc or click outside to dismiss</span>
+            </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </AnimatePresence>
+      )}
+    </AnimatePresence>,
+    document.body
   );
 };
 

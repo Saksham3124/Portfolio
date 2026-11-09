@@ -179,5 +179,268 @@
     "heading": "Research & Industry Experience",
     "subheading": "Applied business analytics, historical demand forecasting, and quantitative research."
   },
-  "updatedAt": "2026-10-19T13:30:00.000Z"
+  "updatedAt": "2026-10-19T13:30:00.000Z",
+  "featuredProjects": [
+    {
+      "id": "dunnhumby-promotional-analytics",
+      "title": "Promotional Opportunity & Customer Segmentation Analysis",
+      "category": "Customer & Product Analytics",
+      "targetRoleRelevance": [
+        "Customer Analytics",
+        "Product Analytics",
+        "Decision Support"
+      ],
+      "tagline": "Customer segmentation, basket affinity, and household promotional opportunity scoring in Power BI",
+      "description": "Analyzed 2.6M+ transactions across 2,500 households representing .06M in sales to understand customer behavior and identify promotional opportunities.",
+      "architectureHighlights": [
+        "Engineered a household-level promotional scoring framework evaluating customer engagement, category affinity, and campaign responsiveness.",
+        "Controlled for analytical zero-inflation bias and department-size distortion across 2,500 households and .06M in sales.",
+        "Translated and cross-validated analytical pipelines across Python, PostgreSQL, and AWS Athena.",
+        "Constructed an executive Power BI dashboard, identifying 10 un-campaigned high-affinity households and evaluating an illustrative .1K sensitivity case."
+      ],
+      "metrics": [
+        {
+          "label": "Transactions",
+          "value": "2.6M+"
+        },
+        {
+          "label": "Households",
+          "value": "2,500"
+        },
+        {
+          "label": "Sales Analyzed",
+          "value": ".06M"
+        }
+      ],
+      "tags": [
+        "Python",
+        "SQL",
+        "PostgreSQL",
+        "AWS S3",
+        "AWS Athena",
+        "Power BI"
+      ],
+      "githubUrl": "https://github.com/Saksham3124/dunnhumby-customer-promotional-opportunity",
+      "featured": true,
+      "preview": {
+        "type": "carousel",
+        "isExpandable": true,
+        "views": [
+          {
+            "id": "overview",
+            "label": "Overview",
+            "src": "/projects/customer-segmentation-overview.png",
+            "alt": "Dunnhumby Customer Segmentation — Executive Overview Dashboard",
+            "description": "Executive Overview Dashboard (Household sales, department volume, campaign reach)"
+          },
+          {
+            "id": "segmentation",
+            "label": "Customer Segmentation",
+            "src": "/projects/customer-segmentation-segmentation.png",
+            "alt": "Dunnhumby Customer Segmentation — Category & Segment Insights Dashboard",
+            "description": "Category & Household Segment Insights (Demographics, income brackets, basket sizes)"
+          },
+          {
+            "id": "promotional",
+            "label": "Promotional Analysis",
+            "src": "/projects/customer-segmentation-promotional.png",
+            "alt": "Dunnhumby Customer Segmentation — Promotional Opportunity & Affinity Diagnostic",
+            "description": "Promotional Opportunity Diagnostic (High-affinity uncampaigned households, lift models)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "gst-anomaly-detection",
+      "title": "GST Invoice Anomaly Detection & Vendor Risk Scoring",
+      "category": "Risk Analytics & AI",
+      "targetRoleRelevance": [
+        "Risk Analytics",
+        "Fraud Detection",
+        "Applied AI"
+      ],
+      "tagline": "Four-layer forensic framework (Detect → Score → Explain) with statistical anomaly detection and Gemini AI narratives in Tableau",
+      "description": "An end-to-end invoice analytics and vendor risk solution analyzing 50K+ GST invoices across 210 vendors to detect anomalies, quantify vendor risk, and support audit prioritization.",
+      "architectureHighlights": [
+        "Engineered a four-layer risk architecture (Detect → Score → Explain) combining deterministic rule validation with Z-Score and IQR statistical anomaly detection.",
+        "Formulated deterministic vendor risk scoring across four signals (anomaly frequency, deviation magnitude, validation failures, recency), flagging 7,500+ invoices and 32 HIGH-risk vendors.",
+        "Integrated Gemini API to generate evidence-grounded vendor risk narratives from deterministic risk signals, without modifying risk scores or risk tiers.",
+        "Constructed an interactive drill-down Tableau forensic dashboard connecting 32 AI narratives with audit-recoverable tax capital."
+      ],
+      "metrics": [
+        {
+          "label": "Invoices Audited",
+          "value": "50K+"
+        },
+        {
+          "label": "High-Risk Vendors",
+          "value": "32"
+        },
+        {
+          "label": "AI Narratives",
+          "value": "32"
+        }
+      ],
+      "tags": [
+        "Python",
+        "SQL",
+        "PostgreSQL",
+        "Gemini API",
+        "Tableau",
+        "Risk Scoring"
+      ],
+      "githubUrl": "https://github.com/Saksham3124/gst-invoice-anomaly-detection",
+      "tableauUrl": "https://public.tableau.com/app/profile/kumar.saksham2703/viz/GST__/Dashboard1",
+      "featured": true,
+      "preview": {
+        "type": "static",
+        "src": "/projects/gst-invoice-anomaly-dashboard.png",
+        "alt": "GST Invoice Anomaly Detection Forensic Tableau Dashboard",
+        "isExpandable": true
+      }
+    },
+    {
+      "id": "ewaybill-data-reliability",
+      "title": "E-Way Bill Data Reliability Pipeline",
+      "category": "Data Quality & Reliability",
+      "targetRoleRelevance": [
+        "Data Quality",
+        "Statistical Analysis",
+        "Reliability"
+      ],
+      "tagline": "Automated reliability validation, KS and PSI statistical analysis, and Airflow PASS/FAIL gate for regulatory datasets",
+      "description": "An analytical data-quality and reliability system evaluating 10,089 E-Way Bill records across FY2022-23 and FY2023-24 to ensure statistical integrity and data quality.",
+      "architectureHighlights": [
+        "Built multi-layer reliability validation and cross-table reconciliation for 10,089 regulatory records across FY2022-23 and FY2023-24.",
+        "Conducted Kolmogorov-Smirnov (KS) tests and Population Stability Index (PSI) year-over-year statistical analysis generating 204 statistical results.",
+        "Designed an automated Airflow PASS/FAIL reliability gate blocking unvalidated data from promotion to trusted PostgreSQL storage.",
+        "Verified failure handling through 7 controlled corruption scenarios and 125 tests, blocking missing records, duplicates, invalid values, structural defects, and an INR 500 Cr alteration."
+      ],
+      "metrics": [
+        {
+          "label": "Trusted Records",
+          "value": "10,089"
+        },
+        {
+          "label": "Statistical Results",
+          "value": "204"
+        },
+        {
+          "label": "Corruption Scenarios",
+          "value": "7"
+        },
+        {
+          "label": "Automated Tests",
+          "value": "125"
+        }
+      ],
+      "tags": [
+        "Python",
+        "SQL",
+        "PostgreSQL",
+        "Apache Airflow",
+        "Docker",
+        "SciPy",
+        "Streamlit"
+      ],
+      "githubUrl": "https://github.com/Saksham3124/ewaybill-data-reliability-pipeline",
+      "featured": true,
+      "preview": {
+        "type": "static",
+        "src": "/projects/ewaybill-architecture-pipeline.jpg",
+        "alt": "E-Way Bill Data Reliability Pipeline Architecture Diagram",
+        "isExpandable": true
+      }
+    },
+    {
+      "id": "payment-status-recovery",
+      "title": "Payment Status Recovery",
+      "category": "Product Management · Fintech",
+      "targetRoleRelevance": [
+        "Payment Reliability",
+        "Product Management",
+        "Fintech"
+      ],
+      "tagline": "UPI Transaction Uncertainty Engine",
+      "description": "Designed a fintech prototype that resolves uncertain UPI payment outcomes using deterministic, evidence-based recovery logic. The system evaluates synthetic payment evidence across the remitter bank, payment switch, and beneficiary bank to distinguish confirmed failures from unresolved transactions and prevent unsafe duplicate retries.",
+      "architectureHighlights": [
+        "Evidence-based transaction recovery with explicit retry-safety rules.",
+        "Transaction investigation and support-case management workflows.",
+        "Product analytics for recovery outcomes and support funnels."
+      ],
+      "metrics": [
+        {
+          "label": "Synthetic Cases",
+          "value": "13"
+        },
+        {
+          "label": "Banking Telemetry",
+          "value": "4-Party"
+        },
+        {
+          "label": "Automated Tests",
+          "value": "88"
+        }
+      ],
+      "tags": [
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS",
+        "Vitest"
+      ],
+      "githubUrl": "https://github.com/Saksham3124/payment-status-recovery",
+      "liveUrl": "https://payment-status-recovery.vercel.app",
+      "featured": true,
+      "preview": {
+        "type": "gif",
+        "src": "/Payment%20Status%20Recovery%20Walkthrough.gif",
+        "alt": "Payment Status Recovery Walkthrough Interface Animation",
+        "isExpandable": true
+      }
+    }
+  ],
+  "supportingProjects": [
+    {
+      "id": "credit-risk-analytics",
+      "title": "Credit Risk Analytics & Default Prediction",
+      "category": "Risk Analytics",
+      "targetRoleRelevance": [
+        "Risk Analytics",
+        "Risk Analyst",
+        "Data Science Analyst",
+        "Decision Support"
+      ],
+      "tagline": "Comprehensive loan portfolio risk stratification on 307K+ applicants with AI narrative layer",
+      "description": "End-to-end credit risk analysis pipeline auditing 307,511 loan applicants. Leveraged PostgreSQL and Python to perform demographic and credit bureau correlation modeling, isolating default indicators and debt-to-income default thresholds visualized in an executive Tableau dashboard.",
+      "architectureHighlights": [
+        "Audited 307,511 real-world loan applications across multi-table relational PostgreSQL schema",
+        "Modeled delinquency probability tiers across borrower age brackets, credit history, and income ratios",
+        "Evaluated default distribution patterns identifying an 8.07% overall portfolio default rate",
+        "Designed dynamic Tableau executive dashboard with scenario filtering and portfolio stress testing"
+      ],
+      "metrics": [
+        {
+          "label": "Applicants",
+          "value": "307,511"
+        },
+        {
+          "label": "Default Rate",
+          "value": "8.07%"
+        },
+        {
+          "label": "Risk Indicators",
+          "value": "18+ Features"
+        }
+      ],
+      "tags": [
+        "Python",
+        "SQL",
+        "PostgreSQL",
+        "Tableau",
+        "Risk Modeling"
+      ],
+      "githubUrl": "https://github.com/Saksham3124/credit-risk-analytics",
+      "featured": false
+    }
+  ]
 }

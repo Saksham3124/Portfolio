@@ -1,3 +1,19 @@
+export interface ProjectPreviewItem {
+  id: string;
+  label: string;
+  src: string;
+  alt?: string;
+  description?: string;
+}
+
+export interface ProjectPreviewConfig {
+  type: "static" | "gif" | "video" | "carousel" | "none";
+  src?: string;
+  alt?: string;
+  isExpandable?: boolean;
+  views?: ProjectPreviewItem[];
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -12,6 +28,7 @@ export interface Project {
   tableauUrl?: string;
   liveUrl?: string;
   featured?: boolean;
+  preview?: ProjectPreviewConfig;
 }
 
 export interface ExperienceItem {
@@ -346,6 +363,33 @@ export const FEATURED_PROJECTS: Project[] = [
     tags: ["Python", "SQL", "PostgreSQL", "AWS S3", "AWS Athena", "Power BI"],
     githubUrl: "https://github.com/Saksham3124/dunnhumby-customer-promotional-opportunity",
     featured: true,
+    preview: {
+      type: "carousel",
+      isExpandable: true,
+      views: [
+        {
+          id: "overview",
+          label: "Overview",
+          src: "/projects/customer-segmentation-overview.png",
+          alt: "Dunnhumby Customer Segmentation — Executive Overview Dashboard",
+          description: "Executive Overview Dashboard (Household sales, department volume, campaign reach)",
+        },
+        {
+          id: "segmentation",
+          label: "Customer Segmentation",
+          src: "/projects/customer-segmentation-segmentation.png",
+          alt: "Dunnhumby Customer Segmentation — Category & Segment Insights Dashboard",
+          description: "Category & Household Segment Insights (Demographics, income brackets, basket sizes)",
+        },
+        {
+          id: "promotional",
+          label: "Promotional Analysis",
+          src: "/projects/customer-segmentation-promotional.png",
+          alt: "Dunnhumby Customer Segmentation — Promotional Opportunity & Affinity Diagnostic",
+          description: "Promotional Opportunity Diagnostic (High-affinity uncampaigned households, lift models)",
+        },
+      ],
+    },
   },
   {
     id: "gst-anomaly-detection",
@@ -370,6 +414,12 @@ export const FEATURED_PROJECTS: Project[] = [
     githubUrl: "https://github.com/Saksham3124/gst-invoice-anomaly-detection",
     tableauUrl: "https://public.tableau.com/app/profile/kumar.saksham2703/viz/GST__/Dashboard1",
     featured: true,
+    preview: {
+      type: "static",
+      src: "/projects/gst-invoice-anomaly-dashboard.png",
+      alt: "GST Invoice Anomaly Detection Forensic Tableau Dashboard",
+      isExpandable: true,
+    },
   },
   {
     id: "ewaybill-data-reliability",
@@ -402,6 +452,12 @@ export const FEATURED_PROJECTS: Project[] = [
     ],
     githubUrl: "https://github.com/Saksham3124/ewaybill-data-reliability-pipeline",
     featured: true,
+    preview: {
+      type: "static",
+      src: "/projects/ewaybill-architecture-pipeline.jpg",
+      alt: "E-Way Bill Data Reliability Pipeline Architecture Diagram",
+      isExpandable: true,
+    },
   },
   {
     id: "payment-status-recovery",
@@ -425,6 +481,12 @@ export const FEATURED_PROJECTS: Project[] = [
     githubUrl: "https://github.com/Saksham3124/payment-status-recovery",
     liveUrl: "https://payment-status-recovery.vercel.app",
     featured: true,
+    preview: {
+      type: "gif",
+      src: "/Payment%20Status%20Recovery%20Walkthrough.gif",
+      alt: "Payment Status Recovery Walkthrough Interface Animation",
+      isExpandable: true,
+    },
   },
 ];
 

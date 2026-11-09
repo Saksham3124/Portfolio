@@ -21,7 +21,6 @@ import {
   AlertCircle,
   Sparkles,
   ChevronRight,
-  Layers,
   Briefcase,
   GraduationCap,
   Award,
@@ -35,12 +34,21 @@ import {
   CheckCircle2,
   Mail,
   Video,
+  Image as ImageIcon,
+  Edit3,
+  SlidersHorizontal,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {
   PortfolioContentData,
   DEFAULT_PORTFOLIO_CONTENT,
 } from "@/lib/portfolioModel";
-import { Project, HERO_VIDEO_PRESETS } from "@/data/portfolioData";
+import {
+  Project,
+  ProjectPreviewConfig,
+  HERO_VIDEO_PRESETS,
+} from "@/data/portfolioData";
 
 export default function AdminPage() {
   // Auth state
@@ -54,6 +62,7 @@ export default function AdminPage() {
   // CMS state
   const [activeTab, setActiveTab] = useState<
     | "profile"
+    | "projects"
     | "flagship"
     | "supporting"
     | "about"
@@ -83,6 +92,42 @@ export default function AdminPage() {
 
   const [showResetConfirmModal, setShowResetConfirmModal] = useState(false);
   const [resetting, setResetting] = useState(false);
+
+  // Dedicated Project Management State
+  const [projectFilter, setProjectFilter] = useState<"all" | "featured" | "supporting">("all");
+  const [showSectionSettings, setShowSectionSettings] = useState(false);
+  const [searchProjectQuery, setSearchProjectQuery] = useState("");
+
+  // Preview Modal State
+  const [selectedProjectForPreview, setSelectedProjectForPreview] = useState<{
+    project: Project;
+    isFeatured: boolean;
+    index: number;
+  } | null>(null);
+  const [previewWorkingConfig, setPreviewWorkingConfig] = useState<ProjectPreviewConfig>({
+    type: "static",
+    src: "",
+    alt: "",
+    isExpandable: true,
+  });
+  const [activeCarouselViewIdx, setActiveCarouselViewIdx] = useState(0);
+  const [uploadingAsset, setUploadingAsset] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  // Add / Edit Project Modal State
+  const [editingProject, setEditingProject] = useState<{
+    project: Partial<Project>;
+    isFeatured: boolean;
+    index: number;
+    isNew: boolean;
+  } | null>(null);
+
+  // Delete Project Confirmation Modal State
+  const [deleteConfirmProject, setDeleteConfirmProject] = useState<{
+    project: Project;
+    isFeatured: boolean;
+    index: number;
+  } | null>(null);
 
   // GitHub Sync Integration State
   const [gitHubToken, setGitHubToken] = useState("");
@@ -529,37 +574,371 @@ export default function AdminPage() {
     setIsDirty(true);
   };
 
-  const deleteProject = (index: number, isFeatured: boolean) => {
-    const listKey = isFeatured ? "featuredProjects" : "supportingProjects";
-    const list = data[listKey].filter((_, i) => i !== index);
-    setData({ ...data, [listKey]: list });
-    setIsDirty(true);
+  // Dedicated Project Management & Independent Preview Helpers
+  const openPreviewManager = (project: Project, isFeatured: boolean, index: number) => {
+    let initialConfig: ProjectPreviewConfig;
+
+    if (project.preview) {
+      initialConfig = JSON.parse(JSON.stringify(project.preview));
+    } else if (project.id === "dunnhumby-promotional-analytics") {
+      initialConfig = {
+        type: "carousel",
+        isExpandable: true,
+        views: [
+          {
+            id: "overview",
+            label: "Overview",
+            src: "/projects/customer-segmentation-overview.png",
+            alt: "Dunnhumby Customer Segmentation — Executive Overview Dashboard",
+            description: "Executive Overview Dashboard (Household sales, department volume, campaign reach)",
+          },
+          {
+            id: "segmentation",
+            label: "Customer Segmentation",
+            src: "/projects/customer-segmentation-segmentation.png",
+            alt: "Dunnhumby Customer Segmentation — Category & Segment Insights Dashboard",
+            description: "Category & Household Segment Insights (Demographics, income brackets, basket sizes)",
+          },
+          {
+            id: "promotional",
+            label: "Promotional Analysis",
+            src: "/projects/customer-segmentation-promotional.png",
+            alt: "Dunnhumby Customer Segmentation — Promotional Opportunity & Affinity Diagnostic",
+            description: "Promotional Opportunity Diagnostic (High-affinity uncampaigned households, lift models)",
+          },
+        ],
+      };
+    } else if (project.id === "payment-status-recovery") {
+      initialConfig = {
+        type: "gif",
+        src: "/Payment%20Status%20Recovery%20Walkthrough.gif",
+        alt: "Payment Status Recovery Walkthrough Interface Animation",
+        isExpandable: true,
+      };
+    } else if (project.id === "gst-anomaly-detection") {
+      initialConfig = {
+        type: "static",
+        src: "/projects/gst-invoice-anomaly-dashboard.png",
+        alt: "GST Invoice Anomaly Detection Forensic Tableau Dashboard",
+        isExpandable: true,
+      };
+    } else if (project.id === "ewaybill-data-reliability") {
+      initialConfig = {
+        type: "static",
+        src: "/projects/ewaybill-architecture-pipeline.jpg",
+        alt: "E-Way Bill Data Reliability Pipeline Architecture Diagram",
+        isExpandable: true,
+      };
+    } else {
+      initialConfig = {
+        type: "none",
+        src: "",
+        alt: project.title,
+        isExpandable: true,
+      };
+    }
+
+    setPreviewWorkingConfig(initialConfig);
+    setActiveCarouselViewIdx(0);
+    setUploadError("");
+    setSelectedProjectForPreview({ project, isFeatured, index });
   };
 
-  const addProject = (isFeatured: boolean) => {
+  const handleUploadPreviewAsset = async (file: File, targetViewIndex?: number) => {
+    setUploadingAsset(true);
+    setUploadError("");
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await res.json();
+      if (!res.ok || !result.success) {
+        throw new Error(result.error || "Failed to upload asset");
+      }
+
+      const uploadedUrl = result.url;
+
+      if (previewWorkingConfig.type === "carousel" && targetViewIndex !== undefined) {
+        const updatedViews = [...(previewWorkingConfig.views || [])];
+        if (updatedViews[targetViewIndex]) {
+          updatedViews[targetViewIndex] = {
+            ...updatedViews[targetViewIndex],
+            src: uploadedUrl,
+          };
+        }
+        setPreviewWorkingConfig({
+          ...previewWorkingConfig,
+          views: updatedViews,
+        });
+        showToast(`Dashboard image #${targetViewIndex + 1} updated successfully!`, "success");
+      } else {
+        const detectedType: "static" | "gif" | "video" = file.type.startsWith("video/")
+          ? "video"
+          : file.type === "image/gif"
+          ? "gif"
+          : "static";
+
+        setPreviewWorkingConfig({
+          ...previewWorkingConfig,
+          src: uploadedUrl,
+          type: detectedType,
+        });
+        showToast(`Asset uploaded successfully (${result.filename})`, "success");
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Upload error";
+      setUploadError(msg);
+      showToast(msg, "error");
+    } finally {
+      setUploadingAsset(false);
+    }
+  };
+
+  const handleSavePreviewModal = async () => {
+    if (!selectedProjectForPreview) return;
+    const { project, isFeatured } = selectedProjectForPreview;
     const listKey = isFeatured ? "featuredProjects" : "supportingProjects";
-    const newProj: Project = {
-      id: `custom-project-${Date.now()}`,
-      title: "New Project Title",
-      category: "Analytics & Product",
-      targetRoleRelevance: ["Analytics", "Decision Systems"],
-      tagline: "High-impact analytical engine or product framework",
-      description: "Comprehensive description of the project problem, methodology, and outcome.",
-      architectureHighlights: [
-        "Structured ingestion and data transformation pipeline",
-        "Deterministic validation rules and uncertainty resolution",
-      ],
-      metrics: [
-        { label: "Metric 1", value: "99.8%" },
-        { label: "Metric 2", value: "50K+" },
-      ],
-      tags: ["Python", "SQL", "Analytics"],
-      githubUrl: "https://github.com/Saksham3124",
-      featured: isFeatured,
+
+    const updatedList = (data[listKey] || []).map((p) => {
+      if (p.id === project.id) {
+        return {
+          ...p,
+          preview: previewWorkingConfig,
+        };
+      }
+      return p;
+    });
+
+    const updatedData: PortfolioContentData = {
+      ...data,
+      [listKey]: updatedList,
     };
 
-    setData({ ...data, [listKey]: [...data[listKey], newProj] });
+    setData(updatedData);
     setIsDirty(true);
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("portfolio_cached_data", JSON.stringify(updatedData));
+      } catch {}
+    }
+
+    try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      const token = localStorage.getItem("portfolio_github_token") || gitHubToken.trim();
+      if (token) headers["x-github-token"] = token;
+
+      await fetch("/api/admin/portfolio-data", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(updatedData),
+      });
+      showToast(`Preview configuration for "${project.title}" saved successfully!`, "success");
+    } catch {
+      showToast(`Preview updated in local session. Remember to click "Save All Changes".`, "success");
+    }
+
+    setSelectedProjectForPreview(null);
+  };
+
+  const openAddProject = (isFeaturedDefault: boolean = true) => {
+    setEditingProject({
+      project: {
+        id: `custom-proj-${Date.now()}`,
+        title: "",
+        category: "Analytics & Product",
+        targetRoleRelevance: ["Analytics", "Decision Systems"],
+        tagline: "",
+        description: "",
+        architectureHighlights: [
+          "Engineered an automated data pipeline and deterministic validation system.",
+          "Applied statistical evaluation and quality metrics across historical records.",
+        ],
+        metrics: [
+          { label: "Accuracy / Efficiency", value: "99.8%" },
+          { label: "Records Audited", value: "50K+" },
+        ],
+        tags: ["Python", "SQL", "PostgreSQL", "Analytics"],
+        githubUrl: "https://github.com/Saksham3124",
+        liveUrl: "",
+        featured: isFeaturedDefault,
+        preview: {
+          type: "static",
+          src: "",
+          alt: "",
+          isExpandable: true,
+        },
+      },
+      isFeatured: isFeaturedDefault,
+      index: -1,
+      isNew: true,
+    });
+  };
+
+  const openEditProject = (project: Project, isFeatured: boolean, index: number) => {
+    setEditingProject({
+      project: JSON.parse(JSON.stringify(project)),
+      isFeatured,
+      index,
+      isNew: false,
+    });
+  };
+
+  const handleSaveEditedProject = async () => {
+    if (!editingProject || !editingProject.project.title?.trim()) {
+      showToast("Please provide a project title.", "error");
+      return;
+    }
+
+    const { project, isFeatured: originalIsFeatured, index, isNew } = editingProject;
+    const targetIsFeatured = project.featured !== undefined ? project.featured : originalIsFeatured;
+
+    let updatedFeatured = [...(data.featuredProjects || [])];
+    let updatedSupporting = [...(data.supportingProjects || [])];
+
+    const finalProject: Project = {
+      id: project.id || `proj-${Date.now()}`,
+      title: project.title || "Untitled Project",
+      category: project.category || "Analytics & Product",
+      targetRoleRelevance: project.targetRoleRelevance || ["Analytics", "Decision Systems"],
+      tagline: project.tagline || "",
+      description: project.description || "",
+      architectureHighlights: (project.architectureHighlights || []).filter((h) => h.trim().length > 0),
+      metrics: (project.metrics || []).filter((m) => m.label.trim().length > 0 || m.value.trim().length > 0),
+      tags: project.tags || [],
+      githubUrl: project.githubUrl || undefined,
+      tableauUrl: project.tableauUrl || undefined,
+      liveUrl: project.liveUrl || undefined,
+      featured: targetIsFeatured,
+      preview: project.preview,
+    };
+
+    if (isNew) {
+      if (targetIsFeatured) {
+        updatedFeatured.push(finalProject);
+      } else {
+        updatedSupporting.push(finalProject);
+      }
+    } else {
+      if (originalIsFeatured === targetIsFeatured) {
+        if (targetIsFeatured) {
+          updatedFeatured[index] = finalProject;
+        } else {
+          updatedSupporting[index] = finalProject;
+        }
+      } else {
+        if (originalIsFeatured) {
+          updatedFeatured = updatedFeatured.filter((_, i) => i !== index);
+          updatedSupporting.push(finalProject);
+        } else {
+          updatedSupporting = updatedSupporting.filter((_, i) => i !== index);
+          updatedFeatured.push(finalProject);
+        }
+      }
+    }
+
+    const updatedData: PortfolioContentData = {
+      ...data,
+      featuredProjects: updatedFeatured,
+      supportingProjects: updatedSupporting,
+    };
+
+    setData(updatedData);
+    setIsDirty(true);
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("portfolio_cached_data", JSON.stringify(updatedData));
+      } catch {}
+    }
+
+    try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      const token = localStorage.getItem("portfolio_github_token") || gitHubToken.trim();
+      if (token) headers["x-github-token"] = token;
+
+      await fetch("/api/admin/portfolio-data", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(updatedData),
+      });
+      showToast(`Project "${finalProject.title}" saved successfully!`, "success");
+    } catch {
+      showToast(`Project saved to local session. Click "Save All Changes" to persist.`, "success");
+    }
+
+    setEditingProject(null);
+  };
+
+  const handleConfirmDeleteProject = async () => {
+    if (!deleteConfirmProject) return;
+    const { project, isFeatured, index } = deleteConfirmProject;
+    const listKey = isFeatured ? "featuredProjects" : "supportingProjects";
+
+    const updatedList = (data[listKey] || []).filter((_, i) => i !== index);
+    const updatedData: PortfolioContentData = {
+      ...data,
+      [listKey]: updatedList,
+    };
+
+    setData(updatedData);
+    setIsDirty(true);
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("portfolio_cached_data", JSON.stringify(updatedData));
+      } catch {}
+    }
+
+    try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      const token = localStorage.getItem("portfolio_github_token") || gitHubToken.trim();
+      if (token) headers["x-github-token"] = token;
+
+      await fetch("/api/admin/portfolio-data", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(updatedData),
+      });
+      showToast(`Deleted project "${project.title}"`, "success");
+    } catch {
+      showToast(`Project removed in local session.`, "success");
+    }
+
+    setDeleteConfirmProject(null);
+  };
+
+  const toggleProjectStatus = async (index: number, currentlyFeatured: boolean) => {
+    const sourceKey = currentlyFeatured ? "featuredProjects" : "supportingProjects";
+    const targetKey = currentlyFeatured ? "supportingProjects" : "featuredProjects";
+    const project = data[sourceKey][index];
+    if (!project) return;
+
+    const updatedProject = { ...project, featured: !currentlyFeatured };
+    const updatedSource = data[sourceKey].filter((_, i) => i !== index);
+    const updatedTarget = [...data[targetKey], updatedProject];
+
+    const updatedData: PortfolioContentData = {
+      ...data,
+      [sourceKey]: updatedSource,
+      [targetKey]: updatedTarget,
+    };
+
+    setData(updatedData);
+    setIsDirty(true);
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("portfolio_cached_data", JSON.stringify(updatedData));
+      } catch {}
+    }
+
+    showToast(`Moved "${project.title}" to ${!currentlyFeatured ? "Flagship" : "Supporting"} projects`, "success");
   };
 
   // Experience helpers
@@ -1049,8 +1428,7 @@ export default function AdminPage() {
 
               {[
                 { id: "profile", label: "Profile & Hero", icon: User },
-                { id: "flagship", label: "Flagship Projects", icon: FolderKanban },
-                { id: "supporting", label: "Supporting Projects", icon: Layers },
+                { id: "projects", label: "Project Management", icon: FolderKanban },
                 { id: "about", label: "About & Narrative", icon: Compass },
                 { id: "telemetry", label: "Telemetry & Scale", icon: Sliders },
                 { id: "experience", label: "Experience & LNMIIT", icon: Briefcase },
@@ -1061,7 +1439,10 @@ export default function AdminPage() {
                 { id: "settings", label: "Settings & Backups", icon: Shield },
               ].map((tab) => {
                 const IconComponent = tab.icon;
-                const isActive = activeTab === tab.id;
+                const isActive =
+                  tab.id === "projects"
+                    ? activeTab === "projects" || activeTab === "flagship" || activeTab === "supporting"
+                    : activeTab === tab.id;
                 return (
                   <button
                     key={tab.id}
@@ -1512,568 +1893,498 @@ export default function AdminPage() {
               </div>
             )}
 
-            {/* 2. FLAGSHIP PROJECTS TAB */}
-            {activeTab === "flagship" && (
+            {/* 2. PROJECT MANAGEMENT TAB */}
+            {(activeTab === "projects" || activeTab === "flagship" || activeTab === "supporting") && (
               <div className="space-y-6">
+                {/* Header & Primary Actions */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#08080c] border border-white/[0.06] rounded-2xl p-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-white tracking-tight">Flagship Projects</h2>
-                    <p className="text-xs text-zinc-400 mt-1">
-                      Prominently featured deep-dive projects showcased in the primary 2-column grid.
+                    <div className="flex items-center gap-2.5 mb-1">
+                      <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+                        <FolderKanban className="w-5 h-5" />
+                      </div>
+                      <h2 className="text-lg font-semibold text-white tracking-tight">Project Management</h2>
+                    </div>
+                    <p className="text-xs text-zinc-400 mt-1 max-w-xl">
+                      Central studio for viewing, editing, reordering, and independently configuring media previews and interactive carousels.
                     </p>
                   </div>
-                  <button
-                    onClick={() => addProject(true)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 transition-all shrink-0"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Add Flagship Project</span>
-                  </button>
-                </div>
-
-                {/* Section Header Controls */}
-                <div className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 space-y-4">
-                  <h3 className="text-xs font-mono uppercase text-zinc-400 tracking-wider font-semibold">
-                    Section Header & Context
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
-                        Eyebrow Pill
-                      </label>
-                      <input
-                        type="text"
-                        value={data.featuredProjectsPill || ""}
-                        placeholder="Flagship Projects"
-                        onChange={(e) => {
-                          setData({
-                            ...data,
-                            featuredProjectsPill: e.target.value,
-                          });
-                          setIsDirty(true);
-                        }}
-                        className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
-                        Section Heading
-                      </label>
-                      <input
-                        type="text"
-                        value={data.featuredProjectsHeading || ""}
-                        placeholder="Work & Flagship Projects"
-                        onChange={(e) => {
-                          setData({
-                            ...data,
-                            featuredProjectsHeading: e.target.value,
-                          });
-                          setIsDirty(true);
-                        }}
-                        className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs font-semibold text-white focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-mono text-zinc-500 uppercase block mb-1">
-                      Section Subheading
-                    </label>
-                    <textarea
-                      rows={2}
-                      value={data.featuredProjectsSubtitle || ""}
-                      placeholder="Evidence-based projects supporting customer opportunity modeling, forensic anomaly detection, regulatory data reliability, and payment uncertainty recovery."
-                      onChange={(e) => {
-                        setData({
-                          ...data,
-                          featuredProjectsSubtitle: e.target.value,
-                        });
-                        setIsDirty(true);
-                      }}
-                      className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-zinc-300 focus:outline-none leading-relaxed"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  {data.featuredProjects.map((proj, pIdx) => (
-                    <div
-                      key={proj.id}
-                      className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 space-y-4 relative"
+                  <div className="flex items-center gap-2.5 shrink-0 flex-wrap sm:flex-nowrap">
+                    <button
+                      type="button"
+                      onClick={() => setShowSectionSettings(!showSectionSettings)}
+                      className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium border transition-all ${
+                        showSectionSettings
+                          ? "bg-white/10 text-white border-white/20"
+                          : "bg-white/[0.03] text-zinc-300 border-white/[0.08] hover:bg-white/[0.06]"
+                      }`}
                     >
-                      <div className="flex items-start justify-between gap-4 pb-3 border-b border-white/[0.06]">
-                        <div className="flex items-center gap-2.5">
-                          <span className="w-6 h-6 rounded-full bg-white/[0.05] border border-white/10 text-zinc-400 font-mono text-xs flex items-center justify-center shrink-0">
-                            {pIdx + 1}
-                          </span>
-                          <div>
-                            <h3 className="text-base font-semibold text-white">{proj.title}</h3>
-                            <span className="text-[11px] font-mono text-zinc-400">{proj.category}</span>
-                          </div>
-                        </div>
+                      <SlidersHorizontal className="w-3.5 h-3.5" />
+                      <span>Section Headers</span>
+                      {showSectionSettings ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openAddProject(projectFilter !== "supporting")}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 transition-all shadow-md shrink-0"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Add New Project</span>
+                    </button>
+                  </div>
+                </div>
 
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => moveProject(pIdx, "up", true)}
-                            disabled={pIdx === 0}
-                            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30 disabled:hover:bg-transparent"
-                            title="Move Up"
-                          >
-                            <ArrowUp className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => moveProject(pIdx, "down", true)}
-                            disabled={pIdx === data.featuredProjects.length - 1}
-                            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30 disabled:hover:bg-transparent"
-                            title="Move Down"
-                          >
-                            <ArrowDown className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => deleteProject(pIdx, true)}
-                            className="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/10 ml-1"
-                            title="Delete Project"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
+                {/* Section Header Controls Accordion */}
+                {showSectionSettings && (
+                  <div className="bg-[#08080c] border border-white/[0.08] rounded-2xl p-6 space-y-5 animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+                      <h3 className="text-xs font-mono uppercase text-zinc-300 tracking-wider font-semibold flex items-center gap-2">
+                        <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Public Portfolio Section Headings & Eyebrow Pills</span>
+                      </h3>
+                      <span className="text-[11px] font-mono text-zinc-500">Live on main portfolio</span>
+                    </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Flagship Section Settings */}
+                      <div className="space-y-3 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                        <div className="text-[11px] font-mono uppercase text-cyan-400 font-semibold">Flagship Projects Section</div>
                         <div>
-                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                            Project Title
-                          </label>
+                          <label className="text-[10px] font-mono text-zinc-400 uppercase block mb-1">Eyebrow Pill</label>
                           <input
                             type="text"
-                            value={proj.title}
+                            value={data.featuredProjectsPill || ""}
+                            placeholder="Flagship Projects"
                             onChange={(e) => {
-                              const updated = [...data.featuredProjects];
-                              updated[pIdx].title = e.target.value;
-                              setData({ ...data, featuredProjects: updated });
-                              setIsDirty(true);
-                            }}
-                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                            Category / Subtitle Tagline
-                          </label>
-                          <input
-                            type="text"
-                            value={proj.category}
-                            onChange={(e) => {
-                              const updated = [...data.featuredProjects];
-                              updated[pIdx].category = e.target.value;
-                              setData({ ...data, featuredProjects: updated });
-                              setIsDirty(true);
-                            }}
-                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                          Subtitle / Core Hook
-                        </label>
-                        <input
-                          type="text"
-                          value={proj.tagline}
-                          onChange={(e) => {
-                            const updated = [...data.featuredProjects];
-                            updated[pIdx].tagline = e.target.value;
-                            setData({ ...data, featuredProjects: updated });
-                            setIsDirty(true);
-                          }}
-                          className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                          Description Narrative
-                        </label>
-                        <textarea
-                          rows={3}
-                          value={proj.description}
-                          onChange={(e) => {
-                            const updated = [...data.featuredProjects];
-                            updated[pIdx].description = e.target.value;
-                            setData({ ...data, featuredProjects: updated });
-                            setIsDirty(true);
-                          }}
-                          className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none leading-relaxed"
-                        />
-                      </div>
-
-                      {/* Technical highlights */}
-                      <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <label className="text-[11px] font-mono text-zinc-400 uppercase">
-                            Technical / Architecture Highlights (Bullets)
-                          </label>
-                          <button
-                            onClick={() => {
-                              const updated = [...data.featuredProjects];
-                              updated[pIdx].architectureHighlights = [
-                                ...updated[pIdx].architectureHighlights,
-                                "New technical bullet point",
-                              ];
-                              setData({ ...data, featuredProjects: updated });
-                              setIsDirty(true);
-                            }}
-                            className="text-[10px] font-mono text-blue-400 hover:text-blue-300 flex items-center gap-1"
-                          >
-                            <Plus className="w-3 h-3" /> Add Bullet
-                          </button>
-                        </div>
-                        <div className="space-y-2">
-                          {proj.architectureHighlights.map((hl, hlIdx) => (
-                            <div key={hlIdx} className="flex items-center gap-2">
-                              <span className="text-zinc-600 text-xs">•</span>
-                              <input
-                                type="text"
-                                value={hl}
-                                onChange={(e) => {
-                                  const updated = [...data.featuredProjects];
-                                  updated[pIdx].architectureHighlights[hlIdx] = e.target.value;
-                                  setData({ ...data, featuredProjects: updated });
-                                  setIsDirty(true);
-                                }}
-                                className="flex-1 px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
-                              />
-                              <button
-                                onClick={() => {
-                                  const updated = [...data.featuredProjects];
-                                  updated[pIdx].architectureHighlights = updated[
-                                    pIdx
-                                  ].architectureHighlights.filter((_, i) => i !== hlIdx);
-                                  setData({ ...data, featuredProjects: updated });
-                                  setIsDirty(true);
-                                }}
-                                className="p-1 text-zinc-500 hover:text-red-400"
-                              >
-                                <X className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Metrics Boxes */}
-                      <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <label className="text-[11px] font-mono text-zinc-400 uppercase">
-                            Metric Statistics Boxes
-                          </label>
-                          <button
-                            onClick={() => {
-                              const updated = [...data.featuredProjects];
-                              updated[pIdx].metrics = [
-                                ...updated[pIdx].metrics,
-                                { label: "New Metric", value: "100%" },
-                              ];
-                              setData({ ...data, featuredProjects: updated });
-                              setIsDirty(true);
-                            }}
-                            className="text-[10px] font-mono text-blue-400 hover:text-blue-300 flex items-center gap-1"
-                          >
-                            <Plus className="w-3 h-3" /> Add Metric
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          {proj.metrics.map((met, mIdx) => (
-                            <div
-                              key={mIdx}
-                              className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] relative group"
-                            >
-                              <button
-                                onClick={() => {
-                                  const updated = [...data.featuredProjects];
-                                  updated[pIdx].metrics = updated[pIdx].metrics.filter(
-                                    (_, i) => i !== mIdx
-                                  );
-                                  setData({ ...data, featuredProjects: updated });
-                                  setIsDirty(true);
-                                }}
-                                className="absolute top-2 right-2 text-zinc-600 hover:text-red-400"
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                              <div className="space-y-1.5">
-                                <input
-                                  type="text"
-                                  value={met.value}
-                                  placeholder="Value (e.g. 50K+)"
-                                  onChange={(e) => {
-                                    const updated = [...data.featuredProjects];
-                                    updated[pIdx].metrics[mIdx].value = e.target.value;
-                                    setData({ ...data, featuredProjects: updated });
-                                    setIsDirty(true);
-                                  }}
-                                  className="w-full px-2 py-1 rounded bg-white/[0.03] border border-white/10 text-xs font-semibold text-white focus:outline-none"
-                                />
-                                <input
-                                  type="text"
-                                  value={met.label}
-                                  placeholder="Label description"
-                                  onChange={(e) => {
-                                    const updated = [...data.featuredProjects];
-                                    updated[pIdx].metrics[mIdx].label = e.target.value;
-                                    setData({ ...data, featuredProjects: updated });
-                                    setIsDirty(true);
-                                  }}
-                                  className="w-full px-2 py-1 rounded bg-white/[0.03] border border-white/10 text-[11px] text-zinc-400 focus:outline-none"
-                                />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Tags and URLs */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-white/[0.04]">
-                        <div>
-                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                            Technology Tags (Comma Separated)
-                          </label>
-                          <input
-                            type="text"
-                            value={proj.tags.join(", ")}
-                            onChange={(e) => {
-                              const updated = [...data.featuredProjects];
-                              updated[pIdx].tags = e.target.value
-                                .split(",")
-                                .map((t) => t.trim())
-                                .filter(Boolean);
-                              setData({ ...data, featuredProjects: updated });
+                              setData({ ...data, featuredProjectsPill: e.target.value });
                               setIsDirty(true);
                             }}
                             className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
                           />
                         </div>
-
                         <div>
-                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                            GitHub Repository Link
-                          </label>
+                          <label className="text-[10px] font-mono text-zinc-400 uppercase block mb-1">Section Heading</label>
                           <input
-                            type="url"
-                            value={proj.githubUrl || ""}
+                            type="text"
+                            value={data.featuredProjectsHeading || ""}
+                            placeholder="Work & Flagship Projects"
                             onChange={(e) => {
-                              const updated = [...data.featuredProjects];
-                              updated[pIdx].githubUrl = e.target.value;
-                              setData({ ...data, featuredProjects: updated });
+                              setData({ ...data, featuredProjectsHeading: e.target.value });
+                              setIsDirty(true);
+                            }}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs font-semibold text-white focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-mono text-zinc-400 uppercase block mb-1">Section Subheading</label>
+                          <textarea
+                            rows={2}
+                            value={data.featuredProjectsSubtitle || ""}
+                            placeholder="Evidence-based projects supporting customer opportunity modeling..."
+                            onChange={(e) => {
+                              setData({ ...data, featuredProjectsSubtitle: e.target.value });
+                              setIsDirty(true);
+                            }}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-zinc-300 focus:outline-none leading-relaxed"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Supporting Section Settings */}
+                      <div className="space-y-3 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                        <div className="text-[11px] font-mono uppercase text-violet-400 font-semibold">Supporting Projects Section</div>
+                        <div>
+                          <label className="text-[10px] font-mono text-zinc-400 uppercase block mb-1">Section Heading</label>
+                          <input
+                            type="text"
+                            value={data.supportingProjectsHeading ?? "Supporting Analytical Projects"}
+                            onChange={(e) => {
+                              setData({ ...data, supportingProjectsHeading: e.target.value });
                               setIsDirty(true);
                             }}
                             className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
                           />
                         </div>
+                        <div>
+                          <label className="text-[10px] font-mono text-zinc-400 uppercase block mb-1">Expandable Button Text</label>
+                          <input
+                            type="text"
+                            value={data.supportingProjectsButtonText ?? "Inspect Supporting Pipelines (Credit Risk, Rail Telemetry, Financial Modeling)"}
+                            onChange={(e) => {
+                              setData({ ...data, supportingProjectsButtonText: e.target.value });
+                              setIsDirty(true);
+                            }}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-mono text-zinc-400 uppercase block mb-1">Section Context Note</label>
+                          <textarea
+                            rows={2}
+                            value={data.supportingProjectsSubtitle ?? "Secondary systems and analytical pipelines (e.g. Credit Risk Scorecard Engine)."}
+                            onChange={(e) => {
+                              setData({ ...data, supportingProjectsSubtitle: e.target.value });
+                              setIsDirty(true);
+                            }}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-zinc-300 focus:outline-none leading-relaxed"
+                          />
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                  </div>
+                )}
 
-            {/* 3. SUPPORTING PROJECTS TAB */}
-            {activeTab === "supporting" && (
-              <div className="space-y-6">
-                <div className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                      <h2 className="text-lg font-semibold text-white tracking-tight">
-                        Supporting Analytical Projects
-                      </h2>
-                      <p className="text-xs text-zinc-400 mt-1">
-                        Configure the section heading, subtitle note, expandable button text, and project entries.
-                      </p>
-                    </div>
+                {/* Filter and Search Bar */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[#08080c] border border-white/[0.06] rounded-2xl p-4">
+                  {/* Filter Pills */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
                     <button
-                      onClick={() => addProject(false)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 transition-all shrink-0"
+                      type="button"
+                      onClick={() => setProjectFilter("all")}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 ${
+                        projectFilter === "all"
+                          ? "bg-white/10 text-white font-semibold border border-white/15"
+                          : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.03]"
+                      }`}
                     >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Supporting Project</span>
+                      All Projects ({data.featuredProjects.length + data.supportingProjects.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setProjectFilter("featured")}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 flex items-center gap-1.5 ${
+                        projectFilter === "featured"
+                          ? "bg-cyan-500/15 text-cyan-300 font-semibold border border-cyan-500/30"
+                          : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.03]"
+                      }`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                      <span>Flagship ({data.featuredProjects.length})</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setProjectFilter("supporting")}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 flex items-center gap-1.5 ${
+                        projectFilter === "supporting"
+                          ? "bg-violet-500/15 text-violet-300 font-semibold border border-violet-500/30"
+                          : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.03]"
+                      }`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+                      <span>Supporting ({data.supportingProjects.length})</span>
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-white/[0.06]">
-                    <div>
-                      <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                        Section Heading
-                      </label>
-                      <input
-                        type="text"
-                        value={data.supportingProjectsHeading ?? "Supporting Analytical Projects"}
-                        onChange={(e) => {
-                          setData({ ...data, supportingProjectsHeading: e.target.value });
-                          setIsDirty(true);
-                        }}
-                        className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                        Expandable Button / Pill Text
-                      </label>
-                      <input
-                        type="text"
-                        value={data.supportingProjectsButtonText ?? "Inspect Supporting Pipelines (Credit Risk, Rail Telemetry, Financial Modeling)"}
-                        onChange={(e) => {
-                          setData({ ...data, supportingProjectsButtonText: e.target.value });
-                          setIsDirty(true);
-                        }}
-                        className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                      Supporting Projects Subtitle / Context Note (e.g. Credit Risk Scorecard Engine note)
-                    </label>
-                    <textarea
-                      rows={2}
-                      value={data.supportingProjectsSubtitle ?? "Secondary systems and analytical pipelines (e.g. Credit Risk Scorecard Engine)."}
-                      onChange={(e) => {
-                        setData({ ...data, supportingProjectsSubtitle: e.target.value });
-                        setIsDirty(true);
-                      }}
-                      className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none leading-relaxed"
+                  {/* Search Input */}
+                  <div className="sm:w-64">
+                    <input
+                      type="text"
+                      value={searchProjectQuery}
+                      onChange={(e) => setSearchProjectQuery(e.target.value)}
+                      placeholder="Search title, category, tags..."
+                      className="w-full px-3 py-1.5 rounded-xl bg-white/[0.02] border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400/40"
                     />
                   </div>
                 </div>
 
+                {/* Projects List */}
                 <div className="space-y-4">
-                  {data.supportingProjects.map((proj, pIdx) => (
-                    <div
-                      key={proj.id}
-                      className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-6 space-y-4"
-                    >
-                      <div className="flex items-start justify-between gap-4 pb-3 border-b border-white/[0.06]">
-                        <div>
-                          <h3 className="text-base font-semibold text-white">{proj.title}</h3>
-                          <span className="text-[11px] font-mono text-zinc-400">{proj.category}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => moveProject(pIdx, "up", false)}
-                            disabled={pIdx === 0}
-                            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30"
-                          >
-                            <ArrowUp className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => moveProject(pIdx, "down", false)}
-                            disabled={pIdx === data.supportingProjects.length - 1}
-                            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-30"
-                          >
-                            <ArrowDown className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => deleteProject(pIdx, false)}
-                            className="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/10 ml-1"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
+                  {(() => {
+                    const allWithMeta: { project: Project; isFeatured: boolean; index: number }[] = [
+                      ...data.featuredProjects.map((p, idx) => ({ project: p, isFeatured: true, index: idx })),
+                      ...data.supportingProjects.map((p, idx) => ({ project: p, isFeatured: false, index: idx })),
+                    ];
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                            Title
-                          </label>
-                          <input
-                            type="text"
-                            value={proj.title}
-                            onChange={(e) => {
-                              const updated = [...data.supportingProjects];
-                              updated[pIdx].title = e.target.value;
-                              setData({ ...data, supportingProjects: updated });
-                              setIsDirty(true);
-                            }}
-                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                            Category
-                          </label>
-                          <input
-                            type="text"
-                            value={proj.category}
-                            onChange={(e) => {
-                              const updated = [...data.supportingProjects];
-                              updated[pIdx].category = e.target.value;
-                              setData({ ...data, supportingProjects: updated });
-                              setIsDirty(true);
-                            }}
-                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none"
-                          />
-                        </div>
-                      </div>
+                    const filtered = allWithMeta.filter(({ project, isFeatured }) => {
+                      if (projectFilter === "featured" && !isFeatured) return false;
+                      if (projectFilter === "supporting" && isFeatured) return false;
+                      if (searchProjectQuery.trim()) {
+                        const q = searchProjectQuery.toLowerCase();
+                        const matchTitle = project.title.toLowerCase().includes(q);
+                        const matchCat = (project.category || "").toLowerCase().includes(q);
+                        const matchDesc = (project.description || "").toLowerCase().includes(q);
+                        const matchTags = (project.tags || []).some((t) => t.toLowerCase().includes(q));
+                        if (!matchTitle && !matchCat && !matchDesc && !matchTags) return false;
+                      }
+                      return true;
+                    });
 
-                      <div>
-                        <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                          Description
-                        </label>
-                        <textarea
-                          rows={3}
-                          value={proj.description}
-                          onChange={(e) => {
-                            const updated = [...data.supportingProjects];
-                            updated[pIdx].description = e.target.value;
-                            setData({ ...data, supportingProjects: updated });
-                            setIsDirty(true);
-                          }}
-                          className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-sm text-white focus:outline-none leading-relaxed"
-                        />
-                      </div>
+                    if (filtered.length === 0) {
+                      return (
+                        <div className="bg-[#08080c] border border-white/[0.06] rounded-2xl p-12 text-center space-y-3">
+                          <FolderKanban className="w-8 h-8 text-zinc-600 mx-auto" />
+                          <p className="text-sm text-zinc-400 font-medium">No projects found matching filter</p>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setProjectFilter("all");
+                              setSearchProjectQuery("");
+                            }}
+                            className="text-xs text-cyan-400 hover:underline"
+                          >
+                            Reset filters
+                          </button>
+                        </div>
+                      );
+                    }
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                            Tags (Comma separated)
-                          </label>
-                          <input
-                            type="text"
-                            value={proj.tags.join(", ")}
-                            onChange={(e) => {
-                              const updated = [...data.supportingProjects];
-                              updated[pIdx].tags = e.target.value
-                                .split(",")
-                                .map((t) => t.trim())
-                                .filter(Boolean);
-                              setData({ ...data, supportingProjects: updated });
-                              setIsDirty(true);
-                            }}
-                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
-                          />
+                    return filtered.map(({ project, isFeatured, index }) => {
+                      const preview = project.preview;
+                      const isCarousel = preview?.type === "carousel" || project.id === "dunnhumby-promotional-analytics";
+                      const isGif = preview?.type === "gif" || project.id === "payment-status-recovery";
+                      const isVideo = preview?.type === "video";
+
+                      let thumbSrc = "";
+                      if (isCarousel) {
+                        thumbSrc = preview?.views?.[0]?.src || "/projects/customer-segmentation-overview.png";
+                      } else if (preview?.src) {
+                        thumbSrc = preview.src;
+                      } else if (project.id === "gst-anomaly-detection") {
+                        thumbSrc = "/projects/gst-invoice-anomaly-dashboard.png";
+                      } else if (project.id === "ewaybill-data-reliability") {
+                        thumbSrc = "/projects/ewaybill-architecture-pipeline.jpg";
+                      } else if (project.id === "payment-status-recovery") {
+                        thumbSrc = "/Payment%20Status%20Recovery%20Walkthrough.gif";
+                      }
+
+                      return (
+                        <div
+                          key={project.id}
+                          className="bg-[#08080c] border border-white/[0.06] hover:border-white/[0.12] transition-colors rounded-2xl p-5 sm:p-6 space-y-5"
+                        >
+                          {/* Card Top Row: Meta, Status, and Action Controls */}
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/[0.06]">
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <span className="w-6 h-6 rounded-full bg-white/[0.05] border border-white/10 text-zinc-400 font-mono text-xs flex items-center justify-center shrink-0">
+                                {index + 1}
+                              </span>
+                              <div>
+                                <h3 className="text-base font-semibold text-white tracking-tight">{project.title}</h3>
+                                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                  <span className="text-[11px] font-mono text-zinc-400">{project.category}</span>
+                                  <span className="text-zinc-600">•</span>
+                                  {isFeatured ? (
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                                      Flagship (Primary Grid)
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-300 border border-violet-500/20">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+                                      Supporting (Deep-Dive)
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Card Top Actions: Preview button, Edit button, Reorder, Delete */}
+                            <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                              {/* Dedicated Manage Preview Button */}
+                              <button
+                                type="button"
+                                onClick={() => openPreviewManager(project, isFeatured, index)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-medium transition-all"
+                                title="Manage Preview Asset & Lightbox"
+                              >
+                                <ImageIcon className="w-3.5 h-3.5" />
+                                <span>Manage Preview</span>
+                              </button>
+
+                              {/* Edit Project Button */}
+                              <button
+                                type="button"
+                                onClick={() => openEditProject(project, isFeatured, index)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-white border border-white/10 text-xs font-medium transition-all"
+                                title="Edit Project Details"
+                              >
+                                <Edit3 className="w-3.5 h-3.5" />
+                                <span>Edit Details</span>
+                              </button>
+
+                              {/* Switch Publication Status Button */}
+                              <button
+                                type="button"
+                                onClick={() => toggleProjectStatus(index, isFeatured)}
+                                className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.05]"
+                                title={isFeatured ? "Move to Supporting Projects" : "Promote to Flagship Projects"}
+                              >
+                                <SlidersHorizontal className="w-3.5 h-3.5" />
+                              </button>
+
+                              {/* Reorder Buttons */}
+                              <button
+                                type="button"
+                                onClick={() => moveProject(index, "up", isFeatured)}
+                                disabled={index === 0}
+                                className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-20 disabled:hover:bg-transparent"
+                                title="Move Up"
+                              >
+                                <ArrowUp className="w-4 h-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => moveProject(index, "down", isFeatured)}
+                                disabled={index === (isFeatured ? data.featuredProjects.length : data.supportingProjects.length) - 1}
+                                className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] disabled:opacity-20 disabled:hover:bg-transparent"
+                                title="Move Down"
+                              >
+                                <ArrowDown className="w-4 h-4" />
+                              </button>
+
+                              {/* Delete Button */}
+                              <button
+                                type="button"
+                                onClick={() => setDeleteConfirmProject({ project, isFeatured, index })}
+                                className="p-1.5 rounded-lg text-red-400 hover:text-red-300 hover:bg-red-500/10 ml-0.5"
+                                title="Delete Project"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Card Content Grid: Thumbnail Preview + Detailed Info */}
+                          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                            {/* Left: Thumbnail Preview with Quick Manage Overlay */}
+                            <div className="lg:col-span-4">
+                              <div
+                                onClick={() => openPreviewManager(project, isFeatured, index)}
+                                className="group relative w-full aspect-video rounded-xl bg-black border border-white/10 overflow-hidden cursor-pointer shadow-inner"
+                              >
+                                {thumbSrc ? (
+                                  isVideo ? (
+                                    <video src={thumbSrc} className="w-full h-full object-contain pointer-events-none" muted playsInline />
+                                  ) : (
+                                    <img src={thumbSrc} alt={project.title} className="w-full h-full object-contain pointer-events-none group-hover:scale-105 transition-transform duration-300" />
+                                  )
+                                ) : (
+                                  <div className="w-full h-full flex flex-col items-center justify-center text-zinc-600 space-y-1">
+                                    <ImageIcon className="w-8 h-8" />
+                                    <span className="text-[10px] font-mono uppercase tracking-wider">No Preview Configured</span>
+                                  </div>
+                                )}
+
+                                {/* Hover Overlay */}
+                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white">
+                                  <ImageIcon className="w-4 h-4 text-cyan-400" />
+                                  <span className="text-xs font-semibold">Change Preview</span>
+                                </div>
+
+                                {/* Preview Type Pill */}
+                                <div className="absolute bottom-2 left-2 z-10">
+                                  <span className="px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-sm border border-white/10 text-[9.5px] font-mono text-zinc-300">
+                                    {isCarousel
+                                      ? "Carousel (3 Views)"
+                                      : isGif
+                                      ? "Animated GIF"
+                                      : isVideo
+                                      ? "Video"
+                                      : "Static Image"}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Right: Narrative, Highlights, Metrics, Tags */}
+                            <div className="lg:col-span-8 space-y-3.5">
+                              {project.tagline && (
+                                <p className="text-xs font-medium text-cyan-200/90 leading-snug">
+                                  {project.tagline}
+                                </p>
+                              )}
+
+                              <p className="text-xs text-zinc-300 leading-relaxed line-clamp-2">
+                                {project.description}
+                              </p>
+
+                              {/* Metrics summary */}
+                              {project.metrics && project.metrics.length > 0 && (
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  {project.metrics.map((met, mIdx) => (
+                                    <div
+                                      key={mIdx}
+                                      className="px-2.5 py-1 rounded-lg bg-white/[0.03] border border-white/[0.08] text-[11px] flex items-center gap-1.5"
+                                    >
+                                      <span className="font-semibold text-white">{met.value}</span>
+                                      <span className="text-zinc-400 font-mono text-[10px]">{met.label}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* Highlights preview */}
+                              {project.architectureHighlights && project.architectureHighlights.length > 0 && (
+                                <div className="space-y-1 text-xs text-zinc-400">
+                                  <div className="text-[10px] font-mono uppercase text-zinc-500 tracking-wider">Key Highlights:</div>
+                                  <ul className="list-disc list-inside space-y-0.5 text-[11px] text-zinc-300">
+                                    {project.architectureHighlights.slice(0, 2).map((hl, hlIdx) => (
+                                      <li key={hlIdx} className="truncate">{hl}</li>
+                                    ))}
+                                    {project.architectureHighlights.length > 2 && (
+                                      <li className="text-zinc-500 list-none text-[10px] pl-3">
+                                        +{project.architectureHighlights.length - 2} more technical highlight points
+                                      </li>
+                                    )}
+                                  </ul>
+                                </div>
+                              )}
+
+                              {/* Tech tags and URLs */}
+                              <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/[0.04] flex-wrap">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  {(project.tags || []).map((tag, tIdx) => (
+                                    <span
+                                      key={tIdx}
+                                      className="px-2 py-0.5 rounded-md bg-white/[0.03] border border-white/[0.06] text-[10px] font-mono text-zinc-400"
+                                    >
+                                      {tag}
+                                    </span>
+                                  ))}
+                                </div>
+
+                                <div className="flex items-center gap-3 text-xs text-zinc-400">
+                                  {project.githubUrl && (
+                                    <a
+                                      href={project.githubUrl}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="hover:text-white flex items-center gap-1 text-[11px]"
+                                    >
+                                      <span>GitHub</span>
+                                      <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                  )}
+                                  {project.liveUrl && (
+                                    <a
+                                      href={project.liveUrl}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="hover:text-cyan-400 flex items-center gap-1 text-[11px]"
+                                    >
+                                      <span>Live</span>
+                                      <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                  )}
+                                  {project.tableauUrl && (
+                                    <a
+                                      href={project.tableauUrl}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="hover:text-blue-400 flex items-center gap-1 text-[11px]"
+                                    >
+                                      <span>Tableau</span>
+                                      <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
-                            GitHub Repository
-                          </label>
-                          <input
-                            type="url"
-                            value={proj.githubUrl || ""}
-                            onChange={(e) => {
-                              const updated = [...data.supportingProjects];
-                              updated[pIdx].githubUrl = e.target.value;
-                              setData({ ...data, supportingProjects: updated });
-                              setIsDirty(true);
-                            }}
-                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    });
+                  })()}
                 </div>
               </div>
             )}
@@ -4577,6 +4888,871 @@ export default function AdminPage() {
                 ) : (
                   <span>Yes, Reset to Default</span>
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 1. DEDICATED PREVIEW MANAGER MODAL */}
+      {selectedProjectForPreview && (
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto">
+          <div className="w-full max-w-4xl bg-[#08080c] border border-white/10 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto my-auto">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between gap-4 pb-4 border-b border-white/[0.08]">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+                  <ImageIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-white">Manage Project Preview</h3>
+                  <p className="text-xs text-zinc-400 mt-0.5">
+                    {selectedProjectForPreview.project.title} • <span className="font-mono text-cyan-300">{(previewWorkingConfig.type || "STATIC").toUpperCase()}</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedProjectForPreview(null)}
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.06]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Type Selector Tabs */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
+                Preview Presentation Format
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                {[
+                  { type: "carousel", label: "Dashboard Carousel" },
+                  { type: "static", label: "Static Image" },
+                  { type: "gif", label: "Animated GIF" },
+                  { type: "video", label: "Video Clip" },
+                  { type: "none", label: "None / Disabled" },
+                ].map((t) => (
+                  <button
+                    key={t.type}
+                    type="button"
+                    onClick={() => {
+                      const newType = t.type as ProjectPreviewConfig["type"];
+                      if (newType === "carousel" && (!previewWorkingConfig.views || previewWorkingConfig.views.length === 0)) {
+                        setPreviewWorkingConfig({
+                          ...previewWorkingConfig,
+                          type: newType,
+                          views: [
+                            {
+                              id: "overview",
+                              label: "Overview",
+                              src: previewWorkingConfig.src || "/projects/customer-segmentation-overview.png",
+                              description: "Executive Overview Dashboard",
+                            },
+                            {
+                              id: "segmentation",
+                              label: "Customer Segmentation",
+                              src: "/projects/customer-segmentation-segmentation.png",
+                              description: "Customer Segmentation & Category Insights",
+                            },
+                            {
+                              id: "promotional",
+                              label: "Promotional Analysis",
+                              src: "/projects/customer-segmentation-promotional.png",
+                              description: "Promotional Lift & Opportunity Diagnostic",
+                            },
+                          ],
+                        });
+                      } else {
+                        setPreviewWorkingConfig({
+                          ...previewWorkingConfig,
+                          type: newType,
+                        });
+                      }
+                    }}
+                    className={`px-3 py-2 rounded-xl text-xs font-medium border text-center transition-all ${
+                      previewWorkingConfig.type === t.type
+                        ? "bg-cyan-500/15 text-cyan-300 border-cyan-500/40 font-semibold shadow-[0_0_12px_rgba(34,211,238,0.15)]"
+                        : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:bg-white/[0.05] hover:text-white"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Error Message if any */}
+            {uploadError && (
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-300 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+                <span>{uploadError}</span>
+              </div>
+            )}
+
+            {/* A. CAROUSEL PREVIEW MANAGER (Customer Segmentation 3 Views) */}
+            {previewWorkingConfig.type === "carousel" && (
+              <div className="space-y-5 p-5 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
+                <div className="p-3.5 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-xs text-cyan-200/90 leading-relaxed">
+                  <span className="font-semibold">Customer Segmentation Multi-View Carousel:</span> This project displays 3 rotating dashboards in the portfolio card and lightbox. You can independently select, view, replace, and upload each dashboard image below.
+                </div>
+
+                {/* 3 Dashboard View Selector Tabs */}
+                <div className="space-y-2">
+                  <label className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
+                    Select Dashboard View to Inspect or Replace:
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(previewWorkingConfig.views || []).map((view, vIdx) => {
+                      const isActive = vIdx === activeCarouselViewIdx;
+                      return (
+                        <button
+                          key={view.id || vIdx}
+                          type="button"
+                          onClick={() => setActiveCarouselViewIdx(vIdx)}
+                          className={`p-2.5 rounded-xl border text-left transition-all ${
+                            isActive
+                              ? "bg-cyan-500/20 border-cyan-400 text-white font-semibold shadow-md"
+                              : "bg-white/[0.03] border-white/[0.06] text-zinc-400 hover:bg-white/[0.06]"
+                          }`}
+                        >
+                          <div className="text-[10px] font-mono uppercase text-cyan-400">View #{vIdx + 1}</div>
+                          <div className="text-xs truncate">{view.label}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Active View Editor Card */}
+                {(() => {
+                  const currentView = (previewWorkingConfig.views || [])[activeCarouselViewIdx] || {
+                    id: "view",
+                    label: "View",
+                    src: "",
+                    description: "",
+                  };
+
+                  return (
+                    <div className="space-y-4 pt-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                            Dashboard Tab Label
+                          </label>
+                          <input
+                            type="text"
+                            value={currentView.label}
+                            onChange={(e) => {
+                              const updatedViews = [...(previewWorkingConfig.views || [])];
+                              updatedViews[activeCarouselViewIdx] = {
+                                ...updatedViews[activeCarouselViewIdx],
+                                label: e.target.value,
+                              };
+                              setPreviewWorkingConfig({ ...previewWorkingConfig, views: updatedViews });
+                            }}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                            Image Path or URL
+                          </label>
+                          <input
+                            type="text"
+                            value={currentView.src}
+                            onChange={(e) => {
+                              const updatedViews = [...(previewWorkingConfig.views || [])];
+                              updatedViews[activeCarouselViewIdx] = {
+                                ...updatedViews[activeCarouselViewIdx],
+                                src: e.target.value,
+                              };
+                              setPreviewWorkingConfig({ ...previewWorkingConfig, views: updatedViews });
+                            }}
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                          View Narrative / Modal Subtitle
+                        </label>
+                        <input
+                          type="text"
+                          value={currentView.description || ""}
+                          onChange={(e) => {
+                            const updatedViews = [...(previewWorkingConfig.views || [])];
+                            updatedViews[activeCarouselViewIdx] = {
+                              ...updatedViews[activeCarouselViewIdx],
+                              description: e.target.value,
+                            };
+                            setPreviewWorkingConfig({ ...previewWorkingConfig, views: updatedViews });
+                          }}
+                          className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                        />
+                      </div>
+
+                      {/* Upload new image for this specific view */}
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
+                          Replace Dashboard Image #{activeCarouselViewIdx + 1}
+                        </label>
+                        <div className="flex items-center gap-3">
+                          <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/15 text-xs font-semibold text-white cursor-pointer transition-all">
+                            {uploadingAsset ? (
+                              <>
+                                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                <span>Uploading...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="w-3.5 h-3.5 text-cyan-400" />
+                                <span>Upload New Screenshot for {currentView.label}</span>
+                              </>
+                            )}
+                            <input
+                              type="file"
+                              accept="image/png,image/jpeg,image/webp"
+                              className="hidden"
+                              disabled={uploadingAsset}
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  handleUploadPreviewAsset(file, activeCarouselViewIdx);
+                                }
+                              }}
+                            />
+                          </label>
+                          <span className="text-[11px] text-zinc-500 font-mono">PNG, JPG, or WEBP up to 25MB</span>
+                        </div>
+                      </div>
+
+                      {/* Live Image Preview of Current View */}
+                      <div className="space-y-1.5 pt-2">
+                        <div className="text-[10px] font-mono uppercase text-zinc-500">Live View Preview ({currentView.label}):</div>
+                        <div className="relative w-full aspect-video rounded-xl bg-black border border-white/10 overflow-hidden flex items-center justify-center">
+                          {currentView.src ? (
+                            <img
+                              src={currentView.src}
+                              alt={currentView.label}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : (
+                            <span className="text-xs text-zinc-600 font-mono">No Image Configured</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* B. STATIC / GIF / VIDEO PREVIEW MANAGER */}
+            {previewWorkingConfig.type !== "carousel" && previewWorkingConfig.type !== "none" && (
+              <div className="space-y-5 p-5 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
+                {/* Upload Section */}
+                <div className="space-y-2">
+                  <label className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
+                    Upload New Media Asset
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/15 text-xs font-semibold text-white cursor-pointer transition-all">
+                      {uploadingAsset ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Uploading to Server...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-3.5 h-3.5 text-cyan-400" />
+                          <span>Choose File from Computer</span>
+                        </>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/gif,video/mp4,video/webm"
+                        className="hidden"
+                        disabled={uploadingAsset}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            handleUploadPreviewAsset(file);
+                          }
+                        }}
+                      />
+                    </label>
+                    <span className="text-[11px] text-zinc-500 font-mono">
+                      Accepts PNG, JPG, GIF walkthroughs, or MP4 videos up to 25MB
+                    </span>
+                  </div>
+                </div>
+
+                {/* Source Input */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                      Asset Path or URL
+                    </label>
+                    <input
+                      type="text"
+                      value={previewWorkingConfig.src || ""}
+                      onChange={(e) =>
+                        setPreviewWorkingConfig({
+                          ...previewWorkingConfig,
+                          src: e.target.value,
+                        })
+                      }
+                      placeholder="/projects/filename.png or /Payment%20Status%20Recovery.gif"
+                      className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                      Alt / Accessibility Text
+                    </label>
+                    <input
+                      type="text"
+                      value={previewWorkingConfig.alt || ""}
+                      onChange={(e) =>
+                        setPreviewWorkingConfig({
+                          ...previewWorkingConfig,
+                          alt: e.target.value,
+                        })
+                      }
+                      placeholder="Descriptive image label"
+                      className="w-full px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Expandable Lightbox Toggle */}
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="checkbox"
+                    id="isExpandableToggle"
+                    checked={previewWorkingConfig.isExpandable !== false}
+                    onChange={(e) =>
+                      setPreviewWorkingConfig({
+                        ...previewWorkingConfig,
+                        isExpandable: e.target.checked,
+                      })
+                    }
+                    className="rounded border-white/20 bg-white/[0.05] text-cyan-500 focus:ring-0"
+                  />
+                  <label htmlFor="isExpandableToggle" className="text-xs text-zinc-300 font-medium cursor-pointer">
+                    Enable Expandable Lightbox (opens high-res modal upon clicking preview in portfolio)
+                  </label>
+                </div>
+
+                {/* Live Asset Preview */}
+                <div className="space-y-1.5 pt-2">
+                  <div className="text-[10px] font-mono uppercase text-zinc-500">Live Preview Output:</div>
+                  <div className="relative w-full aspect-video rounded-xl bg-black border border-white/10 overflow-hidden flex items-center justify-center">
+                    {previewWorkingConfig.src ? (
+                      previewWorkingConfig.type === "video" ? (
+                        <video
+                          src={previewWorkingConfig.src}
+                          controls
+                          autoPlay
+                          loop
+                          muted
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <img
+                          src={previewWorkingConfig.src}
+                          alt={previewWorkingConfig.alt || "Preview"}
+                          className="w-full h-full object-contain"
+                        />
+                      )
+                    ) : (
+                      <span className="text-xs text-zinc-600 font-mono">No Asset URL Provided</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Footer Actions */}
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/[0.08]">
+              <button
+                type="button"
+                onClick={() => setSelectedProjectForPreview(null)}
+                className="px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-xs font-medium text-zinc-300 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSavePreviewModal}
+                className="px-5 py-2 rounded-xl bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 transition-all shadow-md flex items-center gap-1.5"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>Save Preview Configuration</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. DELETE PROJECT CONFIRMATION MODAL */}
+      {deleteConfirmProject && (
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="w-full max-w-md bg-[#0a0a0e] border border-red-500/20 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-white">Delete Project?</h3>
+                <p className="text-xs text-zinc-400">This action cannot be undone.</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-zinc-300 leading-relaxed">
+              Are you sure you want to permanently delete <strong className="text-white">&ldquo;{deleteConfirmProject.project.title}&rdquo;</strong> from the {deleteConfirmProject.isFeatured ? "Flagship" : "Supporting"} projects section?
+            </p>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmProject(null)}
+                className="px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] text-xs font-medium text-zinc-300"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDeleteProject}
+                className="px-4 py-2 rounded-xl bg-red-500 text-white font-semibold text-xs uppercase tracking-wider hover:bg-red-600 transition-all flex items-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Delete Project</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. ADD / EDIT PROJECT MODAL */}
+      {editingProject && (
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto">
+          <div className="w-full max-w-4xl bg-[#08080c] border border-white/10 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto my-auto">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between gap-4 pb-4 border-b border-white/[0.08]">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-white/10 border border-white/15 text-white">
+                  <Edit3 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-white">
+                    {editingProject.isNew ? "Add New Project" : "Edit Project Details"}
+                  </h3>
+                  <p className="text-xs text-zinc-400 mt-0.5">
+                    {editingProject.project.title || "Configure project metadata, metrics, highlights, and links."}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingProject(null)}
+                className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.06]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Publication Status & Category */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                  Publication Status
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setEditingProject({
+                        ...editingProject,
+                        project: { ...editingProject.project, featured: true },
+                      })
+                    }
+                    className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                      editingProject.project.featured !== false
+                        ? "bg-cyan-500/20 text-cyan-300 border-cyan-400"
+                        : "bg-white/[0.02] text-zinc-400 border-white/[0.06]"
+                    }`}
+                  >
+                    Flagship (Primary Grid)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setEditingProject({
+                        ...editingProject,
+                        project: { ...editingProject.project, featured: false },
+                      })
+                    }
+                    className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+                      editingProject.project.featured === false
+                        ? "bg-violet-500/20 text-violet-300 border-violet-400"
+                        : "bg-white/[0.02] text-zinc-400 border-white/[0.06]"
+                    }`}
+                  >
+                    Supporting (Deep-Dive)
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                  Project Category
+                </label>
+                <input
+                  type="text"
+                  value={editingProject.project.category || ""}
+                  onChange={(e) =>
+                    setEditingProject({
+                      ...editingProject,
+                      project: { ...editingProject.project, category: e.target.value },
+                    })
+                  }
+                  placeholder="e.g. Risk Analytics & AI"
+                  className="w-full px-3 py-2 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Basic Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                  Project Title *
+                </label>
+                <input
+                  type="text"
+                  value={editingProject.project.title || ""}
+                  onChange={(e) =>
+                    setEditingProject({
+                      ...editingProject,
+                      project: { ...editingProject.project, title: e.target.value },
+                    })
+                  }
+                  placeholder="e.g. GST Invoice Anomaly Detection"
+                  className="w-full px-3 py-2 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white font-medium focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                  Tagline / Core Hook
+                </label>
+                <input
+                  type="text"
+                  value={editingProject.project.tagline || ""}
+                  onChange={(e) =>
+                    setEditingProject({
+                      ...editingProject,
+                      project: { ...editingProject.project, tagline: e.target.value },
+                    })
+                  }
+                  placeholder="Short impact-focused summary hook"
+                  className="w-full px-3 py-2 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Description Narrative */}
+            <div>
+              <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                Project Narrative & Methodology
+              </label>
+              <textarea
+                rows={3}
+                value={editingProject.project.description || ""}
+                onChange={(e) =>
+                  setEditingProject({
+                    ...editingProject,
+                    project: { ...editingProject.project, description: e.target.value },
+                  })
+                }
+                placeholder="Comprehensive description of the problem, analytics methodology, and business outcome..."
+                className="w-full px-3 py-2 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none leading-relaxed"
+              />
+            </div>
+
+            {/* Metrics Key/Value Pairs */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-mono text-zinc-400 uppercase">
+                  Key Metrics (Stat Boxes)
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentMetrics = editingProject.project.metrics || [];
+                    setEditingProject({
+                      ...editingProject,
+                      project: {
+                        ...editingProject.project,
+                        metrics: [...currentMetrics, { label: "New Metric", value: "100%" }],
+                      },
+                    });
+                  }}
+                  className="text-[11px] font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+                >
+                  <Plus className="w-3 h-3" /> Add Metric
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {(editingProject.project.metrics || []).map((met, mIdx) => (
+                  <div key={mIdx} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.08] relative group">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updatedMetrics = (editingProject.project.metrics || []).filter((_, i) => i !== mIdx);
+                        setEditingProject({
+                          ...editingProject,
+                          project: { ...editingProject.project, metrics: updatedMetrics },
+                        });
+                      }}
+                      className="absolute top-2 right-2 text-zinc-500 hover:text-red-400"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                    <div className="space-y-1.5 pr-4">
+                      <input
+                        type="text"
+                        value={met.value}
+                        placeholder="Value (e.g. 50K+)"
+                        onChange={(e) => {
+                          const updated = [...(editingProject.project.metrics || [])];
+                          updated[mIdx] = { ...updated[mIdx], value: e.target.value };
+                          setEditingProject({
+                            ...editingProject,
+                            project: { ...editingProject.project, metrics: updated },
+                          });
+                        }}
+                        className="w-full px-2 py-1 rounded bg-white/[0.03] border border-white/10 text-xs font-semibold text-white focus:outline-none"
+                      />
+                      <input
+                        type="text"
+                        value={met.label}
+                        placeholder="Label"
+                        onChange={(e) => {
+                          const updated = [...(editingProject.project.metrics || [])];
+                          updated[mIdx] = { ...updated[mIdx], label: e.target.value };
+                          setEditingProject({
+                            ...editingProject,
+                            project: { ...editingProject.project, metrics: updated },
+                          });
+                        }}
+                        className="w-full px-2 py-1 rounded bg-white/[0.03] border border-white/10 text-[11px] text-zinc-400 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Technical Highlights (Bullets) */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-mono text-zinc-400 uppercase">
+                  Architecture & Technical Highlights
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentHl = editingProject.project.architectureHighlights || [];
+                    setEditingProject({
+                      ...editingProject,
+                      project: {
+                        ...editingProject.project,
+                        architectureHighlights: [...currentHl, "New architecture highlight point"],
+                      },
+                    });
+                  }}
+                  className="text-[11px] font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+                >
+                  <Plus className="w-3 h-3" /> Add Highlight
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {(editingProject.project.architectureHighlights || []).map((hl, hlIdx) => (
+                  <div key={hlIdx} className="flex items-center gap-2">
+                    <span className="text-zinc-600 text-xs">•</span>
+                    <input
+                      type="text"
+                      value={hl}
+                      onChange={(e) => {
+                        const updated = [...(editingProject.project.architectureHighlights || [])];
+                        updated[hlIdx] = e.target.value;
+                        setEditingProject({
+                          ...editingProject,
+                          project: { ...editingProject.project, architectureHighlights: updated },
+                        });
+                      }}
+                      className="flex-1 px-3 py-1.5 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updated = (editingProject.project.architectureHighlights || []).filter((_, i) => i !== hlIdx);
+                        setEditingProject({
+                          ...editingProject,
+                          project: { ...editingProject.project, architectureHighlights: updated },
+                        });
+                      }}
+                      className="p-1 text-zinc-500 hover:text-red-400"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Technology Tags & URLs */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                  Tech Tags (Comma Separated)
+                </label>
+                <input
+                  type="text"
+                  value={(editingProject.project.tags || []).join(", ")}
+                  onChange={(e) =>
+                    setEditingProject({
+                      ...editingProject,
+                      project: {
+                        ...editingProject.project,
+                        tags: e.target.value.split(",").map((t) => t.trim()).filter(Boolean),
+                      },
+                    })
+                  }
+                  placeholder="Python, SQL, Tableau"
+                  className="w-full px-3 py-2 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                  GitHub Repository Link
+                </label>
+                <input
+                  type="url"
+                  value={editingProject.project.githubUrl || ""}
+                  onChange={(e) =>
+                    setEditingProject({
+                      ...editingProject,
+                      project: { ...editingProject.project, githubUrl: e.target.value },
+                    })
+                  }
+                  placeholder="https://github.com/..."
+                  className="w-full px-3 py-2 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-mono text-zinc-400 uppercase block mb-1">
+                  Live Demo / Dashboard URL
+                </label>
+                <input
+                  type="url"
+                  value={editingProject.project.liveUrl || editingProject.project.tableauUrl || ""}
+                  onChange={(e) =>
+                    setEditingProject({
+                      ...editingProject,
+                      project: { ...editingProject.project, liveUrl: e.target.value },
+                    })
+                  }
+                  placeholder="https://..."
+                  className="w-full px-3 py-2 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Quick Preview Config */}
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-mono uppercase text-zinc-300 font-semibold">
+                  Quick Preview Setup
+                </label>
+                <span className="text-[10px] font-mono text-zinc-500">
+                  You can also manage rich carousels & full media in the Dedicated Preview Manager
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] font-mono text-zinc-400 uppercase block mb-1">Preview Type</label>
+                  <select
+                    value={editingProject.project.preview?.type || "static"}
+                    onChange={(e) =>
+                      setEditingProject({
+                        ...editingProject,
+                        project: {
+                          ...editingProject.project,
+                          preview: {
+                            ...(editingProject.project.preview || { isExpandable: true }),
+                            type: e.target.value as ProjectPreviewConfig["type"],
+                          },
+                        },
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none"
+                  >
+                    <option value="static" className="bg-zinc-900 text-white">Static Image</option>
+                    <option value="gif" className="bg-zinc-900 text-white">Animated GIF</option>
+                    <option value="video" className="bg-zinc-900 text-white">Video Clip</option>
+                    <option value="carousel" className="bg-zinc-900 text-white">Dashboard Carousel</option>
+                    <option value="none" className="bg-zinc-900 text-white">None</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-mono text-zinc-400 uppercase block mb-1">Asset URL / Path</label>
+                  <input
+                    type="text"
+                    value={editingProject.project.preview?.src || ""}
+                    onChange={(e) =>
+                      setEditingProject({
+                        ...editingProject,
+                        project: {
+                          ...editingProject.project,
+                          preview: {
+                            ...(editingProject.project.preview || { type: "static", isExpandable: true }),
+                            src: e.target.value,
+                          },
+                        },
+                      })
+                    }
+                    placeholder="/projects/filename.png"
+                    className="w-full px-3 py-2 rounded-lg bg-white/[0.02] border border-white/10 text-xs text-white focus:outline-none font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Actions */}
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/[0.08]">
+              <button
+                type="button"
+                onClick={() => setEditingProject(null)}
+                className="px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-xs font-medium text-zinc-300 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveEditedProject}
+                className="px-5 py-2 rounded-xl bg-white text-zinc-950 text-xs font-semibold hover:bg-zinc-200 transition-all shadow-md flex items-center gap-1.5"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>Save Project</span>
               </button>
             </div>
           </div>
