@@ -139,15 +139,18 @@ const InteractivePreviewFrame: React.FC<{
       onClick={isExpandable ? onClick : undefined}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
-      className={`group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border transition-all duration-300 ${
+      data-cursor={isExpandable ? "project" : undefined}
+      className={`group relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#06080e] border transition-all duration-300 select-none ${
         isExpandable
           ? "cursor-pointer border-white/[0.08] hover:border-cyan-500/40 hover:shadow-[0_0_25px_rgba(34,211,238,0.08)]"
           : "border-white/[0.08]"
       }`}
       title={isExpandable ? (title || "Click to expand preview") : undefined}
     >
-      {/* Underlying Preview Content */}
-      {children}
+      {/* Underlying Preview Content - reliably constrained and pointer-neutral */}
+      <div className="absolute inset-0 w-full h-full flex items-center justify-center select-none pointer-events-none overflow-hidden">
+        {children}
+      </div>
 
       {/* Cursor-Following Soft Radial Spotlight */}
       {isExpandable && !shouldReduceMotion && (
@@ -443,15 +446,15 @@ const ProjectVisualPreview: React.FC<{
               loop
               muted
               playsInline
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain pointer-events-none select-none"
             />
           ) : (
             <img
               src={preview.src}
               alt={preview.alt || project.title}
-              className="w-full h-full object-contain"
-              loading="lazy"
-              decoding="async"
+              className="w-full h-full object-contain pointer-events-none select-none"
+              draggable={false}
+              loading="eager"
             />
           )}
         </InteractivePreviewFrame>
@@ -477,9 +480,9 @@ const ProjectVisualPreview: React.FC<{
           <img
             src="/projects/gst-invoice-anomaly-dashboard.png"
             alt="GST Invoice Anomaly Detection Forensic Tableau Dashboard"
-            className="w-full h-full object-contain"
-            loading="lazy"
-            decoding="async"
+            className="w-full h-full object-contain pointer-events-none select-none"
+            draggable={false}
+            loading="eager"
           />
         </InteractivePreviewFrame>
       </div>
@@ -503,9 +506,9 @@ const ProjectVisualPreview: React.FC<{
           <img
             src="/projects/ewaybill-architecture-pipeline.jpg"
             alt="E-Way Bill Data Reliability Pipeline Architecture Diagram"
-            className="w-full h-full object-contain"
-            loading="lazy"
-            decoding="async"
+            className="w-full h-full object-contain pointer-events-none select-none"
+            draggable={false}
+            loading="eager"
           />
         </InteractivePreviewFrame>
       </div>
@@ -530,9 +533,9 @@ const ProjectVisualPreview: React.FC<{
           <img
             src="/Payment%20Status%20Recovery%20Walkthrough.gif"
             alt="Payment Status Recovery Walkthrough Interface Animation"
-            className="w-full h-full object-contain"
-            loading="lazy"
-            decoding="async"
+            className="w-full h-full object-contain pointer-events-none select-none"
+            draggable={false}
+            loading="eager"
           />
         </InteractivePreviewFrame>
       </div>

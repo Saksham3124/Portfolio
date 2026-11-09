@@ -59,7 +59,7 @@ export const CustomCursor: React.FC = () => {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden select-none"
+      className="pointer-events-none fixed inset-0 z-[100000] overflow-hidden select-none"
     >
       {/* 1. Subtle Trailing Satellite Particle */}
       <motion.div
