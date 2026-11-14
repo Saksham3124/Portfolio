@@ -290,7 +290,7 @@ const CustomerSegmentationCarousel: React.FC<{
     };
   }, []);
 
-  // Automatic rotation between dashboards every 3 seconds
+  // Automatic rotation between dashboards every 2 seconds
   // Only runs when preloaded, in viewport, not hovered, not actively interacting, and not reduced motion
   useEffect(() => {
     if (!allPreloaded || !isInView || isHovered || isInteracting || shouldReduceMotion) {
@@ -300,7 +300,7 @@ const CustomerSegmentationCarousel: React.FC<{
     const timer = setInterval(() => {
       setDirection(1); // strictly right-to-left
       setActiveIndex((prev) => (prev + 1) % views.length);
-    }, 3000);
+    }, 2000);
 
     return () => clearInterval(timer);
   }, [allPreloaded, isInView, isHovered, isInteracting, shouldReduceMotion, views.length]);
